@@ -1,0 +1,145 @@
+{
+  "shared": {
+    "save": "Save",
+    "logOut": "Log Out",
+    "myAccount": "My account",
+    "successfulChange": "Your changes have been saved",
+    "copy": "Copy",
+    "copied": "Copied"
+  },
+  "errors": {
+    "required": "Required"
+  },
+  "personalAccountDeactivated": {
+    "createFirstAccount": "Let's get started",
+    "firstAccountDescription": "Create your first team and invite some teammates"
+  },
+  "updateProfileName": {
+    "yourInformation": "Your information",
+    "description": "This is how you'll appear to others in your team.",
+    "yourName": "Your name"
+  },
+  "updateEmailAddress": {
+    "title": "Update Email Address",
+    "description": "Once you've updated your email, you'll need to confirm the change at both your new and old address",
+    "pendingChange": "We've sent an email to {newEmail} to confirm your email change",
+    "emailAddress": "Email address",
+    "successfulChange": "We've sent you a confirmation email"
+  },
+  "listTeams": {
+    "title": "Your Teams",
+    "description": "You belong to the following teams",
+    "teamName": "Team",
+    "teamRole": "Role",
+    "viewTeam": "View",
+    "manageTeam": "Settings",
+    "createTeam": "New team"
+  },
+  "profileButton": {
+    "loggedInAs": "Logged in as",
+    "yourAccount": "Your account",
+    "editProfile": "Edit profile"
+  },
+  "newAccount": {
+    "name": "Team name",
+    "nameHelpText": "You can change your team name at any time",
+    "submit": "Create team"
+  },
+  "newAccountModal": {
+    "title": "Create a new team"
+  },
+  "personalAccountMenu": {
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "billing": "Billing"
+  },
+  "teamSelectMenu": {
+    "myAccount": "My account",
+    "personalAccount": "Personal Account",
+    "newAccount": "Create a new team",
+    "teams": "Teams"
+  },
+  "teamAccountMenu": {
+    "dashboard": "Dashboard",
+    "settings": "Settings"
+  },
+  "profile": {
+    "pageTitle": "Profile"
+  },
+  "billing": {
+    "pageTitle": "Billing"
+  },
+  "teamAccountSettings": {
+    "pageTitle": "Settings",
+    "tabs": {
+      "general": "General",
+      "members": "Members",
+      "billing": "Billing"
+    }
+  },
+  "updateAccountName": {
+    "title": "Update Team Name",
+    "description": "You can change your team name at any time",
+    "teamName": "Team name"
+  },
+  "inviteMember": {
+    "title": "Invite a new member",
+    "description": "Generate a one-time use or time-bound link to invite your teammates.",
+    "userType": "User type",
+    "inviteType": "Invitation type",
+    "linkButton": "Generate invitation",
+    "linkGenerated": "You've created an invitation link, share it with your teammates so they can join"
+  },
+  "listTeamMembers": {
+    "title": "Team members",
+    "description": "You can invite new members to your team or remove existing ones",
+    "primaryOwner": "Primary owner",
+    "updateRole": "Change role",
+    "updateRoleTitle": "Change role for {{name}}",
+    "removeMember": "Remove member",
+    "removeMemberTitle": "Are you sure you want to remove {{name}} from the team?"
+  },
+  "listTeamInvitations": {
+    "linkDescription": "Link generated {{date}}"
+  },
+  "invitation": {
+    "invalid": "This invitation is invalid or has expired",
+    "title": "You've been invited to join",
+    "accept": "Accept invitation"
+  },
+  "updateTeamMemberRole": {
+    "role": "User role",
+    "buttonText": "Update user role",
+    "makePrimaryOwner": "Make this user the primary owner"
+  },
+  "removeTeamMember": {
+    "buttonText": "Remove member"
+  },
+  "accountSubscription": {
+    "title": "Your Plan",
+    "description": "You can upgrade or downgrade your plan at any time",
+    "updatePlan": "Update plan settings",
+    "billingEmail": "Your billing email is {{email}}"
+  },
+  "accountSubscriptionTakeover": {
+    "newSubscriptionTitle": "Select your plan to get started",
+    "fixExistingSubscriptionTitle": {
+      "incomplete": "You need to finish setting up your account",
+      "past_due": "Your payment is past due",
+      "unpaid": "Your payment is due"
+    }
+  },
+  "newSubscriptions": {
+    "activate": "Select Plan",
+    "tabs": {
+      "month": "Monthly",
+      "year": "Yearly",
+      "one_time": "One time"
+    },
+    "intervals": {
+      "month": "month",
+      "year": "year",
+      "one_time": "Once"
+    }
+  }
+}

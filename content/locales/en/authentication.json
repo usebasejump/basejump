@@ -1,0 +1,21 @@
+{
+  "shared": {
+    "email": "Email",
+    "password": "Password",
+    "notYetRegistered": "Not yet registered? Sign up here",
+    "alreadyRegistered": "Already registered? Sign in here"
+  },
+  "magicLink": {
+    "checkEmail": "Check your email to continue",
+    "tryAgain": "Try again",
+    "emailPlaceholder": "Your email address",
+    "emailHelpText": "We'll send you a magic link to sign in",
+    "buttonText": "Send magic link"
+  },
+  "loginPassword": {
+    "buttonText": "Sign in"
+  },
+  "signupPassword": {
+    "buttonText": "Create your account"
+  }
+}

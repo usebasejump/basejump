@@ -1,0 +1,10 @@
+{
+    "i18n-ally.localesPaths": [
+        "content/locales"
+    ],
+    "deno.enable": true,
+    "deno.unstable": true,
+    "deno.enablePaths": [
+        "supabase/functions"
+    ]
+}
