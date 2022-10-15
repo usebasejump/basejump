@@ -10,6 +10,15 @@
   "errors": {
     "required": "Required"
   },
+  "dashboardMeta": {
+    "dashboard": "Dashboard",
+    "billing": "Manage billing",
+    "profile": "Your profile",
+    "teamDashboard": "{{teamName}} Dashboard",
+    "teamBilling": "{{teamName}} billing",
+    "teamMembers": "{{teamName}} members",
+    "teamSettings": "{{teamName}} Settings"
+  },
   "personalAccountDeactivated": {
     "createFirstAccount": "Let's get started",
     "firstAccountDescription": "Create your first team and invite some teammates"

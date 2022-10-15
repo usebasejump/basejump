@@ -8,14 +8,20 @@ import ListTeamInvitations from "@/components/dashboard/accounts/settings/list-t
 import useTeamInvitations from "@/utils/api/use-team-invitations";
 import { withPageAuth } from "@supabase/auth-helpers-nextjs";
 import { LOGIN_PATH } from "@/types/auth";
+import useTeamAccount from "@/utils/api/use-team-account";
+import DashboardMeta from "@/components/dashboard/dashboard-meta";
 
 const TeamSettingsMembers = () => {
   const { t } = useTranslation("dashboard");
   const router = useRouter();
   const { accountId } = router.query;
   const { refetch } = useTeamInvitations(accountId as string);
+  const { data } = useTeamAccount(accountId as string);
   return (
     <AccountSettingsLayout>
+      <DashboardMeta
+        title={t("dashboardMeta.teamMembers", { teamName: data?.team_name })}
+      />
       <div className="grid gap-y-6">
         <SettingsCard
           title={t("inviteMember.title")}
