@@ -50,7 +50,7 @@ create table account_user (
     -- id of the account the user is in
     account_id uuid references accounts not null,
     -- role of the user in the account
-    account_role account_role not null
+    account_role account_role not null,
     constraint account_user_pkey primary key(user_id, account_id)
 );
 
