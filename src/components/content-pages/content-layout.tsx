@@ -5,7 +5,7 @@ const ContentLayout = ({ children }) => {
   return (
     <div>
       <ContentHeader />
-      {children}
+      <div className="min-h-screen">{children}</div>
       <ContentFooter />
     </div>
   );

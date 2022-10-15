@@ -1,6 +1,5 @@
 import {
   getContentBySlug,
-  getContentPaths,
   getDocsNavigation,
 } from "@/utils/content/content-helpers";
 import { MDXRemote } from "next-mdx-remote";
@@ -18,11 +17,6 @@ const DocsShow = ({ navigation, content, title, meta }) => {
         socialImage={meta.socialImage}
       />
       <div className="prose mx-auto">
-        {!!meta?.category && (
-          <span className="text-primary font-bold text-sm">
-            {meta.category}
-          </span>
-        )}
         <h1 className="mt-0 pt-0">{title}</h1>
         <MDXRemote {...content} />
       </div>
@@ -33,7 +27,7 @@ const DocsShow = ({ navigation, content, title, meta }) => {
 export default DocsShow;
 
 export async function getStaticProps({ params, locale, ...rest }) {
-  const doc = await getContentBySlug(params.slug?.[0], {
+  const doc = await getContentBySlug("index", {
     locale,
     contentType: "docs",
   });
@@ -47,27 +41,5 @@ export async function getStaticProps({ params, locale, ...rest }) {
       navigation,
       content,
     },
-  };
-}
-
-export async function getStaticPaths({ locales }) {
-  const paths = [];
-  for (const locale of locales) {
-    const filePaths = await getContentPaths(locale, "docs");
-    filePaths
-      .filter((filePath) => !filePath.slug.includes("index"))
-      .forEach((filePath) => {
-        paths.push({
-          params: {
-            slug: [filePath.slug],
-          },
-          locale,
-        });
-      });
-  }
-
-  return {
-    paths,
-    fallback: false,
   };
 }

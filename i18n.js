@@ -13,6 +13,7 @@ module.exports = {
     "/signup": ["authentication"],
     "/invitation": ["dashboard"],
     "rgx:^/dashboard": ["dashboard"],
+    "*": ["content"],
   },
   // HACK: Add this back in once resolved
   // loadLocaleFrom: (lang, ns) =>
