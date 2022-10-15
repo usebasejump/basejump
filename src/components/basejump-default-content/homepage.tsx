@@ -1,7 +1,12 @@
 import Logo from "@/components/basejump-default-content/logo";
+import ContentMeta from "@/components/content-pages/content-meta";
 
 const BasejumpHomepage = () => (
   <div className="max-w-screen-lg mx-auto bg-base-100">
+    <ContentMeta
+      title="Basejump - SaaS starter kit for Supabase and NextJS"
+      description="An opinionated short cut for launching Supabase apps using NextJS"
+    />
     <div className="pt-36 pb-48">
       <Logo size="lg" className="mx-auto" />
       <h2 className="h2 text-center my-2">
