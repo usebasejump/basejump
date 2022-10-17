@@ -10,6 +10,6 @@ jobs:
       - name: Install modules
         run: yarn install --frozen-lockfile
       - name: Next Linting
-        run: next lint
+        run: yarn lint
       - name: Run tests
         run: yarn test
