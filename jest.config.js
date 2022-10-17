@@ -7,16 +7,16 @@ const createJestConfig = nextJest({
 // Add any custom config to be passed to Jest
 const customJestConfig = {
   // Add more setup options before each test is run
-  setupFilesAfterEnv: ["<rootDir>/__tests__/utils/jest.setup.js"],
+  setupFilesAfterEnv: ["<rootDir>/__tests__/setup/jest.setup.js"],
   // if using TypeScript with a baseUrl set to the root directory then you need the below for alias' to work
   preset: "ts-jest",
   moduleDirectories: ["node_modules", "<rootDir>/"],
   testEnvironment: "jest-environment-jsdom",
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
-    "^@tests/(.*)$": "<rootDir>/__tests__/utils/$1",
+    "^@tests/(.*)$": "<rootDir>/__tests__/setup/$1",
   },
-  testPathIgnorePatterns: ["<rootDir>/__tests__/utils/"],
+  testPathIgnorePatterns: ["<rootDir>/__tests__/setup/"],
   /**
    * This is where you'll define node_module libraries that need to be transformed still
    * By default all node_modules are ignored
