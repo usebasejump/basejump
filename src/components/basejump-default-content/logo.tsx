@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import Image from "next/image";
 import cx from "classnames";
 
