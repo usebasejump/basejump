@@ -1,5 +1,6 @@
 ---
 title: "Hello World"
+published: 2022-10-15
 category: "Updates"
 description: "This is an automatically generated Basejump blog article!"
 socialDescription: "Check out this automatically generated Basejump blog article!"
