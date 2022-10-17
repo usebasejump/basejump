@@ -6,11 +6,18 @@ import { MDXRemote } from "next-mdx-remote";
 import { serialize } from "next-mdx-remote/serialize";
 import Link from "next/link";
 import useTranslation from "next-translate/useTranslation";
+import ContentMeta from "@/components/content-pages/content-meta";
 
 const BlogShow = ({ content, title, meta }) => {
   const { t } = useTranslation("content");
   return (
     <div className="prose mx-auto">
+      <ContentMeta
+        title={title}
+        description={meta?.description}
+        socialDescription={meta?.socialDescription}
+        socialImage={meta?.socialImage}
+      />
       <div className="breadcrumbs text-sm mb-4">
         <ul className="m-0 p-0">
           <li className="p-0">
