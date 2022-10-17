@@ -13,7 +13,7 @@ describe("Update team member role", () => {
     });
   });
 
-  it("primary owners can change the primary owner", async () => {
+  test.skip("primary owners can change the primary owner", async () => {
     jest.mock("@/utils/api/use-team-role", () => ({
       __esModule: true,
       default: jest.fn(() => ({
@@ -51,7 +51,7 @@ describe("Update team member role", () => {
     // expect(toast.success).toHaveBeenCalled();
   });
 
-  it("Regular owners cannot change the primary owner", async () => {
+  test.skip("Regular owners cannot change the primary owner", async () => {
     // const nameInput = await screen.getByTestId<HTMLInputElement>("name");
     // await act(async () => {
     //   fireEvent.input(nameInput, {
@@ -68,7 +68,7 @@ describe("Update team member role", () => {
     expect(false).toBeTruthy();
   });
 
-  it("Primary owners only see the primary owner option on other owners", async () => {
+  test.skip("Primary owners only see the primary owner option on other owners", async () => {
     expect(false).toBeTruthy();
   });
 });

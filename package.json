@@ -6,7 +6,7 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc",
-    "test": "jest --watch",
+    "test": "jest",
     "generate-types": "npx openapi-typescript \"${NEXT_PUBLIC_SUPABASE_URL}/rest/v1/?apikey=${NEXT_PUBLIC_SUPABASE_ANON_KEY}\" --version=2 --output src/types/supabase-generated.ts",
     "sync-stripe": "npx tsx scripts/sync-stripe.ts"
   },

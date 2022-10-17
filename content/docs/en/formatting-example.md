@@ -1,7 +1,7 @@
 ---
 title: "Formatting Example"
 category: "Example Category"
-published: 2022-10-15
+published: 2022-10-16
 description: "This is a quick example page showing the support for markdown elements"
 ---
 

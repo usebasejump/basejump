@@ -2,6 +2,7 @@ import matter from "gray-matter";
 import { join } from "path";
 import { readdirSync, readFileSync } from "fs";
 import { slugToTitle } from "@/utils/content/slug-to-title";
+import { compareAsc, isBefore } from "date-fns";
 
 type ContentTypes = "docs" | "blog";
 
@@ -29,22 +30,34 @@ export async function getContentPaths(
   const files = readdirSync(
     join(process.cwd(), "content", contentType, locale)
   );
-  return files.map((filePath) => {
-    // clean up markdown extension and replace index files with a non-index slug
-    const slug = filePath.replace(/\.md$/, "").replace(/\/?index$/, "");
-    const source = readFileSync(
-      join(process.cwd(), "content", contentType, locale, filePath),
-      "utf8"
-    );
-    const { data: meta, content } = matter(source);
-    return {
-      slug,
-      fullPath: join("/", contentType, slug),
-      meta,
-      title: meta?.title || slugToTitle(slug),
-      content,
-    };
-  });
+  return (
+    files
+      .map((filePath) => {
+        // clean up markdown extension and replace index files with a non-index slug
+        const slug = filePath.replace(/\.md$/, "").replace(/\/?index$/, "");
+        const source = readFileSync(
+          join(process.cwd(), "content", contentType, locale, filePath),
+          "utf8"
+        );
+        const { data: meta, content } = matter(source);
+        return {
+          slug,
+          fullPath: join("/", contentType, slug),
+          meta,
+          title: meta?.title || slugToTitle(slug),
+          content,
+        };
+      })
+      // remove unpublished files
+      .filter(
+        (file) =>
+          file.meta?.published && isBefore(file.meta.published, new Date())
+      )
+      // sort by publish date
+      .sort((fileA, fileB) => {
+        return compareAsc(fileA.meta.published, fileB.meta.published);
+      })
+  );
 }
 
 type GetContentBySlugResponse = {
