@@ -4,6 +4,8 @@ import { readdirSync, readFileSync } from "fs";
 import { slugToTitle } from "@/utils/content/slug-to-title";
 import { compareAsc, isBefore } from "date-fns";
 
+type ContentTypes = "docs" | "blog";
+
 /**
  * Next requires a json-serializable object to be returned from getStaticProps
  * So we have to cleanup the metadata that gets returned a bit
@@ -15,7 +17,13 @@ function loadFileWithMeta(filePath: string) {
   return { meta: JSON.parse(JSON.stringify(meta)), content };
 }
 
-type ContentTypes = "docs" | "blog";
+/**
+ * We want to load files from the content directory for production, or from the test directory for tests
+ * We do this so that after the project template is copied somewhere else things don't start failing
+ * once people add their own docs/blogs
+ */
+const basePath =
+  process.env.NODE_ENV === "test" ? "__tests__/content" : "content";
 
 type ContentPathsObject = {
   slug: string;
@@ -38,16 +46,14 @@ export async function getContentPaths(
   locale: string,
   contentType: ContentTypes
 ): Promise<ContentPathsResponse> {
-  const files = readdirSync(
-    join(process.cwd(), "content", contentType, locale)
-  );
+  const files = readdirSync(join(process.cwd(), basePath, contentType, locale));
   return (
     files
       .map((filePath) => {
         // clean up markdown extension and replace index files with a non-index slug
         const slug = filePath.replace(/\.md$/, "").replace(/\/?index$/, "");
         const { meta, content } = loadFileWithMeta(
-          join(process.cwd(), "content", contentType, locale, filePath)
+          join(process.cwd(), basePath, contentType, locale, filePath)
         );
 
         return {
@@ -100,7 +106,7 @@ export async function getContentBySlug(
   const realSlug = slug.replace(/\.md$/, "");
   const fullPath = join(
     process.cwd(),
-    "content",
+    basePath,
     contentType,
     locale,
     `${realSlug}.md`

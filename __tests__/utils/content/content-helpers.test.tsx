@@ -7,6 +7,8 @@ describe("Content Helpers", () => {
     expect(docs.length).toEqual(2);
     // should sort them by published date
     expect(docs[0].title).toEqual("Getting Started");
+    // nextjs expects all dates to be strings
+    expect(typeof docs[0].meta.published).toEqual("string");
   });
 
   it("Should know how to load and sort correct blogs", async () => {
@@ -14,6 +16,8 @@ describe("Content Helpers", () => {
     // should not load unpublished blogs
     expect(blogs.length).toEqual(2);
     // should sort them by published date
-    expect(blogs[0].title).toEqual("Hello World");
+    expect(blogs[0].title).toEqual("Article 1");
+    // nextjs expects all dates to be strings
+    expect(typeof blogs[0].meta.published).toEqual("string");
   });
 });
