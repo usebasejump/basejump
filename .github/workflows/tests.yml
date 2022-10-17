@@ -1,4 +1,4 @@
-name: Jest Tests
+name: Jest Tests and Linting
 on:
   pull_request:
     branches: [ main ]
@@ -9,5 +9,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install modules
         run: yarn install --frozen-lockfile
+      - name: Next Linting
+        run: next lint
       - name: Run tests
         run: yarn test
