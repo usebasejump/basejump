@@ -27,6 +27,10 @@ const customJestConfig = {
       tsconfig: "<rootDir>/tsconfig.json",
     },
   },
+  collectCoverageFrom: [
+    "<rootDir>/src/utils/**/*.{js,jsx,ts,tsx}",
+    "<rootDir>/src/components/**/*.{js,jsx,ts,tsx}",
+  ],
 };
 
 module.exports = async () => {
