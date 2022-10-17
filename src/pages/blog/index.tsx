@@ -8,7 +8,7 @@ import { serialize } from "next-mdx-remote/serialize";
 const BlogIndex = ({ articles }) => {
   const { t } = useTranslation("content");
   return (
-    <div className="max-w-prose mx-auto">
+    <div className="max-w-prose mx-auto mt-8">
       <ContentMeta
         title={t("blog")}
         description={t("blogDescription")}
@@ -46,7 +46,7 @@ export async function getStaticProps({ params, locale, ...rest }) {
   }
   return {
     props: {
-      articles,
+      articles: articles.reverse(),
     },
   };
 }

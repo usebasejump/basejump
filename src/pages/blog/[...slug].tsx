@@ -7,7 +7,7 @@ import { serialize } from "next-mdx-remote/serialize";
 import Link from "next/link";
 import useTranslation from "next-translate/useTranslation";
 
-const BlogShow = ({ navigation, content, title, meta }) => {
+const BlogShow = ({ content, title, meta }) => {
   const { t } = useTranslation("content");
   return (
     <div className="prose mx-auto">
