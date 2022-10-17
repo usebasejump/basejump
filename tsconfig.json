@@ -23,7 +23,7 @@
         "src/*"
       ],
       "@tests/*": [
-        "__tests__/utils/*"
+        "__tests__/setup/*"
       ]
     },
     "incremental": true

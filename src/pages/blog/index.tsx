@@ -14,21 +14,23 @@ const BlogIndex = ({ articles }) => {
         description={t("blogDescription")}
         socialDescription={t("blogDescription")}
       />
-      {articles.map((article) => (
-        <article key={article.fullPath} className="prose">
-          {!!article.meta?.category && (
-            <span className="text-primary font-bold text-sm">
-              {article.meta.category}
-            </span>
-          )}
-          <Link key={article.fullPath} href={article.fullPath} passHref>
-            <a className="no-underline">
-              <h1>{article.title}</h1>
-            </a>
-          </Link>
-          <MDXRemote {...article.content} />
-        </article>
-      ))}
+      <div className="grid gap-y-12">
+        {articles.map((article) => (
+          <article key={article.fullPath} className="prose">
+            {!!article.meta?.category && (
+              <span className="text-primary font-bold text-sm">
+                {article.meta.category}
+              </span>
+            )}
+            <Link key={article.fullPath} href={article.fullPath} passHref>
+              <a className="no-underline">
+                <h1>{article.title}</h1>
+              </a>
+            </Link>
+            <MDXRemote {...article.content} />
+          </article>
+        ))}
+      </div>
     </div>
   );
 };
