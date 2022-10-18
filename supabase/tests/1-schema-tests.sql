@@ -14,7 +14,7 @@ select columns_are('basejump', 'config', Array['enable_personal_accounts', 'enab
 select ok(basejump.is_set('enable_personal_accounts')), 'Basejump config should have personal accounts enabled';
 select ok(basejump.is_set('enable_team_accounts')), 'Basejump config should have team accounts enabled';
 select ok(basejump.is_set('enable_account_billing')), 'Basejump config should have account billing enabled';
-select ok((basejump.get_config() -> 'stripe_default_trial_period_days')::int = 30), 'Basejump config should have a default trial period';
+select ok((basejump.get_config() ->> 'stripe_default_trial_period_days')::int = 30), 'Basejump config should have a default trial period';
 
 SELECT * FROM finish();
 
