@@ -1,4 +1,9 @@
 /**
+ * We want to enable pgtap for testing
+ */
+create extension if not exists pgtap with schema extensions;
+
+/**
   * By default we want to revoke execute from public
  */
 ALTER DEFAULT PRIVILEGES REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC;
