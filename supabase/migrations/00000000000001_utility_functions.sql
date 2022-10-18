@@ -25,7 +25,7 @@ insert into basejump.config (enable_personal_accounts, enable_team_accounts)
 values (true, true);
 
 -- enable select on the config table
-GRANT SELECT ON basejump.config TO authenticated, anon, service_role;
+GRANT SELECT ON basejump.config TO authenticated, service_role;
 
 -- enable RLS on config
 ALTER TABLE basejump.config
@@ -53,7 +53,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-grant execute on function basejump.get_config() to authenticated, anon;
+grant execute on function basejump.get_config() to authenticated;
 
 /**
   Sometimes it's useful for supabase admin clients to access settings
@@ -70,6 +70,8 @@ BEGIN
     return row_to_json(result);
 END;
 $$ LANGUAGE plpgsql;
+revoke execute on function public.get_service_role_config() from anon, authenticated;
+
 
 /**
   Check a specific boolean config value
@@ -85,7 +87,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-grant execute on function basejump.is_set(text) to authenticated, anon;
+grant execute on function basejump.is_set(text) to authenticated;
 
 
 /**
