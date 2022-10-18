@@ -3,6 +3,8 @@ BEGIN;
 -- set local role authenticated;
 -- set local "request.jwt.claim.user_id" to 9;
 
+select plan(7);
+
 select has_schema('basejump', 'Basejump schema should exist');
 
 select has_table('basejump', 'config', 'Basejump config table should exist');
@@ -13,5 +15,7 @@ select ok(basejump.is_set('enable_personal_accounts')), 'Basejump config should 
 select ok(basejump.is_set('enable_team_accounts')), 'Basejump config should have team accounts enabled';
 select ok(basejump.is_set('enable_account_billing')), 'Basejump config should have account billing enabled';
 select ok(basejump.get_config() -> 'stripe_default_trial_period_days' = 30), 'Basejump config should have a default trial period';
+
+SELECT * FROM finish();
 
 ROLLBACK;
