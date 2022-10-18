@@ -15,4 +15,6 @@ jobs:
         env:
           SHELL: /bin/bash
       - name: Run Tests
-        run: pg_prove -d supabase -U postgres -h localhost -p 54322 -f supabase/tests/*.sql
+        run: pg_prove -d postgres -U postgres -h localhost -p 54322 supabase/tests/
+        env:
+          PGPASSWORD: postgres
