@@ -7,6 +7,7 @@ create extension if not exists pgtap with schema extensions;
   * By default we want to revoke execute from public
  */
 ALTER DEFAULT PRIVILEGES REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC;
+ALTER DEFAULT PRIVILEGES IN SCHEMA PUBLIC REVOKE EXECUTE ON FUNCTIONS FROM anon, authenticated;
 
 /**
   Create a schema for us to use for private functions
@@ -70,8 +71,6 @@ BEGIN
     return row_to_json(result);
 END;
 $$ LANGUAGE plpgsql;
-revoke execute on function public.get_service_role_config() from anon, authenticated;
-
 
 /**
   Check a specific boolean config value
