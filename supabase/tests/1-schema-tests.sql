@@ -9,7 +9,7 @@ select has_schema('basejump', 'Basejump schema should exist');
 
 select has_table('basejump', 'config', 'Basejump config table should exist');
 
-select columns_are('basejump', 'config', Array['enable_personal_accounts', 'enable_team_accounts', 'enable_account_billing', 'billing_provider', stripe_default_trial_period_days', 'stripe_default_account_price_id'], 'Basejump config table should have the correct columns');
+select columns_are('basejump', 'config', Array['enable_personal_accounts', 'enable_team_accounts', 'enable_account_billing', 'billing_provider', 'stripe_default_trial_period_days', 'stripe_default_account_price_id'], 'Basejump config table should have the correct columns');
 
 select ok(basejump.is_set('enable_personal_accounts')), 'Basejump config should have personal accounts enabled';
 select ok(basejump.is_set('enable_team_accounts')), 'Basejump config should have team accounts enabled';
