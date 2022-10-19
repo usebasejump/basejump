@@ -33,6 +33,26 @@ set local search_path = core, public;
 set local role authenticated;
 set local "request.jwt.claim.user_id" to '1009e39a-fa61-4aab-a762-e7b1f3b014f3'::uuid;
 
+-- should be able to get your own role for the account
+SELECT
+    ok(
+    select basejump.current_user_account_role(select id from accounts where personal_account = true) = 'owner'::account_role,
+    'Primary owner should be able to get their own role'
+);
+
+-- cannot change the accounts.primary_owner_user_id
+SELECT
+    throws_ok(
+        $$ update accounts set primary_owner_user_id = '1009e39a-fa61-5324-a762-e7b1f3b014f3'::uuid where personal_account = true $$,
+        'Should not be able to change the primary owner of a personal account'
+    );
+
+-- cannot delete the primary_owner_user_id from the account_user table
+select
+    throws_ok(
+    $$ delete from account_user where user_id = '1009e39a-fa61-4aab-a762-e7b1f3b014f3' $$,
+    'Should not be able to delete the primary_owner_user_id from the account_user table',
+    )
 
 -- should not be able to add invitations to personal accounts
 SELECT
@@ -63,20 +83,29 @@ SELECT
     'Owner can update their team name'
     );
 
+-- personal account should be returned by the basejump.get_accounts_for_current_user functoin
+SELECT
+    row_eq(
+    $$ select basejump.get_accounts_for_current_user() $$,
+    ROW((select id from accounts where personal_account = true)),
+    'Personal account should be returned by the basejump.get_accounts_for_current_user function'
+    );
+
 -----------
 -- Strangers
 ----------
 set local "request.jwt.claim.user_id" to '1009e49a-fa61-4aab-a762-e7b1f3b014f3'::uuid;
+
 -- non members / owner cannot update team name
 SELECT
     throws_ok(
-    $$ update accounts set team_name = 'test' where id = (select id from accounts where personal_account = true) $$,
+    $$ update accounts set team_name = 'test' $$,
     'Non members / owner cannot update team name'
     );
 -- non member / owner should receive no results from accounts
 SELECT
     is_empty(
-    $$ select * from accounts where id = (select id from accounts where personal_account = true) $$,
+    $$ select * from accounts $$,
     'Non members / owner should receive no results from accounts'
     );
 
@@ -90,14 +119,14 @@ set local "request.jwt.claim.user_id" to null;
 -- anonymous should receive no results from accounts
 SELECT
     is_empty(
-    $$ select * from accounts where id = (select id from accounts where personal_account = true) $$,
+    $$ select * from accounts $$,
     'Anonymous should receive no results from accounts'
     );
 
 -- anonymous cannot update team name
 SELECT
     throws_ok(
-    $$ update accounts set team_name = 'test' where id = (select id from accounts where personal_account = true) $$,
+    $$ update accounts set team_name = 'test'$$,
     'Anonymous cannot update team name'
     );
 
