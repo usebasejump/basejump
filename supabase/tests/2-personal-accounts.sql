@@ -31,7 +31,7 @@ SELECT
 ------------
 set local search_path = core, public;
 set local role authenticated;
-set local "request.jwt.claim.user_id" to '1009e39a-fa61-4aab-a762-e7b1f3b014f3'::uuid;
+set local "request.jwt.claim.user_id" to '1009e39a-fa61-4aab-a762-e7b1f3b014f3';
 
 -- should be able to get your own role for the account
 SELECT
@@ -99,7 +99,7 @@ SELECT
 -----------
 -- Strangers
 ----------
-set local "request.jwt.claim.user_id" to '1009e49a-fa61-4aab-a762-e7b1f3b014f3'::uuid;
+set local "request.jwt.claim.user_id" to '1009e49a-fa61-4aab-a762-e7b1f3b014f3';
 
 -- non members / owner cannot update team name
 SELECT
