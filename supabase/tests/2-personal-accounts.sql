@@ -35,8 +35,13 @@ set local "request.jwt.claim.user_id" to '1009e39a-fa61-4aab-a762-e7b1f3b014f3':
 
 -- should be able to get your own role for the account
 SELECT
-    ok(
-    select basejump.current_user_account_role(select id from accounts where personal_account = true) = 'owner'::account_role,
+    row_eq(
+    select public.current_user_account_role(select id from accounts where personal_account = true),
+    ROW(jsonb_build_object(
+                    'account_role', 'owner',
+                    'is_primary_owner', TRUE,
+                    'is_personal_account', TRUE
+                )),
     'Primary owner should be able to get their own role'
 );
 
