@@ -28,6 +28,37 @@ CREATE TYPE public.account_role AS ENUM ('owner', 'member');
      PRIMARY KEY (id)
  );
 
+/**
+ * We want to protect some fields on accounts from being updated
+ * Specifically the primary owner user id and account id.
+ * primary_owner_user_id should be updated using the dedicated function
+ */
+ CREATE OR REPLACE FUNCTION public.protect_account_fields()
+     RETURNS TRIGGER AS
+ $$
+ BEGIN
+
+    IF current_setting('role') IN ('authenticated', 'anon') THEN
+       -- these are protected fields that users are not allowed to update themselves
+       -- platform admins should be VERY careful about updating them as well.
+       if NEW.id <> OLD.id
+        OR NEW.primary_owner_user_id <> OLD.primary_owner_user_id
+        OR NEW.personal_account <> OLD.personal_account
+        THEN
+           RAISE EXCEPTION 'You do not have permission to update this field';
+        end if;
+    END IF;
+
+    RETURN NEW;
+ END
+ $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER protect_account_fields
+    BEFORE UPDATE
+    ON public.accounts
+    FOR EACH ROW
+    EXECUTE FUNCTION public.protect_account_fields();
+
 -- enable RLS for accounts
 alter table accounts
     enable row level security;

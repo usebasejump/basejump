@@ -9,7 +9,7 @@ update basejump.config set enable_personal_accounts = true;
 
 --- we insert a user into auth.users and return the id into user_id to use
 INSERT INTO auth.users (email, id) VALUES ('test@test.com', '1009e39a-fa61-4aab-a762-e7b1f3b014f3');
-INSERT INTO auth.users (email, id) VALUES('test2@test.com', '1009e39a-fa61-5324-a762-e7b1f3b014f3');
+INSERT INTO auth.users (email, id) VALUES('test2@test.com', '5d94cce7-054f-4d01-a9ec-51e7b7ba8d59');
 
 ------------
 --- Primary Owner
@@ -50,8 +50,8 @@ SELECT
 -- cannot change the accounts.primary_owner_user_id
 SELECT
     throws_ok(
-        $$ update accounts set primary_owner_user_id = '1009e39a-fa61-5324-a762-e7b1f3b014f3' where personal_account = true $$,
-        'Should not be able to change the primary owner of a personal account'
+        $$ update accounts set primary_owner_user_id = '5d94cce7-054f-4d01-a9ec-51e7b7ba8d59' where personal_account = true $$,
+        'You do not have permission to update this field'
     );
 
 -- cannot delete the primary_owner_user_id from the account_user table
@@ -69,21 +69,21 @@ select
 SELECT
     throws_ok(
     $$ insert into invitations (account_id, account_role, token, invitation_type) values ((select id from accounts where personal_account = true), 'owner', 'test', 'one-time') $$,
-    'Cannot add invitations to personal accounts'
+    'new row violates row-level security policy for table "invitations"'
     );
 
 -- should not be able to add new users to personal accounts
 SELECT
     throws_ok(
-    $$ insert into account_user (account_id, account_role, user_id) values ((select id from accounts where personal_account = true), 'owner', '1009e39a-fa61-4aab-a762-e7b1f3b014f3') $$,
-    'Cannot add new users directly to personal accounts'
+    $$ insert into account_user (account_id, account_role, user_id) values ((select id from accounts where personal_account = true), 'owner', '5d94cce7-054f-4d01-a9ec-51e7b7ba8d59') $$,
+    'new row violates row-level security policy for table "invitations"'
     );
 
 -- cannot change personal_account setting no matter who you are
 SELECT
     throws_ok(
     $$ update accounts set personal_account = false where personal_account = true $$,
-    'Cannot change personal_account setting'
+    'You do not have permission to update this field'
     );
 
 -- owner can update their team name
@@ -98,7 +98,7 @@ SELECT
 SELECT
     results_eq(
     $$ select basejump.get_accounts_for_current_user() $$,
-    $$ select array_agg(id) from accounts where personal_account = true $$,
+    $$ select id from accounts where personal_account = true $$,
     'Personal account should be returned by the basejump.get_accounts_for_current_user function'
     );
 
@@ -111,7 +111,7 @@ set local "request.jwt.claims" to '{ "sub": "1009e49a-fa61-4aab-a762-e7b1f3b014f
 SELECT
     throws_ok(
     $$ update accounts set team_name = 'test' $$,
-    'Non members / owner cannot update team name'
+    'new row violates row-level security policy for table "invitations"'
     );
 -- non member / owner should receive no results from accounts
 SELECT
@@ -138,7 +138,7 @@ SELECT
 SELECT
     throws_ok(
     $$ update accounts set team_name = 'test'$$,
-    'Anonymous cannot update team name'
+    'new row violates row-level security policy for table "invitations"'
     );
 
 SELECT * FROM finish();

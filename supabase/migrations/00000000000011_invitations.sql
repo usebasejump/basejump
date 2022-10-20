@@ -81,7 +81,11 @@ create policy "Invitations can be created by account owners" on invitations
     for insert
     to authenticated
     with check (
-            basejump.is_set('enable_team_accounts') = true
+        -- team accounts should be enabled
+        basejump.is_set('enable_team_accounts') = true
+        -- this should not be a personal account
+        and (SELECT personal_account FROM public.accounts WHERE id = account_id) = false
+        -- the inserting user should be an owner of the account
         and
             (account_id IN
              (SELECT basejump.get_accounts_for_current_user('owner') AS get_accounts_for_current_user))
