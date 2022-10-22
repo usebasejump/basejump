@@ -119,6 +119,11 @@ begin
     from invitations
     where token = lookup_invitation_token
       and created_at > now() - interval '24 hours';
+
+    if lookup_account_id IS NULL then
+        raise exception 'Invitation not found';
+    end if;
+
     if lookup_account_id is not null then
         -- we've validated the token is real, so grant the user access
         insert into account_user (account_id, user_id, account_role)
