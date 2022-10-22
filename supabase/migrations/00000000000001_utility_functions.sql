@@ -1,7 +1,13 @@
 /**
+ * We want to enable pgtap for testing
+ */
+create extension if not exists pgtap with schema extensions;
+
+/**
   * By default we want to revoke execute from public
  */
 ALTER DEFAULT PRIVILEGES REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC;
+ALTER DEFAULT PRIVILEGES IN SCHEMA PUBLIC REVOKE EXECUTE ON FUNCTIONS FROM anon, authenticated;
 
 /**
   Create a schema for us to use for private functions
@@ -20,7 +26,7 @@ insert into basejump.config (enable_personal_accounts, enable_team_accounts)
 values (true, true);
 
 -- enable select on the config table
-GRANT SELECT ON basejump.config TO authenticated, anon, service_role;
+GRANT SELECT ON basejump.config TO authenticated, service_role;
 
 -- enable RLS on config
 ALTER TABLE basejump.config
@@ -48,7 +54,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-grant execute on function basejump.get_config() to authenticated, anon;
+grant execute on function basejump.get_config() to authenticated;
 
 /**
   Sometimes it's useful for supabase admin clients to access settings
@@ -80,7 +86,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-grant execute on function basejump.is_set(text) to authenticated, anon;
+grant execute on function basejump.is_set(text) to authenticated;
 
 
 /**

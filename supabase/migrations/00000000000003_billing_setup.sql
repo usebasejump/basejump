@@ -187,7 +187,6 @@ $$ LANGUAGE plpgsql;
 
 grant execute on function public.get_account_billing_status(uuid) to authenticated, service_role;
 
-
 /**
   Add config options to basejump.config to setup the stripe requirements on new accounts
  */
