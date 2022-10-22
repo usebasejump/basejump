@@ -15,7 +15,7 @@ select is_empty(
        join pg_type pt on pt.oid = pc.reltype
        where relrowsecurity = FALSE $$,
     'All tables in the public schema should have row level security enabled'
-)
+);
 
 select has_table('basejump', 'config', 'Basejump config table should exist');
 
