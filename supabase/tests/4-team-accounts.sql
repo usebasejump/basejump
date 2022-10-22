@@ -37,7 +37,7 @@ SELECT
 -- should add that user to the account as an owner
 SELECT
     row_eq(
-	    $$ select user_id, account_id, account_role from account_user $$,
+	    $$ select user_id, account_id, account_role from account_user join accounts on accounts.id = account_user.account_id and accounts.personal_account = false $$,
 	    ROW('1009e39a-fa61-4aab-a762-e7b1f3b014f3'::uuid, (select id from accounts where personal_account = false), 'owner'::account_role),
 	    'Inserting an account should also add an account_user for the current user'
     );
@@ -45,7 +45,7 @@ SELECT
 -- should be able to get your own role for the account
 SELECT
     row_eq(
-	    $$ with data as (select id from accounts where personal_account = true) select public.current_user_account_role(data.id) from data $$,
+	    $$ with data as (select id from accounts where personal_account = false) select public.current_user_account_role(data.id) from data $$,
 	    ROW(jsonb_build_object(
 		    'account_role', 'owner',
 		    'is_primary_owner', TRUE,
