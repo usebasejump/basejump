@@ -31,20 +31,38 @@ module.exports = {
     plugin(({ addComponents, theme }) => {
       const headings = {
         ".h1": {
-          fontSize: theme("fontSize.3xl"),
-          fontWeight: theme("fontWeight.medium"),
-        },
-        ".h2": {
           fontSize: theme("fontSize.2xl"),
           fontWeight: theme("fontWeight.medium"),
         },
-        ".h3": {
+        ".h2": {
           fontSize: theme("fontSize.xl"),
+          fontWeight: theme("fontWeight.medium"),
+        },
+        ".h3": {
+          fontSize: theme("fontSize.lg"),
           fontWeight: theme("fontWeight.medium"),
         },
         ".h4": {
           fontSize: theme("fontSize.lg"),
           fontWeight: theme("fontWeight.medium"),
+        },
+        "@screen md": {
+          ".h1": {
+            fontSize: theme("fontSize.3xl"),
+            fontWeight: theme("fontWeight.medium"),
+          },
+          ".h2": {
+            fontSize: theme("fontSize.2xl"),
+            fontWeight: theme("fontWeight.medium"),
+          },
+          ".h3": {
+            fontSize: theme("fontSize.xl"),
+            fontWeight: theme("fontWeight.medium"),
+          },
+          ".h4": {
+            fontSize: theme("fontSize.lg"),
+            fontWeight: theme("fontWeight.medium"),
+          },
         },
       };
       addComponents(headings, {
