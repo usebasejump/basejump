@@ -8,7 +8,7 @@ const BasejumpHomepage = () => (
       title="Basejump - SaaS starter kit for Supabase and NextJS"
       description="An opinionated short cut for launching Supabase apps using NextJS"
     />
-    <div className="pt-36 pb-48">
+    <div className="pt-8 pb-24 md:pt-36 md:pb-48">
       <Logo size="lg" className="mx-auto" />
       <h2 className="h2 text-center my-2">
         An opinionated shortcut for launching{" "}
@@ -16,7 +16,7 @@ const BasejumpHomepage = () => (
         <span className="text-accent">NextJS</span>
       </h2>
     </div>
-    <div className="grid grid-cols-1 gap-y-16">
+    <div className="grid grid-cols-1 gap-y-8 lg:gap-y-16">
       <div>
         <h1 className="h1 text-center mb-8">Features</h1>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

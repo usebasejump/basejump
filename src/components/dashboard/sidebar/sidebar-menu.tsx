@@ -18,7 +18,7 @@ const SidebarMenu = ({ className, onClose, currentAccount }: Props) => {
   return (
     <div
       className={cx(
-        "bg-base-300 md:w-72 md:flex md:flex-col md:justify-between",
+        "bg-base-300 md:w-72 flex flex-col justify-between",
         className
       )}
     >

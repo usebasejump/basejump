@@ -15,16 +15,27 @@ const Logo = ({ size = "lg", className }: Props) => {
       className={cx(
         "flex items-center justify-center",
         {
-          "gap-x-4": size === "lg",
-          "gap-x-2": size === "sm",
+          "gap-x-3 md:gap-x-4": size === "lg",
+          "gap-x-1 md:gap-x-2": size === "sm",
         },
         className
       )}
     >
-      <Image src={"/images/basejump-logo.png"} height={height} width={width} />
+      <div
+        className={cx({
+          "w-24 md:w-auto": size === "lg",
+          "w-14 md:w-auto": size === "sm",
+        })}
+      >
+        <Image
+          src={"/images/basejump-logo.png"}
+          height={height}
+          width={width}
+        />
+      </div>
       <h1
-        className={cx("text-8xl font-black", {
-          "text-8xl": size === "lg",
+        className={cx("font-black", {
+          "text-3xl md:text-8xl": size === "lg",
           "text-2xl": size === "sm",
         })}
       >
