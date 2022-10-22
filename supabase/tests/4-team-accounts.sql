@@ -153,7 +153,7 @@ set local "request.jwt.claims" to '{ "sub": "813748e9-8985-45c6-ad6d-01ab38db96f
 SELECT
     is(
     (select count(*)::int from accounts where id = '8fcec130-27cd-4374-9e47-3303f9529479'),
-    ROW(1),
+    1,
     'Should now have access to the account'
     );
 
