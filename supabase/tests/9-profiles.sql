@@ -37,9 +37,10 @@ BEGIN;
         );
 
     -- User should not be able to update other users names
-    select throws_ok(
-        $$ update profiles set name = 'test update' where id = '5d94cce7-054f-4d01-a9ec-51e7b7ba8d59' $$,
-        'new row violates row-level security policy for table "profiles"'
+    select results_ne(
+        $$ update profiles set name = 'test update' where id = '5d94cce7-054f-4d01-a9ec-51e7b7ba8d59' returning 1 $$,
+        $$ values(1) $$,
+        'Should not be able to update profile'
     );
 
     -- Create a new account so you can start sharing profiles
@@ -61,11 +62,11 @@ BEGIN;
             );
 
     -- still can't update teammates profiles
-        select throws_ok(
-            $$ update profiles set name = 'test update' where id = '5d94cce7-054f-4d01-a9ec-51e7b7ba8d59' $$,
-            'new row violates row-level security policy for table "profiles"'
-        );
-
+        select results_ne(
+        $$ update profiles set name = 'test update' where id = '5d94cce7-054f-4d01-a9ec-51e7b7ba8d59' returning 1 $$,
+        $$ values(1) $$,
+        'Should not be able to update profile'
+    );
     SELECT * FROM finish();
 
 ROLLBACK;
