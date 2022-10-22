@@ -53,7 +53,7 @@ SELECT
     $$ select lookup_invitation('not-real-token')::text $$,
     ROW(json_build_object(
     	'active', false,
-    	'team_name', '')::text
+    	'team_name', null)::text
     	),
     'Fake tokens should fail lookup gracefully'
     );
@@ -89,8 +89,8 @@ SELECT
 -- should have the correct role on the team
 SELECT
     row_eq(
-    $$ select user_id, account_role from account_user where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f'::uuid $$,
-    ROW('813748e9-8985-45c6-ad6d-01ab38db96fe'::uuid, 'owner'::account_role),
+    $$ select account_role from account_user where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f'::uuid and user_id = '813748e9-8985-45c6-ad6d-01ab38db96fe'::uuid $$,
+    ROW('owner'::account_role),
     'Should have the correct account role after accepting an invitation'
     );
 

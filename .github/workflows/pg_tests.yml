@@ -8,12 +8,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: supabase/setup-cli@v1
-      - name: Supabase Start
-        run: supabase start
       - name: install pg_prove
         run: sudo cpan TAP::Parser::SourceHandler::pgTAP
         env:
           SHELL: /bin/bash
+      - name: Supabase Start
+        run: supabase start
       - name: Run Tests
         run: pg_prove -d postgres -U postgres -h localhost -p 54322 supabase/tests/*.sql
         env:

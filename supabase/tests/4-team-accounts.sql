@@ -141,7 +141,7 @@ set local "request.jwt.claims" to '';
 -- insert account_user for the member test
 insert into account_user (account_id, account_role, user_id) values ('8fcec130-27cd-4374-9e47-3303f9529479', 'member', '813748e9-8985-45c6-ad6d-01ab38db96fe');
 -- insert account_user for the owner test
-insert into account_user (account_id, account_role, user_id) values ('b4fc5df3-fa82-406b-bbd8-dba314155518', 'owner', 'b4fc5df3-fa82-406b-bbd8-dba314155518');
+insert into account_user (account_id, account_role, user_id) values ('8fcec130-27cd-4374-9e47-3303f9529479', 'owner', 'b4fc5df3-fa82-406b-bbd8-dba314155518');
 
 -----------
 --- Member
