@@ -15,9 +15,9 @@ BEGIN;
 
     -- user should have access to their own profile
     select
-        row_eq(
-            $$ select name from profiles where id = '1009e39a-fa61-4aab-a762-e7b1f3b014f3' $$,
-            ROW('test'),
+        is(
+            (select name from profiles where id = '1009e39a-fa61-4aab-a762-e7b1f3b014f3'),
+            'test',
             'User should have access to their own profile, profile should auto-set name to first half of email'
         );
 
@@ -32,7 +32,7 @@ BEGIN;
     select
         row_eq(
             $$ update profiles set name = 'test update' where id = '1009e39a-fa61-4aab-a762-e7b1f3b014f3' returning name $$,
-            ROW('test update'),
+            ROW('test update'::text),
             'User should be able to update their own name'
         );
 
@@ -56,7 +56,7 @@ BEGIN;
     select
             row_eq(
                 $$ select name from profiles where id = '5d94cce7-054f-4d01-a9ec-51e7b7ba8d59' $$,
-                ROW('test2'),
+                ROW('test2'::text),
                 'User should have access to teammates profiles'
             );
 
