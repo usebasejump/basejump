@@ -217,7 +217,7 @@ SELECT
 -- account_user should have a role of member
 SELECT
     row_eq(
-    $$ select user_id, account_role from account_user where account_id = '8fcec130-27cd-4374-9e47-3303f9529479' and user_id = 'b4fc5df3-fa82-406b-bbd8-dba314155518'$$,
+    $$ select account_role from account_user where account_id = '8fcec130-27cd-4374-9e47-3303f9529479' and user_id = 'b4fc5df3-fa82-406b-bbd8-dba314155518'$$,
     ROW('owner'::account_role),
     'Should have the expected account role'
     );
