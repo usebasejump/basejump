@@ -1,6 +1,6 @@
 BEGIN;
 
-select plan(15);
+select plan(30);
 
 select has_table('public', 'accounts', 'Accounts table should exist');
 
@@ -168,8 +168,8 @@ SELECT
 -- account_user should have a role of member
 SELECT
     row_eq(
-    $$ select user_id, account_role from account_user where account_id = '8fcec130-27cd-4374-9e47-3303f9529479'$$,
-    ROW('813748e9-8985-45c6-ad6d-01ab38db96fe'::uuid, 'member'::account_role),
+    $$ select account_role from account_user where account_id = '8fcec130-27cd-4374-9e47-3303f9529479' and user_id = '813748e9-8985-45c6-ad6d-01ab38db96fe'$$,
+    ROW('member'::account_role),
     'Should have the correct account role after accepting an invitation'
     );
 
@@ -217,8 +217,8 @@ SELECT
 -- account_user should have a role of member
 SELECT
     row_eq(
-    $$ select user_id, account_role from account_user where account_id = '8fcec130-27cd-4374-9e47-3303f9529479'$$,
-    ROW('b4fc5df3-fa82-406b-bbd8-dba314155518'::uuid, 'owner'::account_role),
+    $$ select user_id, account_role from account_user where account_id = '8fcec130-27cd-4374-9e47-3303f9529479' and user_id = 'b4fc5df3-fa82-406b-bbd8-dba314155518'$$,
+    ROW('owner'::account_role),
     'Should have the expected account role'
     );
 

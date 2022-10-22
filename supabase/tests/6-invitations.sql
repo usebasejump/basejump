@@ -2,7 +2,7 @@
 -- this batch is to let us test the more complicated behaviors such as one-time, 24-hour, multiple use, etc...accounts
 BEGIN;
 
-select plan(2);
+select plan(28);
 
 -- make sure we're setup for enabling personal accounts
 update basejump.config set enable_team_accounts = true;
@@ -13,6 +13,7 @@ INSERT INTO auth.users (email, id) VALUES('stranger@test.com', '5d94cce7-054f-4d
 INSERT INTO auth.users (email, id) VALUES('invited_member1@test.com', '813748e9-8985-45c6-ad6d-01ab38db96fe');
 INSERT INTO auth.users (email, id) VALUES('invited_member2@test.com', '45b3b769-5962-41b4-ac43-b92cc8929cea');
 INSERT INTO auth.users (email, id) VALUES('invited_member3@test.com', 'f2c7a2a8-b0c0-46e7-9118-acbe71824931');
+INSERT INTO auth.users (email, id) VALUES('expired@test.com', 'f4401edc-0afd-4c74-93cf-966901972f4f');
 
 --- start acting as an authenticated user
 set local search_path = core, public, extensions;
@@ -195,37 +196,6 @@ SELECT
     );
 
 -----------
--- Expired 24-hour tokens
------------
-set local role authenticated;
-set local "request.jwt.claims" to '{ "sub": "1009e39a-fa61-4aab-a762-e7b1f3b014f3", "email": "test@test.com" }';
-
-insert into invitations (account_id, account_role, token, invitation_type, created_at, updated_at) values
-    (
-        'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f',
-        'owner',
-        'expired_token',
-        '24-hour',
-        now() - interval '25 hours',
-        now() - interval '25 hours'
-     );
-
--- should not be able to lookup an expired token
-SELECT
-    row_eq(
-    $$ select lookup_invitation('expired_token')::text $$,
-    ROW(json_build_object('active', false, 'team_name', null)::text),
-    'Should not be able to lookup an expired token'
-    );
-
--- should not be able to accept an expired token
-SELECT
-    throws_ok(
-    $$ select accept_invitation('expired_token') $$,
-    'Invitation not found'
-    );
-
------------
 -- Strangers
 ----------
 set role authenticated;
@@ -265,6 +235,46 @@ SELECT
         $$ insert into invitations (account_id, account_role, token, invitation_type) values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'owner', 'test', 'one-time') returning 1 $$,
         'new row violates row-level security policy for table "invitations"'
     );
+
+
+-----------
+-- Expired 24-hour tokens
+-----------
+set local role postgres;
+-- we need to remove the invitations timestamp trigger so we can force the token to expire
+drop trigger set_invitations_timestamp ON public.invitations;
+
+set local role authenticated;
+set local "request.jwt.claims" to '{ "sub": "1009e39a-fa61-4aab-a762-e7b1f3b014f3", "email": "test@test.com" }';
+
+insert into invitations (account_id, account_role, token, invitation_type, created_at, updated_at) values
+    (
+        'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f',
+        'owner',
+        'expired_token',
+        '24-hour',
+        now() - interval '25 hours',
+        now() - interval '25 hours'
+     );
+
+set local role authenticated;
+set local "request.jwt.claims" to '{ "sub": "f4401edc-0afd-4c74-93cf-966901972f4f", "email": "expired@test.com" }';
+
+-- should not be able to lookup an expired token
+SELECT
+    row_eq(
+    $$ select lookup_invitation('expired_token')::text $$,
+    ROW(json_build_object('active', false, 'team_name', null)::text),
+    'Should not be able to lookup an expired token'
+    );
+
+-- should not be able to accept an expired token
+SELECT
+    throws_ok(
+    $$ select accept_invitation('expired_token') $$,
+    'Invitation not found'
+    );
+
 
 SELECT * FROM finish();
 
