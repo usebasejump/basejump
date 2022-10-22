@@ -115,7 +115,7 @@ SELECT
 -- non member / owner should receive no results from accounts
 SELECT
     is(
-    $$ select count(*) from accounts $$,
+    (select count(*)::int from accounts),
     1,
     'Non members / owner should receive no results from accounts'
     );
