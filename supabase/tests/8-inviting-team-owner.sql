@@ -1,6 +1,6 @@
 BEGIN;
 
-select plan(14);
+select plan(9);
 
 -- make sure we're setup for enabling personal accounts
 update basejump.config set enable_team_accounts = true;
