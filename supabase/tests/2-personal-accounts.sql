@@ -1,6 +1,6 @@
 BEGIN;
 
-select plan(2);
+select plan(15);
 
 select has_table('public', 'accounts', 'Accounts table should exist');
 
@@ -17,7 +17,6 @@ INSERT INTO auth.users (email, id) VALUES('test2@test.com', '5d94cce7-054f-4d01-
 set local search_path = core, public, extensions;
 set local role authenticated;
 set local "request.jwt.claims" to '{ "sub": "1009e39a-fa61-4aab-a762-e7b1f3b014f3", "email": "test@test.com" }';
-
 
 -- should create the personal account automatically
 SELECT
@@ -76,7 +75,7 @@ SELECT
 SELECT
     throws_ok(
     $$ insert into account_user (account_id, account_role, user_id) values ((select id from accounts where personal_account = true), 'owner', '5d94cce7-054f-4d01-a9ec-51e7b7ba8d59') $$,
-    'new row violates row-level security policy for table "invitations"'
+    'new row violates row-level security policy for table "account_user"'
     );
 
 -- cannot change personal_account setting no matter who you are
@@ -105,13 +104,13 @@ SELECT
 -----------
 -- Strangers
 ----------
-set local "request.jwt.claims" to '{ "sub": "1009e49a-fa61-4aab-a762-e7b1f3b014f3", "email": "test2@test.com" }';
+set local "request.jwt.claims" to '{ "sub": "5d94cce7-054f-4d01-a9ec-51e7b7ba8d59", "email": "test2@test.com" }';
 
 -- non members / owner cannot update team name
 SELECT
-    throws_ok(
-    $$ update accounts set team_name = 'test' $$,
-    'new row violates row-level security policy for table "invitations"'
+    results_ne(
+    $$ update accounts set team_name = 'test' where primary_owner_user_id = '1009e39a-fa61-4aab-a762-e7b1f3b014f3' returning 1$$,
+    $$ select 1 $$
     );
 -- non member / owner should receive no results from accounts
 SELECT
@@ -135,9 +134,11 @@ SELECT
     );
 
 -- anonymous cannot update team name
+-- FAILS
 SELECT
-    throws_ok(
-    $$ update accounts set team_name = 'test'$$,
+    results_ne(
+    $$ update accounts set team_name = 'test' returning 1 $$,
+    $$ select 1 $$,
     'new row violates row-level security policy for table "invitations"'
     );
 
