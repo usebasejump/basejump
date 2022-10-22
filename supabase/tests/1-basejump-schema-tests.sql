@@ -1,8 +1,21 @@
 BEGIN;
 
-select plan(21);
+select plan(22);
 
 select has_schema('basejump', 'Basejump schema should exist');
+
+select is_empty(
+    $$ select
+       	pn.nspname,
+       	pc.relname,
+       	pc.relrowsecurity,
+       	pc.relforcerowsecurity
+       from pg_class pc
+       join pg_namespace pn on pn.oid = pc.relnamespace and pn.nspname = 'public'
+       join pg_type pt on pt.oid = pc.reltype
+       where relrowsecurity = FALSE $$,
+    'All tables in the public schema should have row level security enabled'
+)
 
 select has_table('basejump', 'config', 'Basejump config table should exist');
 
