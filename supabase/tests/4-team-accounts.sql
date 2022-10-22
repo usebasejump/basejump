@@ -159,9 +159,9 @@ SELECT
 
 -- members cannot update account info
 SELECT
-    throws_ok(
-    $$ update accounts set team_name = 'test' where id = '8fcec130-27cd-4374-9e47-3303f9529479' returning team_name $$,
-    $$ values('test') $$,
+    results_ne(
+    $$ update accounts set team_name = 'test' where id = '8fcec130-27cd-4374-9e47-3303f9529479' returning 1 $$,
+    $$ values(1) $$,
     'Member cannot can update their team name'
     );
 
@@ -201,16 +201,16 @@ SELECT
 
 
 -----------
---- Invited Account Owner
+--- Non-Primary Owner
 -----------
 set role authenticated;
 set local "request.jwt.claims" to '{ "sub": "b4fc5df3-fa82-406b-bbd8-dba314155518", "email": "test_owner@test.com" }';
 
 -- should now have access to the account
 SELECT
-    set_has(
-    $$ select 'team_name' from accounts where personal_account = false $$,
-    $$ values('test') $$,
+    is(
+    (select count(*)::int from accounts where id = '8fcec130-27cd-4374-9e47-3303f9529479'),
+    1,
     'Should now have access to the account'
     );
 
