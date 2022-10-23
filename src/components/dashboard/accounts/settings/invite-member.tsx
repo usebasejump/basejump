@@ -1,14 +1,14 @@
-import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { useForm } from "react-hook-form";
 import handleSupabaseErrors from "@/utils/handle-supabase-errors";
 import { Alert, Button } from "react-daisyui";
 import useTranslation from "next-translate/useTranslation";
-import { definitions } from "@/types/supabase-generated";
 import Select from "@/components/core/select";
 import { useState } from "react";
 import getInvitationUrl from "@/utils/get-invitation-url";
 import { useCopyToClipboard } from "react-use";
 import { ClipboardCopyIcon } from "@heroicons/react/outline";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { Database } from "@/types/supabase-types";
 
 type Props = {
   accountId: string;
@@ -18,11 +18,11 @@ type Props = {
 type INVITE_FORM = {
   invitationType: "one-time" | "24-hour";
   email: string;
-  userType: definitions["invitations"]["account_role"];
+  userType: Database["public"]["Tables"]["invitations"]["Row"]["account_role"];
 };
 
 type INVITE_FORM_USER_TYPES = Array<{
-  value: definitions["invitations"]["account_role"];
+  value: Database["public"]["Tables"]["invitations"]["Row"]["account_role"];
   label: string;
 }>;
 
@@ -54,6 +54,7 @@ const InviteMember = ({ accountId, onComplete }: Props) => {
   const [invitationLink, setInvitationLink] = useState<string | null>(null);
   const [state, copyToClipboard] = useCopyToClipboard();
   const { t } = useTranslation("dashboard");
+  const supabaseClient = useSupabaseClient<Database>();
   const {
     register,
     handleSubmit,
@@ -61,16 +62,19 @@ const InviteMember = ({ accountId, onComplete }: Props) => {
   } = useForm<INVITE_FORM>();
 
   async function onSubmit(invitation: INVITE_FORM) {
-    const { data, error } = await supabaseClient.from("invitations").insert({
-      invitation_type: invitation.invitationType,
-      account_id: accountId,
-      account_role: invitation.userType,
-    });
+    const { data, error } = await supabaseClient
+      .from("invitations")
+      .insert({
+        invitation_type: invitation.invitationType,
+        account_id: accountId,
+        account_role: invitation.userType,
+      })
+      .select();
 
     handleSupabaseErrors(data, error);
 
     if (data) {
-      setInvitationLink(getInvitationUrl(data[0].token));
+      setInvitationLink(getInvitationUrl(data?.[0]?.token));
     }
 
     if (!error && onComplete) {

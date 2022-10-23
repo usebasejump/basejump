@@ -13,7 +13,7 @@ type Props = {
 };
 const ContentHeaderMobile = ({ className, onClose }: Props) => {
   const navigation = useHeaderNavigation();
-  const { user } = useUser();
+  const user = useUser();
   const { t } = useTranslation("content");
   return (
     <div

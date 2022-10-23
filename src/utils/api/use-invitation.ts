@@ -1,7 +1,7 @@
-import { supabaseClient } from "@supabase/auth-helpers-nextjs";
-import { useUser } from "@supabase/auth-helpers-react";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import handleSupabaseErrors from "../handle-supabase-errors";
+import { Database } from "@/types/supabase-types";
 
 type Invitation = {
   team_name?: string;
@@ -11,7 +11,8 @@ export default function useInvitation(
   invitationToken: string,
   options?: UseQueryOptions<Invitation>
 ) {
-  const { user } = useUser();
+  const user = useUser();
+  const supabaseClient = useSupabaseClient<Database>();
   return useQuery<Invitation, Error>(
     ["invitation", invitationToken],
     async () => {
@@ -24,7 +25,8 @@ export default function useInvitation(
     },
     {
       ...options,
-      enabled: Boolean(invitationToken) && Boolean(user),
+      enabled:
+        Boolean(invitationToken) && Boolean(user) && Boolean(supabaseClient),
     }
   );
 }

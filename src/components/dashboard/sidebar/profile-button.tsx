@@ -10,7 +10,7 @@ type Props = {
 };
 const DashboardProfileButton = ({ className }: Props) => {
   const { data: profile } = useUserProfile();
-  const { user } = useUser();
+  const user = useUser();
   const { t } = useTranslation("dashboard");
 
   const menuButtonText = useMemo(

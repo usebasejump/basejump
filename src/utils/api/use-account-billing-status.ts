@@ -1,6 +1,6 @@
-import { useUser } from "@supabase/auth-helpers-react";
+import { useSessionContext, useUser } from "@supabase/auth-helpers-react";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import { definitions } from "@/types/supabase-generated";
+import { Database } from "@/types/supabase-types";
 
 type UseAccountBillingStatusResponse = {
   subscription_id: string;
@@ -9,7 +9,7 @@ type UseAccountBillingStatusResponse = {
   is_primary_owner: boolean;
   billing_email?: string;
   plan_name?: string;
-  account_role: definitions["account_user"]["account_role"];
+  account_role: Database["public"]["Tables"]["account_user"]["Row"]["account_role"];
 };
 
 /**
@@ -21,7 +21,8 @@ export default function useAccountBillingStatus(
   accountId: string,
   options?: UseQueryOptions<UseAccountBillingStatusResponse>
 ) {
-  const { user } = useUser();
+  const user = useUser();
+  const { supabaseClient } = useSessionContext();
   return useQuery<UseAccountBillingStatusResponse, Error>(
     ["accountBillingStatus", accountId],
     async () => {
@@ -36,7 +37,7 @@ export default function useAccountBillingStatus(
     },
     {
       ...options,
-      enabled: !!accountId && !!user,
+      enabled: !!accountId && !!user && !!supabaseClient,
     }
   );
 }

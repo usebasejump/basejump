@@ -5,13 +5,13 @@ import Select from "@/components/core/select";
 import { userTypeOptions } from "@/components/dashboard/accounts/settings/invite-member";
 import useTeamRole from "@/utils/api/use-team-role";
 import { UseTeamMembersResponse } from "@/utils/api/use-team-members";
-import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { toast } from "react-toastify";
 import { useQueryClient } from "@tanstack/react-query";
-import { definitions } from "@/types/supabase-generated";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { Database } from "@/types/supabase-types";
 
 type USER_ROLE_FORM = {
-  account_role: definitions["account_user"]["account_role"];
+  account_role: Database["public"]["Tables"]["account_user"]["Row"]["account_role"];
   make_primary_owner?: boolean;
 };
 
@@ -22,6 +22,7 @@ type Props = {
 
 const UpdateTeamMemberRole = ({ member, onComplete }: Props) => {
   const { t } = useTranslation("dashboard");
+  const supabaseClient = useSupabaseClient<Database>();
   const { isPrimaryOwner } = useTeamRole(member.account_id);
   const queryClient = useQueryClient();
   const {

@@ -1,5 +1,4 @@
-import { supabaseClient } from "@supabase/auth-helpers-nextjs";
-import { useUser } from "@supabase/auth-helpers-react";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { useForm } from "react-hook-form";
 import SettingsCard from "@/components/dashboard/shared/settings-card";
 import useTranslation from "next-translate/useTranslation";
@@ -7,6 +6,7 @@ import { Button } from "react-daisyui";
 import Input from "@/components/core/input";
 import { toast } from "react-toastify";
 import useTeamAccount from "@/utils/api/use-team-account";
+import { Database } from "@/types/supabase-types";
 
 type FORM_DATA = {
   name: string;
@@ -17,7 +17,8 @@ type Props = {
 };
 
 const UpdateAccountName = ({ accountId }: Props) => {
-  const { user } = useUser();
+  const user = useUser();
+  const supabaseClient = useSupabaseClient<Database>();
   const { data } = useTeamAccount(accountId);
   const { t } = useTranslation("dashboard");
   const {
@@ -35,7 +36,6 @@ const UpdateAccountName = ({ accountId }: Props) => {
         team_name: data.name,
       })
       .match({ id: accountId });
-    console.log("booop", response);
     if (response.error) {
       toast.error(response.error.message || response.statusText);
     }

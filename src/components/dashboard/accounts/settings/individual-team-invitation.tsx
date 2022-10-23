@@ -1,4 +1,3 @@
-import { definitions } from "@/types/supabase-generated";
 import formatDistance from "date-fns/formatDistance";
 import { Badge, Button } from "react-daisyui";
 import { ClipboardCopyIcon, TrashIcon } from "@heroicons/react/outline";
@@ -6,15 +5,17 @@ import useTranslation from "next-translate/useTranslation";
 import { useCopyToClipboard } from "react-use";
 import getInvitationUrl from "@/utils/get-invitation-url";
 import { useMutation } from "@tanstack/react-query";
-import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { toast } from "react-toastify";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { Database } from "@/types/supabase-types";
 
 type Props = {
-  invitation: definitions["invitations"];
+  invitation: Database["public"]["Tables"]["invitations"]["Row"];
   onChange?: () => void;
 };
 const IndividualTeamInvitation = ({ invitation, onChange }: Props) => {
   const { t } = useTranslation("dashboard");
+  const supabaseClient = useSupabaseClient<Database>();
   const [state, copyToClipboard] = useCopyToClipboard();
 
   const deleteInvitation = useMutation(
