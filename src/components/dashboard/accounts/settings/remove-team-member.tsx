@@ -1,9 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useTranslation from "next-translate/useTranslation";
-import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { toast } from "react-toastify";
 import { Button } from "react-daisyui";
 import { UseTeamMembersResponse } from "@/utils/api/use-team-members";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { Database } from "@/types/supabase-types";
 
 type Props = {
   member: UseTeamMembersResponse;
@@ -12,6 +13,7 @@ type Props = {
 
 const RemoveTeamMember = ({ member, onComplete }: Props) => {
   const queryClient = useQueryClient();
+  const supabaseClient = useSupabaseClient<Database>();
 
   const { t } = useTranslation("dashboard");
 

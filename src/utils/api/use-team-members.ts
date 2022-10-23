@@ -1,14 +1,13 @@
-import { supabaseClient } from "@supabase/auth-helpers-nextjs";
-import { useUser } from "@supabase/auth-helpers-react";
+import { useSessionContext, useUser } from "@supabase/auth-helpers-react";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import handleSupabaseErrors from "../handle-supabase-errors";
-import { definitions } from "@/types/supabase-generated";
+import { Database } from "@/types/supabase-types";
 
 export type UseTeamMembersResponse = {
   user_id: string;
   account_id: string;
   is_primary_owner: boolean;
-  account_role: definitions["account_user"]["account_role"];
+  account_role: Database["public"]["Tables"]["account_user"]["Row"]["account_role"];
   name: string;
 };
 
@@ -16,7 +15,8 @@ export default function useTeamMembers(
   accountId: string,
   options?: UseQueryOptions<UseTeamMembersResponse[]>
 ) {
-  const { user } = useUser();
+  const user = useUser();
+  const { supabaseClient } = useSessionContext();
   return useQuery<UseTeamMembersResponse[], Error>(
     ["teamMembers", accountId],
     async () => {
@@ -36,7 +36,7 @@ export default function useTeamMembers(
     },
     {
       ...options,
-      enabled: !!accountId && !!user,
+      enabled: !!accountId && !!user && !!supabaseClient,
     }
   );
 }

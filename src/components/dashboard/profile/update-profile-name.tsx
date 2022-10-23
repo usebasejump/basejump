@@ -1,5 +1,4 @@
-import { supabaseClient } from "@supabase/auth-helpers-nextjs";
-import { useUser } from "@supabase/auth-helpers-react";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { useForm } from "react-hook-form";
 import useUserProfile from "@/utils/api/use-user-profile";
 import SettingsCard from "@/components/dashboard/shared/settings-card";
@@ -7,13 +6,15 @@ import useTranslation from "next-translate/useTranslation";
 import { Button } from "react-daisyui";
 import Input from "@/components/core/input";
 import { toast } from "react-toastify";
+import { Database } from "@/types/supabase-types";
 
 type FORM_DATA = {
   name: string;
 };
 
 const UpdateProfileName = () => {
-  const { user } = useUser();
+  const user = useUser();
+  const supabaseClient = useSupabaseClient<Database>();
   const { data: profile } = useUserProfile();
   const { t } = useTranslation("dashboard");
   const {
@@ -29,7 +30,7 @@ const UpdateProfileName = () => {
       .update({
         name: data.name,
       })
-      .match({ id: user.id });
+      .eq("id", user.id);
 
     if (response.error) {
       toast.error(response.error.message);

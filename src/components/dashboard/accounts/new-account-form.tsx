@@ -1,10 +1,10 @@
 import { useForm } from "react-hook-form";
-import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { toast } from "react-toastify";
-import { useUser } from "@supabase/auth-helpers-react";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import Input from "@/components/core/input";
 import { Button } from "react-daisyui";
 import useTranslation from "next-translate/useTranslation";
+import { Database } from "@/types/supabase-types";
 
 type Props = {
   onComplete: (accountId: string) => void;
@@ -15,7 +15,8 @@ type FORM_DATA = {
 };
 
 const NewAccountForm = ({ onComplete }: Props) => {
-  const { user } = useUser();
+  const user = useUser();
+  const supabaseClient = useSupabaseClient<Database>();
   const { t } = useTranslation("dashboard");
   const {
     register,
@@ -26,15 +27,18 @@ const NewAccountForm = ({ onComplete }: Props) => {
 
   async function onSubmit(data: FORM_DATA) {
     if (!user) return;
-    const response = await supabaseClient.from("accounts").insert({
-      team_name: data.name,
-    });
+    const response = await supabaseClient
+      .from("accounts")
+      .insert({
+        team_name: data.name,
+      })
+      .select();
 
     if (response.error) {
       toast.error(response.error.message);
     }
 
-    if (response.data?.[0]?.id) {
+    if (response?.data?.[0]?.id) {
       reset();
       toast.success(t("shared.successfulChange"));
       if (onComplete) {

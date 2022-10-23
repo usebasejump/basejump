@@ -1,28 +1,32 @@
 import { act, fireEvent, render, screen, waitFor } from "@tests/test-utils";
-import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import UpdateEmailAddress from "@/components/dashboard/profile/update-email-address";
 import { toast } from "react-toastify";
 
-// @ts-ignore
-jest.spyOn(supabaseClient.auth, "update").mockImplementation(async () => {
+jest.spyOn(toast, "success");
+
+const updateUser = jest.fn(({ email }) => {
   return {
     data: {
-      new_email: "asdf@asdf.com",
+      user: {
+        new_email: email,
+      },
     },
   };
 });
-jest.spyOn(toast, "success");
 
 jest.mock("@supabase/auth-helpers-react", () => {
   const original = jest.requireActual("@supabase/auth-helpers-react");
   return {
     ...original,
     useUser: jest.fn(() => ({
-      user: {
-        id: "1234-5678",
-        email: "test@test.com",
-      },
+      id: "1234-5678",
+      email: "test@test.com",
     })),
+    useSupabaseClient: () => ({
+      auth: {
+        updateUser,
+      },
+    }),
   };
 });
 
@@ -46,7 +50,9 @@ describe("Update user email", () => {
     });
 
     expect(emailInput.value).toEqual(email);
-    expect(supabaseClient.auth.update).toHaveBeenCalledWith({ email });
+    expect(updateUser).toHaveBeenCalledWith({
+      email,
+    });
     expect(toast.success).toHaveBeenCalled();
   });
 

@@ -1,18 +1,19 @@
-import { supabaseClient } from "@supabase/auth-helpers-nextjs";
-import { useUser } from "@supabase/auth-helpers-react";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { useForm } from "react-hook-form";
 import SettingsCard from "@/components/dashboard/shared/settings-card";
 import useTranslation from "next-translate/useTranslation";
 import { Button } from "react-daisyui";
 import Input from "@/components/core/input";
 import { toast } from "react-toastify";
+import { Database } from "@/types/supabase-types";
 
 type FORM_DATA = {
   email: string;
 };
 
 const UpdateEmailAddress = () => {
-  const { user } = useUser();
+  const user = useUser();
+  const supabaseClient = useSupabaseClient<Database>();
   const { t } = useTranslation("dashboard");
   const {
     register,
@@ -22,14 +23,14 @@ const UpdateEmailAddress = () => {
 
   async function onSubmit(newEmail: FORM_DATA) {
     if (!user) return;
-    const { data, error } = await supabaseClient.auth.update({
+    const { data, error } = await supabaseClient.auth.updateUser({
       email: newEmail.email,
     });
     if (error) {
       toast.error(error.message);
       return;
     }
-    if (!!data?.new_email) {
+    if (!!data?.user?.new_email) {
       toast.success(t("updateEmailAddress.successfulChange"));
     }
   }

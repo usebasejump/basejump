@@ -1,12 +1,12 @@
-import { supabaseClient } from "@supabase/auth-helpers-nextjs";
-import { useUser } from "@supabase/auth-helpers-react";
+import { useSessionContext, useUser } from "@supabase/auth-helpers-react";
 import { useQuery } from "@tanstack/react-query";
 import handleSupabaseErrors from "@/utils/handle-supabase-errors";
-import { definitions } from "@/types/supabase-generated";
+import { Database } from "@/types/supabase-types";
 
 export default function useUserProfile() {
-  const { user, error } = useUser();
-  return useQuery<definitions["profiles"], Error>(
+  const user = useUser();
+  const { supabaseClient } = useSessionContext();
+  return useQuery<Database["public"]["Tables"]["profiles"]["Row"], Error>(
     ["userProfile", user?.id],
     async () => {
       const { data, error } = await supabaseClient
@@ -18,7 +18,7 @@ export default function useUserProfile() {
       return data;
     },
     {
-      enabled: !!user,
+      enabled: !!user && !!supabaseClient,
     }
   );
 }

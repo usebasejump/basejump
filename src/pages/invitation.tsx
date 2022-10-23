@@ -1,4 +1,4 @@
-import { supabaseClient, withPageAuth } from "@supabase/auth-helpers-nextjs";
+import { withPageAuth } from "@supabase/auth-helpers-nextjs";
 import { REGISTER_PATH } from "@/types/auth";
 import { useRouter } from "next/router";
 import useInvitation from "@/utils/api/use-invitation";
@@ -7,11 +7,14 @@ import { Button } from "react-daisyui";
 import { useMutation } from "@tanstack/react-query";
 import handleSupabaseErrors from "@/utils/handle-supabase-errors";
 import Loader from "@/components/core/loader";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { Database } from "@/types/supabase-types";
 
 const Invitation = () => {
   const router = useRouter();
   const { token } = router.query;
   const { t } = useTranslation("dashboard");
+  const supabaseClient = useSupabaseClient<Database>();
 
   const { data, isLoading } = useInvitation(token as string);
 

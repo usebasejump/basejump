@@ -1,13 +1,14 @@
-import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import handleSupabaseErrors from "../handle-supabase-errors";
-import { definitions } from "@/types/supabase-generated";
+import { Database } from "@/types/supabase-types";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 export default function useTeamAccount(
   accountId: string,
-  options?: UseQueryOptions<definitions["accounts"]>
+  options?: UseQueryOptions<Database["public"]["Tables"]["accounts"]["Row"]>
 ) {
-  return useQuery<definitions["accounts"], Error>(
+  const supabaseClient = useSupabaseClient<Database>();
+  return useQuery<Database["public"]["Tables"]["accounts"]["Row"], Error>(
     ["teamAccount", accountId],
     async () => {
       const { data, error } = await supabaseClient
@@ -20,7 +21,7 @@ export default function useTeamAccount(
     },
     {
       ...options,
-      enabled: !!accountId,
+      enabled: !!accountId && !!supabaseClient,
     }
   );
 }

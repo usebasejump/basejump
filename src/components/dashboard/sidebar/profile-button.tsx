@@ -3,15 +3,19 @@ import useTranslation from "next-translate/useTranslation";
 import { useMemo } from "react";
 import { Button, Dropdown } from "react-daisyui";
 import Link from "next/link";
-import { useUser } from "@supabase/auth-helpers-react";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
+import { Database } from "@/types/supabase-types";
+import { useRouter } from "next/router";
 
 type Props = {
   className?: string;
 };
 const DashboardProfileButton = ({ className }: Props) => {
   const { data: profile } = useUserProfile();
-  const { user } = useUser();
+  const user = useUser();
   const { t } = useTranslation("dashboard");
+  const supabaseClient = useSupabaseClient<Database>();
+  const router = useRouter();
 
   const menuButtonText = useMemo(
     () => profile?.name || t("profileButton.yourAccount"),
@@ -29,7 +33,12 @@ const DashboardProfileButton = ({ className }: Props) => {
           <Link href="/dashboard/profile">
             <Dropdown.Item>{t("profileButton.editProfile")}</Dropdown.Item>
           </Link>
-          <Dropdown.Item href="/api/auth/logout">
+          <Dropdown.Item
+            onClick={async () => {
+              await supabaseClient.auth.signOut();
+              await router.push("/");
+            }}
+          >
             {t("shared.logOut")}
           </Dropdown.Item>
         </Dropdown.Menu>

@@ -1,17 +1,17 @@
-import { supabaseClient } from "@supabase/auth-helpers-nextjs";
-import { useUser } from "@supabase/auth-helpers-react";
+import { useSessionContext, useUser } from "@supabase/auth-helpers-react";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import handleSupabaseErrors from "../handle-supabase-errors";
-import { definitions } from "@/types/supabase-generated";
+import { Database } from "@/types/supabase-types";
 
-type TeamAccountWithRole = definitions["accounts"] & {
+type TeamAccountWithRole = Database["public"]["Tables"]["accounts"]["Row"] & {
   account_role: string;
 };
 
 export default function useTeamAccounts(
   options?: UseQueryOptions<TeamAccountWithRole[]>
 ) {
-  const { user } = useUser();
+  const user = useUser();
+  const { supabaseClient } = useSessionContext();
   return useQuery<TeamAccountWithRole[], Error>(
     ["teamAccounts", user?.id],
     async () => {
@@ -30,7 +30,7 @@ export default function useTeamAccounts(
     },
     {
       ...options,
-      enabled: !!user,
+      enabled: !!user && !!supabaseClient,
     }
   );
 }

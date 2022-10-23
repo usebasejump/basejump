@@ -1,10 +1,11 @@
-import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button, Input } from "react-daisyui";
 import useTranslation from "next-translate/useTranslation";
 import getFullRedirectUrl from "@/utils/get-full-redirect-url";
 import { DASHBOARD_PATH } from "@/types/auth";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { Database } from "@/types/supabase-types";
 
 type LOGIN_FORM = {
   email: string;
@@ -17,6 +18,7 @@ type Props = {
 
 const LoginMagicLink = ({ redirectTo = DASHBOARD_PATH, buttonText }: Props) => {
   const { t } = useTranslation("authentication");
+  const supabaseClient = useSupabaseClient<Database>();
   const [emailSent, setEmailSent] = useState<boolean>(false);
 
   const {
@@ -26,10 +28,13 @@ const LoginMagicLink = ({ redirectTo = DASHBOARD_PATH, buttonText }: Props) => {
   } = useForm<LOGIN_FORM>();
 
   async function onSubmit({ email }: LOGIN_FORM) {
-    const { error } = await supabaseClient.auth.signIn(
-      { email },
-      { redirectTo: getFullRedirectUrl(redirectTo) }
-    );
+    const { error } = await supabaseClient.auth.signInWithOtp({
+      email,
+      options: {
+        shouldCreateUser: true,
+        emailRedirectTo: getFullRedirectUrl(redirectTo),
+      },
+    });
     if (error) throw error;
     setEmailSent(true);
   }

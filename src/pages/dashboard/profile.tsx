@@ -1,5 +1,3 @@
-import { LOGIN_PATH } from "@/types/auth";
-import { withPageAuth } from "@supabase/auth-helpers-nextjs";
 import UpdateProfileName from "@/components/dashboard/profile/update-profile-name";
 import DashboardContent from "@/components/dashboard/shared/dashboard-content";
 import UpdateEmailAddress from "@/components/dashboard/profile/update-email-address";
@@ -25,5 +23,3 @@ const DashboardProfile = () => {
 };
 
 export default DashboardProfile;
-
-export const getServerSideProps = withPageAuth({ redirectTo: LOGIN_PATH });

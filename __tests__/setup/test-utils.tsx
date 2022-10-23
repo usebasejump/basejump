@@ -1,21 +1,26 @@
-import React, { FC, ReactElement } from "react";
+import React, { FC, ReactElement, useState } from "react";
 import { render, RenderOptions } from "@testing-library/react";
 import { Theme } from "react-daisyui";
-import { UserProvider } from "@supabase/auth-helpers-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { supabaseClient } from "@supabase/auth-helpers-nextjs";
+import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { ToastContainer } from "react-toastify";
+import { Database } from "@/types/supabase-types";
+import { SessionContextProvider } from "@supabase/auth-helpers-react/src/components/SessionContext";
 
 const queryClient = new QueryClient();
 
 const AllTheProviders: FC<{ children: ReactElement }> = ({ children }) => {
+  const [supabaseClient] = useState(() =>
+    createBrowserSupabaseClient<Database>()
+  );
+
   return (
-    <UserProvider supabaseClient={supabaseClient}>
+    <SessionContextProvider supabaseClient={supabaseClient}>
       <QueryClientProvider client={queryClient}>
         <Theme>{children}</Theme>
       </QueryClientProvider>
       <ToastContainer />
-    </UserProvider>
+    </SessionContextProvider>
   );
 };
 

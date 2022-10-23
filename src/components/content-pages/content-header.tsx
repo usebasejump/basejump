@@ -12,7 +12,7 @@ type Props = {
 };
 
 const ContentHeader = ({ toggleSidebar }: Props) => {
-  const { user } = useUser();
+  const user = useUser();
   const router = useRouter();
 
   const { t } = useTranslation("content");

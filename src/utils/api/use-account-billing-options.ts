@@ -1,7 +1,7 @@
-import { useUser } from "@supabase/auth-helpers-react";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import handleSupabaseErrors from "@/utils/handle-supabase-errors";
+import { Database } from "@/types/supabase-types";
 
 export type UseAccountBillingOptionsResponse = Array<{
   product_name: string;
@@ -21,7 +21,8 @@ export default function useAccountBillingOptions(
   accountId: string,
   options?: UseQueryOptions<UseAccountBillingOptionsResponse>
 ) {
-  const { user } = useUser();
+  const user = useUser();
+  const supabaseClient = useSupabaseClient<Database>();
   return useQuery<UseAccountBillingOptionsResponse, Error>(
     ["accountBillingOptions", accountId],
     async () => {
@@ -36,6 +37,7 @@ export default function useAccountBillingOptions(
       const results = [];
 
       data?.forEach((product) => {
+        // @ts-ignore
         product.billing_prices?.forEach((price) => {
           results.push({
             product_name: product.name,
@@ -52,7 +54,7 @@ export default function useAccountBillingOptions(
     },
     {
       ...options,
-      enabled: !!accountId && !!user,
+      enabled: !!accountId && !!user && !!supabaseClient,
     }
   );
 }

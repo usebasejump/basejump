@@ -21,9 +21,9 @@ yarn generate-types
 You can then reference them as
 
 ```javascript
-import {definitions} from '@/types/supabase-generated';
+import Database from '@/types/supabase-types';
 
-const profile: definitions['profiles'] = {name: 'John Doe'};
+const profile: Database['public']['Tables']['profiles']['Row'] = {name: 'John Doe'};
 ```
 
 ## Code Formatting and linting
