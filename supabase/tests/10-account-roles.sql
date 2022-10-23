@@ -31,7 +31,7 @@ BEGIN;
     SELECT
         row_eq(
         $$ update account_user set account_role = 'owner' where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = '29669d3a-a502-491f-b4f0-0211910ed7eb' returning 1 $$,
-        ROW(0),
+        ROW(NULL),
         'Members should not be able to update their own role'
         );
 
@@ -60,7 +60,7 @@ BEGIN;
         SELECT
             row_eq(
             $$ update account_user set account_role = 'owner' where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = '29669d3a-a502-491f-b4f0-0211910ed7eb' returning 1 $$,
-            ROW(0),
+            ROW(NULL),
             'Members should not be able to update their own role'
             );
 
@@ -127,7 +127,7 @@ BEGIN;
     SELECT
         row_eq(
         $$ update account_user set account_role = 'member' where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = '29669d3a-a502-491f-b4f0-0211910ed7eb' returning 1 $$,
-        ROW(0),
+        ROW(NULL),
         'Members should not be able to update their own role'
         );
 
