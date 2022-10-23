@@ -37,6 +37,7 @@ export default function useAccountBillingOptions(
       const results = [];
 
       data?.forEach((product) => {
+        // @ts-ignore
         product.billing_prices?.forEach((price) => {
           results.push({
             product_name: product.name,

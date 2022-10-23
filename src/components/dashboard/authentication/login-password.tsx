@@ -1,12 +1,11 @@
-import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { useForm } from "react-hook-form";
 import { Button } from "react-daisyui";
 import useTranslation from "next-translate/useTranslation";
-import getFullRedirectUrl from "@/utils/get-full-redirect-url";
 import Input from "@/components/core/input";
 import { toast } from "react-toastify";
 import { DASHBOARD_PATH } from "@/types/auth";
 import { useRouter } from "next/router";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 type LOGIN_FORM = {
   email: string;
@@ -21,6 +20,7 @@ type Props = {
 const LoginPassword = ({ redirectTo = DASHBOARD_PATH, buttonText }: Props) => {
   const { t } = useTranslation("authentication");
   const router = useRouter();
+  const supabaseClient = useSupabaseClient();
   const {
     register,
     handleSubmit,
@@ -28,10 +28,10 @@ const LoginPassword = ({ redirectTo = DASHBOARD_PATH, buttonText }: Props) => {
   } = useForm<LOGIN_FORM>();
 
   async function onSubmit({ email, password }: LOGIN_FORM) {
-    const { error, session } = await supabaseClient.auth.signIn(
-      { email, password },
-      { redirectTo: getFullRedirectUrl(redirectTo) }
-    );
+    const { error } = await supabaseClient.auth.signInWithPassword({
+      email,
+      password,
+    });
     if (error) toast.error(error.message);
     if (!error) {
       await router.push(redirectTo);

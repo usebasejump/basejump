@@ -28,10 +28,13 @@ const LoginMagicLink = ({ redirectTo = DASHBOARD_PATH, buttonText }: Props) => {
   } = useForm<LOGIN_FORM>();
 
   async function onSubmit({ email }: LOGIN_FORM) {
-    const { error } = await supabaseClient.auth.signIn(
-      { email },
-      { redirectTo: getFullRedirectUrl(redirectTo) }
-    );
+    const { error } = await supabaseClient.auth.signInWithOtp({
+      email,
+      options: {
+        shouldCreateUser: true,
+        emailRedirectTo: getFullRedirectUrl(redirectTo),
+      },
+    });
     if (error) throw error;
     setEmailSent(true);
   }

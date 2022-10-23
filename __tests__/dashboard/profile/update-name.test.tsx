@@ -18,9 +18,7 @@ jest.mock("@supabase/auth-helpers-react", () => {
   return {
     ...original,
     useUser: jest.fn(() => ({
-      user: {
-        id: "1234-5678",
-      },
+      id: "1234-5678",
     })),
   };
 });
