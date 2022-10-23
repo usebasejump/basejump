@@ -1,7 +1,6 @@
 import { act, fireEvent, render, screen, waitFor } from "@tests/test-utils";
 import UpdateEmailAddress from "@/components/dashboard/profile/update-email-address";
 import { toast } from "react-toastify";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 jest.spyOn(toast, "success");
 
@@ -40,7 +39,6 @@ describe("Update user email", () => {
   it("let's you update your email", async () => {
     const emailInput = await screen.getByTestId<HTMLInputElement>("email");
     const email = "test2@test.com";
-    const supabaseClient = useSupabaseClient();
     await act(async () => {
       fireEvent.input(emailInput, {
         target: {

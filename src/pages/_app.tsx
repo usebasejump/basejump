@@ -20,6 +20,7 @@ function MyApp({ Component, pageProps, router }: AppProps) {
   const [supabaseClient] = useState(() =>
     createBrowserSupabaseClient<Database>()
   );
+
   useEffect(() => {
     // our dropdowns are used for navigation a lot
     // they work off css focus states, so they don't get removed

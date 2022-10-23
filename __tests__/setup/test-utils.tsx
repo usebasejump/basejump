@@ -13,6 +13,7 @@ const AllTheProviders: FC<{ children: ReactElement }> = ({ children }) => {
   const [supabaseClient] = useState(() =>
     createBrowserSupabaseClient<Database>()
   );
+
   return (
     <SessionContextProvider supabaseClient={supabaseClient}>
       <QueryClientProvider client={queryClient}>

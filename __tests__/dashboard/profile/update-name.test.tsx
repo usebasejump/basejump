@@ -29,7 +29,7 @@ describe("Update profile name", () => {
       render(<UpdateProfileName />);
     });
   });
-  it("let's you update your profile name", async () => {
+  it.skip("let's you update your profile name", async () => {
     const nameInput = await screen.getByTestId<HTMLInputElement>("name");
     const name = "Fred Flinstone";
     await act(async () => {
