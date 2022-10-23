@@ -30,7 +30,7 @@ const UpdateProfileName = () => {
       .update({
         name: data.name,
       })
-      .match({ id: user.id });
+      .eq("id", user.id);
 
     if (response.error) {
       toast.error(response.error.message);

@@ -14,6 +14,7 @@ global.TextDecoder = TextDecoder;
 fetchMock.enableMocks();
 
 beforeEach(() => {
-  // clear oiut the mocks
+  // clear out the mocks
   fetch.resetMocks();
+  jest.clearAllMocks();
 });
