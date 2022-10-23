@@ -1,4 +1,5 @@
 {
+  "name": "Basejump",
   "private": true,
   "scripts": {
     "dev": "next",
