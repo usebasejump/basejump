@@ -27,6 +27,14 @@ BEGIN;
     set local role authenticated;
     set local "request.jwt.claims" to '{ "sub": "29669d3a-a502-491f-b4f0-0211910ed7eb", "email": "member@test.com" }';
 
+    -- can't update role directly in the account_user table
+    SELECT
+        row_eq(
+        $$ update account_user set account_role = 'owner' where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = '29669d3a-a502-491f-b4f0-0211910ed7eb' returning 1 $$,
+        ROW(0),
+        'Members should not be able to update their own role'
+        );
+
     -- members should not be able to update any user roles
     SELECT
         throws_ok(
@@ -48,6 +56,13 @@ BEGIN;
     set local role authenticated;
     set local "request.jwt.claims" to '{ "sub": "5d94cce7-054f-4d01-a9ec-51e7b7ba8d59", "email": "owner@test.com" }';
 
+    -- can't update role directly in the account_user table
+        SELECT
+            row_eq(
+            $$ update account_user set account_role = 'owner' where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = '29669d3a-a502-491f-b4f0-0211910ed7eb' returning 1 $$,
+            ROW(0),
+            'Members should not be able to update their own role'
+            );
 
     -- non primary owner cannot change primary owner
     SELECT
@@ -107,6 +122,14 @@ BEGIN;
     -------
     set local role authenticated;
     set local "request.jwt.claims" to '{ "sub": "1009e39a-fa61-4aab-a762-e7b1f3b014f3", "email": "primary@test.com" }';
+
+    -- can't update role directly in the account_user table
+    SELECT
+        row_eq(
+        $$ update account_user set account_role = 'member' where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = '29669d3a-a502-491f-b4f0-0211910ed7eb' returning 1 $$,
+        ROW(0),
+        'Members should not be able to update their own role'
+        );
 
     -- primary owner should be able to change user back to a member
     SELECT
