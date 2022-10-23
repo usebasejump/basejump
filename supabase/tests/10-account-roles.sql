@@ -1,6 +1,6 @@
 BEGIN;
 
-    select plan(14);
+    select plan(17);
     -- make sure we're setup for enabling personal accounts
     update basejump.config set enable_team_accounts = true;
 
@@ -29,9 +29,9 @@ BEGIN;
 
     -- can't update role directly in the account_user table
     SELECT
-        row_eq(
+        results_ne(
         $$ update account_user set account_role = 'owner' where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = '29669d3a-a502-491f-b4f0-0211910ed7eb' returning 1 $$,
-        ROW(NULL),
+        $$ values(1) $$,
         'Members should not be able to update their own role'
         );
 
@@ -58,9 +58,9 @@ BEGIN;
 
     -- can't update role directly in the account_user table
         SELECT
-            row_eq(
+            results_ne(
             $$ update account_user set account_role = 'owner' where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = '29669d3a-a502-491f-b4f0-0211910ed7eb' returning 1 $$,
-            ROW(NULL),
+            $$ values(1) $$,
             'Members should not be able to update their own role'
             );
 
@@ -125,9 +125,9 @@ BEGIN;
 
     -- can't update role directly in the account_user table
     SELECT
-        row_eq(
+        results_ne(
         $$ update account_user set account_role = 'member' where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = '29669d3a-a502-491f-b4f0-0211910ed7eb' returning 1 $$,
-        ROW(NULL),
+        $$ values(1) $$,
         'Members should not be able to update their own role'
         );
 
