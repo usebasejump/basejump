@@ -38,18 +38,13 @@ CREATE TYPE public.account_role AS ENUM ('owner', 'member');
  $$
  BEGIN
 
-    IF current_setting('role') IN ('authenticated', 'anon') THEN
+
+    IF current_user IN ('authenticated', 'anon') THEN
        -- these are protected fields that users are not allowed to update themselves
        -- platform admins should be VERY careful about updating them as well.
        if NEW.id <> OLD.id
         OR NEW.personal_account <> OLD.personal_account
-        THEN
-           RAISE EXCEPTION 'You do not have permission to update this field';
-        end if;
-
-       -- these fields can only be updated by the primary owner
-       if NEW.primary_owner_user_id <> OLD.primary_owner_user_id
-        AND auth.uid() <> OLD.primary_owner_user_id
+        OR NEW.primary_owner_user_id <> OLD.primary_owner_user_id
         THEN
            RAISE EXCEPTION 'You do not have permission to update this field';
         end if;
