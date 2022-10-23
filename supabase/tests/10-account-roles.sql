@@ -1,6 +1,6 @@
 BEGIN;
 
-    select plan(6);
+    select plan(14);
     -- make sure we're setup for enabling personal accounts
     update basejump.config set enable_team_accounts = true;
 
@@ -48,6 +48,7 @@ BEGIN;
     set local role authenticated;
     set local "request.jwt.claims" to '{ "sub": "5d94cce7-054f-4d01-a9ec-51e7b7ba8d59", "email": "owner@test.com" }';
 
+
     -- non primary owner cannot change primary owner
     SELECT
         throws_ok(
@@ -61,6 +62,7 @@ BEGIN;
             ROW('member'::account_role),
             'Member should still be a member since primary owner change failed'
             );
+
 
     -- trying to update accoutn user role of primary owner should fail
     SELECT

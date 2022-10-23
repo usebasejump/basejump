@@ -42,12 +42,18 @@ CREATE TYPE public.account_role AS ENUM ('owner', 'member');
        -- these are protected fields that users are not allowed to update themselves
        -- platform admins should be VERY careful about updating them as well.
        if NEW.id <> OLD.id
-        OR NEW.primary_owner_user_id <> OLD.primary_owner_user_id
         OR NEW.personal_account <> OLD.personal_account
         THEN
            RAISE EXCEPTION 'You do not have permission to update this field';
         end if;
-    END IF;
+
+       -- these fields can only be updated by the primary owner
+       if NEW.primary_owner_user_id <> OLD.primary_owner_user_id
+        AND auth.uid() <> OLD.primary_owner_user_id
+        THEN
+           RAISE EXCEPTION 'You do not have permission to update this field';
+        end if;
+    end if;
 
     RETURN NEW;
  END
@@ -165,6 +171,7 @@ as $$
     declare
         is_account_owner boolean;
         is_account_primary_owner boolean;
+        changing_primary_owner boolean;
     begin
         -- check if the user is an owner, and if they are, allow them to update the role
         select (update_account_user_role.account_id IN ( SELECT basejump.get_accounts_for_current_user('owner') AS get_accounts_for_current_user)) into is_account_owner;
@@ -173,15 +180,17 @@ as $$
             raise exception 'You must be an owner of the account to update a users role';
         end if;
 
-        update public.account_user set account_role = new_account_role where account_user.account_id = update_account_user_role.account_id and account_user.user_id = update_account_user_role.user_id;
+        -- check if the user being changed is the primary owner, if so its not allowed
+        select primary_owner_user_id = auth.uid(), primary_owner_user_id = update_account_user_role.user_id into is_account_primary_owner, changing_primary_owner from public.accounts where id = update_account_user_role.account_id;
 
+        if changing_primary_owner = true and is_account_primary_owner = false then
+        	raise exception 'You must be the primary owner of the account to change the primary owner';
+        end if;
+
+        update public.account_user set account_role = new_account_role where account_user.account_id = update_account_user_role.account_id and account_user.user_id = update_account_user_role.user_id;
 
         if make_primary_owner = true then
             -- first we see if the current user is the owner, only they can do this
-
-           select primary_owner_user_id = auth.uid() into is_account_primary_owner from public.accounts where id = update_account_user_role.account_id;
-
-
             if is_account_primary_owner = false then
                 raise exception 'You must be the primary owner of the account to change the primary owner';
             end if;
