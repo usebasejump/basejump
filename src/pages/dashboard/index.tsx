@@ -1,5 +1,3 @@
-import { withPageAuth } from "@supabase/auth-helpers-nextjs";
-import { LOGIN_PATH } from "@/types/auth";
 import Loader from "@/components/core/loader";
 import usePersonalAccount from "@/utils/api/use-personal-account";
 import PersonalAccountDeactivated from "@/components/dashboard/accounts/personal-account-deactivated";
@@ -39,5 +37,3 @@ const DashboardIndex = () => {
 };
 
 export default DashboardIndex;
-
-export const getServerSideProps = withPageAuth({ redirectTo: LOGIN_PATH });

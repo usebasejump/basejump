@@ -4,8 +4,6 @@ import { useRouter } from "next/router";
 import useTeamAccount from "@/utils/api/use-team-account";
 import useTranslation from "next-translate/useTranslation";
 import DashboardMeta from "@/components/dashboard/dashboard-meta";
-import { withPageAuth } from "@supabase/auth-helpers-nextjs";
-import { LOGIN_PATH } from "@/types/auth";
 
 const TeamSettingsBilling = () => {
   const router = useRouter();
@@ -23,5 +21,3 @@ const TeamSettingsBilling = () => {
 };
 
 export default TeamSettingsBilling;
-
-export const getServerSideProps = withPageAuth({ redirectTo: LOGIN_PATH });

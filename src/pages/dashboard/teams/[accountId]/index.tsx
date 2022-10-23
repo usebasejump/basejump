@@ -1,5 +1,3 @@
-import { withPageAuth } from "@supabase/auth-helpers-nextjs";
-import { LOGIN_PATH } from "@/types/auth";
 import FutureContentPlaceholder from "@/components/basejump-default-content/future-content-placeholder";
 import { useRouter } from "next/router";
 import useTeamAccount from "@/utils/api/use-team-account";
@@ -22,5 +20,3 @@ const DashboardTeamIndex = () => {
 };
 
 export default DashboardTeamIndex;
-
-export const getServerSideProps = withPageAuth({ redirectTo: LOGIN_PATH });

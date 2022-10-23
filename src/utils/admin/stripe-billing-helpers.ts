@@ -265,7 +265,7 @@ const manageSubscriptionStatusChange = async (
   // Get customer's UUID from mapping table.
   const { data: customerData, error: noCustomerError } = await supabaseAdmin
     .from("billing_customers")
-    .select("id")
+    .select("account_id")
     .eq("customer_id", customerId)
     .single();
   if (noCustomerError) throw noCustomerError;

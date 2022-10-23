@@ -1,15 +1,15 @@
-import {
-  getUser,
-  supabaseServerClient,
-  withApiAuth,
-} from "@supabase/auth-helpers-nextjs";
+import { withApiAuth } from "@supabase/auth-helpers-nextjs";
 import { NextApiRequest, NextApiResponse } from "next";
 import { createOrRetrieveCustomer } from "@/utils/admin/stripe-billing-helpers";
 import { stripe } from "@/utils/admin/stripe";
 import getFullRedirectUrl from "@/utils/get-full-redirect-url";
 import { ACCOUNT_ROLES } from "@/types/auth";
 
-const createPortalLink = async (req: NextApiRequest, res: NextApiResponse) => {
+const createPortalLink = async (
+  req: NextApiRequest,
+  res: NextApiResponse,
+  supabaseServerClient
+) => {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
@@ -19,7 +19,7 @@ const createPortalLink = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(400).json({ error: "Missing account ID" });
   }
 
-  const { data: currentUserRole } = await supabaseServerClient({ req, res })
+  const { data: currentUserRole } = await supabaseServerClient
     .rpc("current_user_account_role", {
       lookup_account_id: accountId,
     })
@@ -31,7 +31,9 @@ const createPortalLink = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   try {
-    const { user } = await getUser({ req, res });
+    const {
+      data: { user },
+    } = await supabaseServerClient.auth.getUser();
     const customer = await createOrRetrieveCustomer({
       accountId: accountId as string,
       email: user.email || "",

@@ -2,13 +2,14 @@ import { act, render } from "@tests/test-utils";
 import { toast } from "react-toastify";
 import { ACCOUNT_ROLES } from "@/types/auth";
 import UpdateTeamMemberRole from "@/components/dashboard/accounts/settings/update-team-member-role";
+import { UseTeamMembersResponse } from "@/utils/api/use-team-members";
 
 jest.spyOn(toast, "success");
 
 describe("Update team member role", () => {
   beforeEach(async () => {
     await act(async () => {
-      const member = {};
+      const member = {} as UseTeamMembersResponse;
       render(<UpdateTeamMemberRole member={member} />);
     });
   });

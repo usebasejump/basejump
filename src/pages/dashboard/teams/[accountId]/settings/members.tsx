@@ -6,8 +6,6 @@ import { useRouter } from "next/router";
 import ListMembers from "@/components/dashboard/accounts/settings/list-team-members";
 import ListTeamInvitations from "@/components/dashboard/accounts/settings/list-team-invitations";
 import useTeamInvitations from "@/utils/api/use-team-invitations";
-import { withPageAuth } from "@supabase/auth-helpers-nextjs";
-import { LOGIN_PATH } from "@/types/auth";
 import useTeamAccount from "@/utils/api/use-team-account";
 import DashboardMeta from "@/components/dashboard/dashboard-meta";
 
@@ -42,5 +40,3 @@ const TeamSettingsMembers = () => {
 };
 
 export default TeamSettingsMembers;
-
-export const getServerSideProps = withPageAuth({ redirectTo: LOGIN_PATH });

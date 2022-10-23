@@ -1,20 +1,22 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { createOrRetrieveSubscription } from "@/utils/admin/stripe-billing-helpers";
-import {
-  getUser,
-  supabaseServerClient,
-  withApiAuth,
-} from "@supabase/auth-helpers-nextjs";
+import { withApiAuth } from "@supabase/auth-helpers-nextjs";
 import { MANUAL_SUBSCRIPTION_REQUIRED } from "@/types/billing";
 
-const BillingStatus = async (req: NextApiRequest, res: NextApiResponse) => {
+const BillingStatus = async (
+  req: NextApiRequest,
+  res: NextApiResponse,
+  supabaseServerClient
+) => {
   const { accountId } = req.query;
 
   if (!accountId) {
     return res.status(400).json({ error: "Missing account ID" });
   }
 
-  const { user } = await getUser({ req, res });
+  const {
+    data: { user },
+  } = await supabaseServerClient.auth.getUser();
 
   const { data } = await supabaseServerClient({ req, res })
     .rpc("current_user_account_role", {
