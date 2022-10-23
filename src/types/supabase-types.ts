@@ -317,4 +317,3 @@ export interface Database {
     };
   };
 }
-

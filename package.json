@@ -7,7 +7,7 @@
     "lint": "next lint",
     "type-check": "tsc",
     "test": "NEXT_PUBLIC_SUPABASE_URL=http://localhost NEXT_PUBLIC_SUPABASE_ANON_KEY=anon-key jest",
-    "generate-types": "supabase gen types typescript --local > ./src/types/supabase-types.ts",
+    "generate-types": "supabase gen types typescript --local > ./src/types/supabase-types.ts && eslint ./src/types/supabase-types.ts --fix",
     "sync-stripe": "npx tsx scripts/sync-stripe.ts"
   },
   "dependencies": {

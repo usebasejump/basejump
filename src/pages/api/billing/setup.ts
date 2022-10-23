@@ -24,7 +24,7 @@ const BillingSetup = async (
     data: { user },
   } = await supabaseServerClient.auth.getUser();
 
-  const { data: currentUserRole } = await supabaseServerClient({ req, res })
+  const { data: currentUserRole } = await supabaseServerClient
     .rpc("current_user_account_role", {
       lookup_account_id: accountId,
     })
