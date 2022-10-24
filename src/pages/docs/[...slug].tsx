@@ -55,7 +55,11 @@ export async function getStaticPaths({ locales }) {
   for (const locale of locales) {
     const filePaths = await getContentPaths(locale, "docs");
     filePaths
-      .filter((filePath) => !filePath.slug.includes("index"))
+      .filter(
+        // Resolves an issue where returning empty paths collides with the index page
+        // known issue: https://github.com/vercel/next.js/issues/12717
+        (filePath) => !filePath.slug.includes("index") && filePath.slug !== ""
+      )
       .forEach((filePath) => {
         paths.push({
           params: {

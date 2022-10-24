@@ -7,7 +7,7 @@ import { serialize } from "next-mdx-remote/serialize";
 import DocsLayout from "@/components/docs/docs-layout";
 import ContentMeta from "@/components/content-pages/content-meta";
 
-const DocsShow = ({ navigation, content, title, meta }) => {
+const DocsIndex = ({ navigation, content, title, meta }) => {
   return (
     <DocsLayout navigation={navigation}>
       <ContentMeta
@@ -24,7 +24,7 @@ const DocsShow = ({ navigation, content, title, meta }) => {
   );
 };
 
-export default DocsShow;
+export default DocsIndex;
 
 export async function getStaticProps({ params, locale, ...rest }) {
   const doc = await getContentBySlug("index", {
