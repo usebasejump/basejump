@@ -9,9 +9,9 @@ module.exports = {
   locales: ["en"],
   defaultLocale: "en",
   pages: {
-    "/login": ["authentication"],
-    "/signup": ["authentication"],
-    "/invitation": ["dashboard"],
+    "/login": ["authentication", "content"],
+    "/signup": ["authentication", "content"],
+    "/invitation": ["dashboard", "content"],
     "rgx:^/dashboard": ["dashboard"],
     "*": ["content"],
   },
