@@ -118,7 +118,7 @@ const BasejumpHomepage = () => (
           </li>
           <li>
             <a
-              href="https://nextjs.com/"
+              href="https://nextjs.org/"
               title="NextJS"
               target="_blank"
               rel="noreferrer"
