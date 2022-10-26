@@ -8,6 +8,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: supabase/setup-cli@v1
+        with:
+          version: 1.11.2
       - name: Supabase Start
         run: supabase start
       - name: Run Tests
