@@ -17,16 +17,29 @@ const ContentMeta = ({
   return (
     <Head>
       <title>{title}</title>
+      <meta name="twitter:card" content="summary_large_image" />
       <meta name="description" content={description} key="desc" />
       <meta property="og:title" content={title} />
+      <meta name="twitter:title" content={title} />
       <meta
         property="og:description"
         content={socialDescription || description}
       />
+      <meta
+        name="twitter:description"
+        content={socialDescription || description}
+      />
       {!!socialImage && (
-        <meta property="og:image" content={getFullRedirectUrl(socialImage)} />
+        <>
+          <meta property="og:image" content={getFullRedirectUrl(socialImage)} />
+          <meta
+            name="twitter:image"
+            content={getFullRedirectUrl(socialImage)}
+          />
+        </>
       )}
     </Head>
   );
 };
+
 export default ContentMeta;
