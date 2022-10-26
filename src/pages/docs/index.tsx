@@ -14,7 +14,7 @@ const DocsIndex = ({ navigation, content, title, meta }) => {
         title={title}
         description={meta.description}
         socialDescription={meta.socialDescription}
-        socialImage={meta.socialImage}
+        socialImage={`/api/og?title=${title}`}
       />
       <div className="prose mx-auto">
         <h1 className="mt-0 pt-0">{title}</h1>
