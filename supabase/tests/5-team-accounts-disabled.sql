@@ -15,7 +15,7 @@ set local search_path = core, public, extensions;
 set local role authenticated;
 set local "request.jwt.claims" to '{ "sub": "1009e39a-fa61-4aab-a762-e7b1f3b014f3", "email": "test@test.com" }';
 
--- check to see if we can create an accoiunt
+-- check to see if we can create an account
 select throws_ok(
         $$ insert into accounts (team_name, personal_account) values ('test team', false) $$,
         'new row violates row-level security policy for table "accounts"'
