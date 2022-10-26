@@ -2,7 +2,7 @@ BEGIN;
 
 select plan(22);
 
-select has_schema('basejump', 'Basejump schema should exist');
+select has_schema('basejump2', 'Basejump schema should exist');
 
 select is_empty(
     $$ select
