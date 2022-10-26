@@ -47,37 +47,35 @@ export async function getContentPaths(
   contentType: ContentTypes
 ): Promise<ContentPathsResponse> {
   const files = readdirSync(join(process.cwd(), basePath, contentType, locale));
-  return (
-    files
-      .map((filePath) => {
-        // clean up markdown extension and replace index files with a non-index slug
-        const slug = filePath.replace(/\.md$/, "").replace(/\/?index$/, "");
-        const { meta, content } = loadFileWithMeta(
-          join(process.cwd(), basePath, contentType, locale, filePath)
-        );
+  return files
+    .map((filePath) => {
+      // clean up markdown extension and replace index files with a non-index slug
+      const slug = filePath.replace(/\.md$/, "").replace(/\/?index$/, "");
+      const { meta, content } = loadFileWithMeta(
+        join(process.cwd(), basePath, contentType, locale, filePath)
+      );
 
-        return {
-          slug,
-          fullPath: join("/", contentType, slug),
-          meta,
-          title: meta?.title || slugToTitle(slug),
-          content,
-        };
-      })
-      // remove unpublished files
-      .filter(
-        (file) =>
-          file.meta?.published &&
-          isBefore(new Date(file.meta.published), new Date())
-      )
-      // sort by publish date
-      .sort((fileA, fileB) => {
-        return compareAsc(
-          new Date(fileA.meta.published),
-          new Date(fileB.meta.published)
-        );
-      })
-  );
+      return {
+        slug,
+        fullPath: join("/", contentType, slug),
+        meta,
+        title: meta?.title || slugToTitle(slug),
+        content,
+      };
+    })
+    // remove unpublished files
+    .filter(
+      (file) =>
+        file.meta?.published &&
+        isBefore(new Date(file.meta.published), new Date())
+    )
+    // sort by publish date
+    .sort((fileA, fileB) => {
+      return compareAsc(
+        new Date(fileA.meta.published),
+        new Date(fileB.meta.published)
+      );
+    });
 }
 
 type GetContentBySlugResponse = {

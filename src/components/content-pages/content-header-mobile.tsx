@@ -25,9 +25,7 @@ const ContentHeaderMobile = ({ className, onClose }: Props) => {
       <div className="grid gap-y-4">
         <div className="flex justify-between items-center px-2 py-4">
           <Link href="/" passHref>
-            <button>
-              <Logo size="sm" />
-            </button>
+            <Logo size="sm" />
           </Link>
           <Button
             className="md:hidden"
@@ -42,7 +40,7 @@ const ContentHeaderMobile = ({ className, onClose }: Props) => {
           {navigation.map((item) => (
             <Menu.Item key={item.title}>
               <Link href={item.href} passHref>
-                <a>{item.title}</a>
+                {item.title}
               </Link>
             </Menu.Item>
           ))}
@@ -50,19 +48,19 @@ const ContentHeaderMobile = ({ className, onClose }: Props) => {
           {!!user ? (
             <Menu.Item>
               <Link href="/dashboard" passHref>
-                <a>{t("dashboard")}</a>
+                {t("dashboard")}
               </Link>
             </Menu.Item>
           ) : (
             <>
               <Menu.Item>
                 <Link href="/login" passHref>
-                  <a>{t("login")}</a>
+                  {t("login")}
                 </Link>
               </Menu.Item>
               <Menu.Item>
                 <Link href="/signup" passHref>
-                  <a>{t("signUp")}</a>
+                  {t("signUp")}
                 </Link>
               </Menu.Item>
             </>

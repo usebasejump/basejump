@@ -8,7 +8,7 @@ const LoginPage = () => {
     <div className="max-w-md mx-4 md:mx-auto my-12 bg-base-500 grid gap-y-4">
       <LoginPassword />
       <Link href="/signup" passHref>
-        <a>{t("shared.notYetRegistered")}</a>
+        {t("shared.notYetRegistered")}
       </Link>
     </div>
   );

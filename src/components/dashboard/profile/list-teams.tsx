@@ -38,14 +38,19 @@ const ListTeams = () => {
                   <p>{account.account_role}</p>
                 </div>
                 <div className="col-span-1 px-6 py-3 flex gap-x-2 md:justify-end">
-                  <Link href={`/dashboard/teams/${account.id}`} passHref>
-                    <Button variant="outline">{t("listTeams.viewTeam")}</Button>
+                  <Link
+                    href={`/dashboard/teams/${account.id}`}
+                    passHref
+                    className="btn btn-outline"
+                  >
+                    {t("listTeams.viewTeam")}
                   </Link>
                   <Link
                     href={`/dashboard/teams/${account.id}/settings`}
                     passHref
+                    className="btn btn-ghost"
                   >
-                    <Button color="ghost">{t("listTeams.manageTeam")}</Button>
+                    {t("listTeams.manageTeam")}
                   </Link>
                 </div>
               </div>

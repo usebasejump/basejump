@@ -60,7 +60,7 @@ const TeamSelectMenu = ({ currentAccount }: Props) => {
               <Menu.Title>
                 <p>{t("teamSelectMenu.personalAccount")}</p>
               </Menu.Title>
-              <Link href={DASHBOARD_PATH} passHref>
+              <Link href={DASHBOARD_PATH} passHref legacyBehavior>
                 <Dropdown.Item>{t("teamSelectMenu.myAccount")}</Dropdown.Item>
               </Link>
             </>
@@ -73,6 +73,7 @@ const TeamSelectMenu = ({ currentAccount }: Props) => {
               key={account.account_id}
               href={`/dashboard/teams/${account.account_id}`}
               passHref
+              legacyBehavior
             >
               <Dropdown.Item>{account.team_name}</Dropdown.Item>
             </Link>

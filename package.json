@@ -7,7 +7,7 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc",
-    "test": "NEXT_PUBLIC_SUPABASE_URL=http://localhost NEXT_PUBLIC_SUPABASE_ANON_KEY=anon-key jest",
+    "test": "NEXT_PUBLIC_SUPABA SE_URL=http://localhost NEXT_PUBLIC_SUPABASE_ANON_KEY=anon-key jest",
     "generate-types": "supabase gen types typescript --local > ./src/types/supabase-types.ts && eslint ./src/types/supabase-types.ts --fix",
     "sync-stripe": "npx tsx scripts/sync-stripe.ts"
   },
@@ -17,6 +17,7 @@
     "@supabase/auth-helpers-react": "^0.3.1",
     "@supabase/supabase-js": "^2.0.4",
     "@tanstack/react-query": "^4.13.0",
+    "@vercel/og": "^0.0.20",
     "classnames": "^2.3.2",
     "date-fns": "^2.29.3",
     "gray-matter": "^4.0.3",
