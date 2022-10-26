@@ -40,7 +40,7 @@ const PersonalAccountMenu = ({ currentAccount }: Props) => {
       {menu.map((item) => (
         <Menu.Item key={item.label} className={cx({ bordered: item.isActive })}>
           <Link href={item.href} passHref>
-            <a>{item.label}</a>
+            {item.label}
           </Link>
         </Menu.Item>
       ))}

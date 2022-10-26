@@ -22,10 +22,13 @@ const BlogIndex = ({ articles }) => {
                 {article.meta.category}
               </span>
             )}
-            <Link key={article.fullPath} href={article.fullPath} passHref>
-              <a className="no-underline">
-                <h1>{article.title}</h1>
-              </a>
+            <Link
+              key={article.fullPath}
+              href={article.fullPath}
+              passHref
+              className="no-underline"
+            >
+              <h1>{article.title}</h1>
             </Link>
             <MDXRemote {...article.content} />
           </article>

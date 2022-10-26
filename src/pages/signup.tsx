@@ -8,7 +8,7 @@ const SignUpPage = () => {
     <div className="max-w-md mx-auto my-12 bg-base-500 grid gap-y-4">
       <SignupPassword />
       <Link href="/login" passHref>
-        <a>{t("shared.alreadyRegistered")}</a>
+        {t("shared.alreadyRegistered")}
       </Link>
     </div>
   );

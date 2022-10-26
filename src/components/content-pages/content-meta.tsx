@@ -1,4 +1,5 @@
 import Head from "next/head";
+import getFullRedirectUrl from "@/utils/get-full-redirect-url";
 
 type Props = {
   title: string;
@@ -22,7 +23,9 @@ const ContentMeta = ({
         property="og:description"
         content={socialDescription || description}
       />
-      {!!socialImage && <meta property="og:image" content={socialImage} />}
+      {!!socialImage && (
+        <meta property="og:image" content={getFullRedirectUrl(socialImage)} />
+      )}
     </Head>
   );
 };

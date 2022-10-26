@@ -30,7 +30,7 @@ const DashboardProfileButton = ({ className }: Props) => {
             <p className="text-sm">{t("profileButton.loggedInAs")}</p>
             <p className="font-bold">{user?.email}</p>
           </div>
-          <Link href="/dashboard/profile">
+          <Link href="/dashboard/profile" legacyBehavior>
             <Dropdown.Item>{t("profileButton.editProfile")}</Dropdown.Item>
           </Link>
           <Dropdown.Item

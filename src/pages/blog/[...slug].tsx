@@ -16,18 +16,18 @@ const BlogShow = ({ content, title, meta }) => {
         title={title}
         description={meta?.description}
         socialDescription={meta?.socialDescription}
-        socialImage={meta?.socialImage}
+        socialImage={`/api/og?title=${title}`}
       />
       <div className="breadcrumbs text-sm mb-4">
         <ul className="m-0 p-0">
           <li className="p-0">
             <Link href="/" passHref>
-              <a>{t("home")}</a>
+              {t("home")}
             </Link>
           </li>
           <li>
             <Link href="/blog" passHref>
-              <a>{t("blog")}</a>
+              {t("blog")}
             </Link>
           </li>
           <li>{title}</li>

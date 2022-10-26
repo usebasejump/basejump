@@ -38,14 +38,14 @@ const AccountSettingsLayout = ({ children }) => {
       <DashboardContent.Tabs>
         <div className="tabs">
           {tabs.map(({ label, href, isActive }) => (
-            <Link href={href} key={href}>
-              <a
-                className={cx("tab tab-lg", {
-                  "tab-bordered tab-active": isActive,
-                })}
-              >
-                {label}
-              </a>
+            <Link
+              href={href}
+              key={href}
+              className={cx("tab tab-lg", {
+                "tab-bordered tab-active": isActive,
+              })}
+            >
+              {label}
             </Link>
           ))}
         </div>

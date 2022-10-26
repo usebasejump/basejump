@@ -23,32 +23,35 @@ const ContentHeader = ({ toggleSidebar }: Props) => {
     <Navbar className="flex justify-between items-center md:px-8 py-4 max-w-screen-xl mx-auto">
       <div className="flex gap-2">
         {router.asPath !== "/" && (
-          <Link href="/" passHref>
-            <button className="mr-4">
-              <Logo size="sm" />
-            </button>
+          <Link href="/" passHref className="mr-4 cursor-pointer">
+            <Logo size="sm" />
           </Link>
         )}
         <div className="hidden lg:flex gap-4">
           {navigation.map((nav) => (
-            <Link key={nav.href} href={nav.href} passHref>
-              <Button color="ghost">{nav.title}</Button>
+            <Link
+              key={nav.href}
+              href={nav.href}
+              passHref
+              className="btn btn-ghost"
+            >
+              {nav.title}
             </Link>
           ))}
         </div>
       </div>
       <div className="hidden lg:flex">
         {!!user ? (
-          <Link href="/dashboard" passHref>
-            <Button color="ghost">{t("dashboard")}</Button>
+          <Link href="/dashboard" passHref className="btn btn-ghost">
+            {t("dashboard")}
           </Link>
         ) : (
           <>
-            <Link href="/login" passHref>
-              <Button color="ghost">{t("login")}</Button>
+            <Link href="/login" passHref className="btn btn-ghost">
+              {t("login")}
             </Link>
-            <Link href="/signup" passHref>
-              <Button color="ghost">{t("signUp")}</Button>
+            <Link href="/signup" passHref className="btn btn-ghost">
+              {t("signUp")}
             </Link>
           </>
         )}

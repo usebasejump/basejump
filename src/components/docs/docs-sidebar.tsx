@@ -33,7 +33,7 @@ const DocsSidebar = ({ navigation, onClose }: Props) => {
             className={cx({ bordered: router.asPath === rootPath.fullPath })}
           >
             <Link href={rootPath.fullPath} passHref>
-              <a>{rootPath.title}</a>
+              {rootPath.title}
             </Link>
           </Menu.Item>
         ))}
@@ -50,7 +50,7 @@ const DocsSidebar = ({ navigation, onClose }: Props) => {
                 })}
               >
                 <Link href={categoryPath.fullPath} passHref>
-                  <a>{categoryPath.title}</a>
+                  {categoryPath.title}
                 </Link>
               </Menu.Item>
             ))}

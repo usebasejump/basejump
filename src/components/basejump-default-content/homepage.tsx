@@ -7,6 +7,7 @@ const BasejumpHomepage = () => (
     <ContentMeta
       title="Basejump - SaaS starter kit for Supabase and NextJS"
       description="An opinionated short cut for launching Supabase apps using NextJS"
+      socialImage={`/api/og?title=Basejump`}
     />
     <div className="pt-8 pb-24 md:pt-36 md:pb-48">
       <Logo size="lg" className="mx-auto" />
