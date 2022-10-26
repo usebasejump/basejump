@@ -26,10 +26,9 @@ const BlogIndex = ({ articles }) => {
               key={article.fullPath}
               href={article.fullPath}
               passHref
-              className="no-underline">
-
+              className="no-underline"
+            >
               <h1>{article.title}</h1>
-
             </Link>
             <MDXRemote {...article.content} />
           </article>
