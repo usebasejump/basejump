@@ -37,7 +37,7 @@ set local "request.jwt.claims" to '{ "sub": "29669d3a-a502-491f-b4f0-0211910ed7e
 -- can't update role directly in the account_user table
 SELECT results_ne(
                $$ update account_user set account_role = 'owner' where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = '29669d3a-a502-491f-b4f0-0211910ed7eb' returning 1 $$,
-               $$ values(2) $$,
+               $$ values(1) $$,
                'Members should not be able to update their own role'
            );
 
@@ -89,7 +89,7 @@ SELECT throws_ok(
 --- primary owner should still be the same
 SELECT row_eq(
                $$ select account_role from account_user where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = '1009e39a-fa61-4aab-a762-e7b1f3b014f3' $$,
-               ROW ('owner'::account_role),
+               ROW ('member'::account_role),
                'Primary owner should still be the same'
            );
 
