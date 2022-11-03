@@ -89,7 +89,7 @@ SELECT throws_ok(
 --- primary owner should still be the same
 SELECT row_eq(
                $$ select account_role from account_user where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = '1009e39a-fa61-4aab-a762-e7b1f3b014f3' $$,
-               ROW ('member'::account_role),
+               ROW ('owner'::account_role),
                'Primary owner should still be the same'
            );
 
