@@ -8,13 +8,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: supabase/setup-cli@v1
-      - name: install pg_prove
-        run: sudo cpan TAP::Parser::SourceHandler::pgTAP
-        env:
-          SHELL: /bin/bash
+        with:
+          version: 1.11.4
       - name: Supabase Start
         run: supabase start
       - name: Run Tests
-        run: pg_prove -d postgres -U postgres -h localhost -p 54322 supabase/tests/*.sql
-        env:
-          PGPASSWORD: postgres
+        run: supabase db test
