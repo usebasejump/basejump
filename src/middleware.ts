@@ -4,5 +4,5 @@ import { LOGIN_PATH } from "@/types/auth";
 export const middleware = withMiddlewareAuth({ redirectTo: LOGIN_PATH });
 
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  matcher: ["/dashboard/:path*", "/invitation"],
 };

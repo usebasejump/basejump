@@ -1,5 +1,3 @@
-import { withPageAuth } from "@supabase/auth-helpers-nextjs";
-import { REGISTER_PATH } from "@/types/auth";
 import { useRouter } from "next/router";
 import useInvitation from "@/utils/api/use-invitation";
 import useTranslation from "next-translate/useTranslation";
@@ -56,7 +54,5 @@ const Invitation = () => {
     </div>
   );
 };
-
-export const getServerSideProps = withPageAuth({ redirectTo: REGISTER_PATH });
 
 export default Invitation;
