@@ -34,7 +34,6 @@ function MyApp({ Component, pageProps, router }: AppProps) {
     <Theme dataTheme={theme}>
       <SessionContextProvider
         supabaseClient={supabaseClient}
-        // @ts-ignore
         initialSession={pageProps.initialSession}
       >
         <QueryClientProvider client={queryClient}>
