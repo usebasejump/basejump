@@ -16,7 +16,7 @@ export default function usePersonalAccount(
         .select()
         .eq("primary_owner_user_id", user?.id)
         .eq("personal_account", true)
-        .single();
+        .maybeSingle();
       handleSupabaseErrors(data, error);
       return data;
     },
