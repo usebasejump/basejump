@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { createOrRetrieveSubscription } from "@/utils/admin/stripe-billing-helpers";
 import { withApiAuth } from "@supabase/auth-helpers-nextjs";
 import { MANUAL_SUBSCRIPTION_REQUIRED } from "@/types/billing";
+import { supabaseAdmin } from "@/utils/admin/supabase-admin-client";
 
 const BillingStatus = async (
   req: NextApiRequest,
@@ -24,8 +25,27 @@ const BillingStatus = async (
     })
     .single();
 
+  const { data: config } = await supabaseAdmin
+    .rpc("get_service_role_config")
+    .single();
+
   if (!data) {
     return res.status(404).json({ error: "Account not found" });
+  }
+
+  // @ts-ignore
+  if (config.enable_account_billing === false) {
+    // If billing is disabled, return the account as active
+    return res.status(200).json({
+      subscription_id: null,
+      subscription_active: true,
+      status: "active",
+      is_primary_owner: false,
+      billing_email: null,
+      plan_name: null,
+      account_role: data.account_role,
+      billing_enabled: false,
+    });
   }
 
   try {
@@ -43,6 +63,7 @@ const BillingStatus = async (
       status: subscriptionData.status,
       account_role: data?.account_role,
       is_primary_owner: data?.is_primary_owner,
+      billing_enabled: true,
     });
   } catch (error) {
     if (error.message === MANUAL_SUBSCRIPTION_REQUIRED) {
@@ -54,6 +75,7 @@ const BillingStatus = async (
         status: MANUAL_SUBSCRIPTION_REQUIRED,
         account_role: data?.account_role,
         is_primary_owner: data?.is_primary_owner,
+        billing_enabled: true,
       });
     }
     return res.status(500).json({ error: error.message });

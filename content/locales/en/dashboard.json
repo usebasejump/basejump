@@ -128,7 +128,9 @@
     "title": "Your Plan",
     "description": "You can upgrade or downgrade your plan at any time",
     "updatePlan": "Update plan settings",
-    "billingEmail": "Your billing email is {{email}}"
+    "billingEmail": "Your billing email is {{email}}",
+    "billingDisabled": "Billing is disabled for this Basejump project",
+    "billingDisabledDescription": "You can enable billing in the `config` table of your supabase database. Alternatively, you can remove this menu option to disable billing completely"
   },
   "accountSubscriptionTakeover": {
     "newSubscriptionTitle": "Select your plan to get started",

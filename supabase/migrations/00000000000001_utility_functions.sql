@@ -16,14 +16,11 @@ CREATE SCHEMA IF NOT EXISTS basejump;
 GRANT USAGE ON SCHEMA basejump to authenticated;
 GRANT USAGE ON SCHEMA basejump to service_role;
 
-CREATE TABLE IF NOT EXISTS basejump.config (
+CREATE TABLE IF NOT EXISTS basejump.config
+(
     enable_personal_accounts boolean default true,
     enable_team_accounts     boolean default true
 );
-
--- insert default config values
-insert into basejump.config (enable_personal_accounts, enable_team_accounts)
-values (true, true);
 
 -- enable select on the config table
 GRANT SELECT ON basejump.config TO authenticated, service_role;

@@ -10,6 +10,7 @@ type UseAccountBillingStatusResponse = {
   billing_email?: string;
   plan_name?: string;
   account_role: Database["public"]["Tables"]["account_user"]["Row"]["account_role"];
+  billing_enabled: boolean;
 };
 
 /**

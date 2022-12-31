@@ -9,47 +9,47 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
-      accounts: {
-        Row: {
-          team_name: string | null;
-          id: string;
-          primary_owner_user_id: string;
-          updated_at: string | null;
-          created_at: string | null;
-          personal_account: boolean;
-        };
-        Insert: {
-          team_name?: string | null;
-          id?: string;
-          primary_owner_user_id?: string;
-          updated_at?: string | null;
-          created_at?: string | null;
-          personal_account?: boolean;
-        };
-        Update: {
-          team_name?: string | null;
-          id?: string;
-          primary_owner_user_id?: string;
-          updated_at?: string | null;
-          created_at?: string | null;
-          personal_account?: boolean;
-        };
-      };
       account_user: {
         Row: {
           user_id: string;
           account_id: string;
-          account_role: "owner" | "member";
+          account_role: Database["public"]["Enums"]["account_role"];
         };
         Insert: {
           user_id: string;
           account_id: string;
-          account_role: "owner" | "member";
+          account_role: Database["public"]["Enums"]["account_role"];
         };
         Update: {
           user_id?: string;
           account_id?: string;
-          account_role?: "owner" | "member";
+          account_role?: Database["public"]["Enums"]["account_role"];
+        };
+      };
+      accounts: {
+        Row: {
+          id: string;
+          primary_owner_user_id: string;
+          team_name: string | null;
+          personal_account: boolean;
+          updated_at: string | null;
+          created_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          primary_owner_user_id?: string;
+          team_name?: string | null;
+          personal_account?: boolean;
+          updated_at?: string | null;
+          created_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          primary_owner_user_id?: string;
+          team_name?: string | null;
+          personal_account?: boolean;
+          updated_at?: string | null;
+          created_at?: string | null;
         };
       };
       billing_customers: {
@@ -58,85 +58,21 @@ export interface Database {
           customer_id: string | null;
           email: string | null;
           active: boolean | null;
-          provider: "stripe" | null;
+          provider: Database["public"]["Enums"]["billing_providers"] | null;
         };
         Insert: {
           account_id: string;
           customer_id?: string | null;
           email?: string | null;
           active?: boolean | null;
-          provider?: "stripe" | null;
+          provider?: Database["public"]["Enums"]["billing_providers"] | null;
         };
         Update: {
           account_id?: string;
           customer_id?: string | null;
           email?: string | null;
           active?: boolean | null;
-          provider?: "stripe" | null;
-        };
-      };
-      billing_products: {
-        Row: {
-          id: string;
-          active: boolean | null;
-          name: string | null;
-          description: string | null;
-          image: string | null;
-          metadata: Json | null;
-          provider: "stripe" | null;
-        };
-        Insert: {
-          id: string;
-          active?: boolean | null;
-          name?: string | null;
-          description?: string | null;
-          image?: string | null;
-          metadata?: Json | null;
-          provider?: "stripe" | null;
-        };
-        Update: {
-          id?: string;
-          active?: boolean | null;
-          name?: string | null;
-          description?: string | null;
-          image?: string | null;
-          metadata?: Json | null;
-          provider?: "stripe" | null;
-        };
-      };
-      invitations: {
-        Row: {
-          account_role: "owner" | "member";
-          account_id: string;
-          invited_by_user_id: string;
-          account_team_name: string | null;
-          updated_at: string | null;
-          created_at: string | null;
-          invitation_type: "one-time" | "24-hour";
-          id: string;
-          token: string;
-        };
-        Insert: {
-          account_role: "owner" | "member";
-          account_id: string;
-          invited_by_user_id: string;
-          account_team_name?: string | null;
-          updated_at?: string | null;
-          created_at?: string | null;
-          invitation_type: "one-time" | "24-hour";
-          id?: string;
-          token?: string;
-        };
-        Update: {
-          account_role?: "owner" | "member";
-          account_id?: string;
-          invited_by_user_id?: string;
-          account_team_name?: string | null;
-          updated_at?: string | null;
-          created_at?: string | null;
-          invitation_type?: "one-time" | "24-hour";
-          id?: string;
-          token?: string;
+          provider?: Database["public"]["Enums"]["billing_providers"] | null;
         };
       };
       billing_prices: {
@@ -147,12 +83,12 @@ export interface Database {
           description: string | null;
           unit_amount: number | null;
           currency: string | null;
-          type: "one_time" | "recurring" | null;
-          interval: "day" | "week" | "month" | "year" | null;
+          type: Database["public"]["Enums"]["pricing_type"] | null;
+          interval: Database["public"]["Enums"]["pricing_plan_interval"] | null;
           interval_count: number | null;
           trial_period_days: number | null;
           metadata: Json | null;
-          provider: "stripe" | null;
+          provider: Database["public"]["Enums"]["billing_providers"] | null;
         };
         Insert: {
           id: string;
@@ -161,12 +97,14 @@ export interface Database {
           description?: string | null;
           unit_amount?: number | null;
           currency?: string | null;
-          type?: "one_time" | "recurring" | null;
-          interval?: "day" | "week" | "month" | "year" | null;
+          type?: Database["public"]["Enums"]["pricing_type"] | null;
+          interval?:
+            | Database["public"]["Enums"]["pricing_plan_interval"]
+            | null;
           interval_count?: number | null;
           trial_period_days?: number | null;
           metadata?: Json | null;
-          provider?: "stripe" | null;
+          provider?: Database["public"]["Enums"]["billing_providers"] | null;
         };
         Update: {
           id?: string;
@@ -175,32 +113,54 @@ export interface Database {
           description?: string | null;
           unit_amount?: number | null;
           currency?: string | null;
-          type?: "one_time" | "recurring" | null;
-          interval?: "day" | "week" | "month" | "year" | null;
+          type?: Database["public"]["Enums"]["pricing_type"] | null;
+          interval?:
+            | Database["public"]["Enums"]["pricing_plan_interval"]
+            | null;
           interval_count?: number | null;
           trial_period_days?: number | null;
           metadata?: Json | null;
-          provider?: "stripe" | null;
+          provider?: Database["public"]["Enums"]["billing_providers"] | null;
+        };
+      };
+      billing_products: {
+        Row: {
+          id: string;
+          active: boolean | null;
+          name: string | null;
+          description: string | null;
+          image: string | null;
+          metadata: Json | null;
+          provider: Database["public"]["Enums"]["billing_providers"] | null;
+        };
+        Insert: {
+          id: string;
+          active?: boolean | null;
+          name?: string | null;
+          description?: string | null;
+          image?: string | null;
+          metadata?: Json | null;
+          provider?: Database["public"]["Enums"]["billing_providers"] | null;
+        };
+        Update: {
+          id?: string;
+          active?: boolean | null;
+          name?: string | null;
+          description?: string | null;
+          image?: string | null;
+          metadata?: Json | null;
+          provider?: Database["public"]["Enums"]["billing_providers"] | null;
         };
       };
       billing_subscriptions: {
         Row: {
           id: string;
           account_id: string;
-          status:
-            | "trialing"
-            | "active"
-            | "canceled"
-            | "incomplete"
-            | "incomplete_expired"
-            | "past_due"
-            | "unpaid"
-            | null;
+          status: Database["public"]["Enums"]["subscription_status"] | null;
           metadata: Json | null;
           price_id: string | null;
           quantity: number | null;
           cancel_at_period_end: boolean | null;
-          provider: "stripe" | null;
           created: string;
           current_period_start: string;
           current_period_end: string;
@@ -209,24 +169,16 @@ export interface Database {
           canceled_at: string | null;
           trial_start: string | null;
           trial_end: string | null;
+          provider: Database["public"]["Enums"]["billing_providers"] | null;
         };
         Insert: {
           id: string;
           account_id: string;
-          status?:
-            | "trialing"
-            | "active"
-            | "canceled"
-            | "incomplete"
-            | "incomplete_expired"
-            | "past_due"
-            | "unpaid"
-            | null;
+          status?: Database["public"]["Enums"]["subscription_status"] | null;
           metadata?: Json | null;
           price_id?: string | null;
           quantity?: number | null;
           cancel_at_period_end?: boolean | null;
-          provider?: "stripe" | null;
           created?: string;
           current_period_start?: string;
           current_period_end?: string;
@@ -235,24 +187,16 @@ export interface Database {
           canceled_at?: string | null;
           trial_start?: string | null;
           trial_end?: string | null;
+          provider?: Database["public"]["Enums"]["billing_providers"] | null;
         };
         Update: {
           id?: string;
           account_id?: string;
-          status?:
-            | "trialing"
-            | "active"
-            | "canceled"
-            | "incomplete"
-            | "incomplete_expired"
-            | "past_due"
-            | "unpaid"
-            | null;
+          status?: Database["public"]["Enums"]["subscription_status"] | null;
           metadata?: Json | null;
           price_id?: string | null;
           quantity?: number | null;
           cancel_at_period_end?: boolean | null;
-          provider?: "stripe" | null;
           created?: string;
           current_period_start?: string;
           current_period_end?: string;
@@ -261,6 +205,42 @@ export interface Database {
           canceled_at?: string | null;
           trial_start?: string | null;
           trial_end?: string | null;
+          provider?: Database["public"]["Enums"]["billing_providers"] | null;
+        };
+      };
+      invitations: {
+        Row: {
+          id: string;
+          account_role: Database["public"]["Enums"]["account_role"];
+          account_id: string;
+          token: string;
+          invited_by_user_id: string;
+          account_team_name: string | null;
+          updated_at: string | null;
+          created_at: string | null;
+          invitation_type: Database["public"]["Enums"]["invitation_type"];
+        };
+        Insert: {
+          id?: string;
+          account_role: Database["public"]["Enums"]["account_role"];
+          account_id: string;
+          token?: string;
+          invited_by_user_id: string;
+          account_team_name?: string | null;
+          updated_at?: string | null;
+          created_at?: string | null;
+          invitation_type: Database["public"]["Enums"]["invitation_type"];
+        };
+        Update: {
+          id?: string;
+          account_role?: Database["public"]["Enums"]["account_role"];
+          account_id?: string;
+          token?: string;
+          invited_by_user_id?: string;
+          account_team_name?: string | null;
+          updated_at?: string | null;
+          created_at?: string | null;
+          invitation_type?: Database["public"]["Enums"]["invitation_type"];
         };
       };
       profiles: {
@@ -284,36 +264,54 @@ export interface Database {
         };
       };
     };
+    Views: {
+      [_ in never]: never;
+    };
     Functions: {
+      accept_invitation: {
+        Args: { lookup_invitation_token: string };
+        Returns: string;
+      };
+      current_user_account_role: {
+        Args: { lookup_account_id: string };
+        Returns: Json;
+      };
+      get_account_billing_status: {
+        Args: { lookup_account_id: string };
+        Returns: Json;
+      };
       get_service_role_config: {
         Args: Record<PropertyKey, never>;
         Returns: Json;
       };
-      current_user_account_role: {
-        Args: { lookup_account_id: string };
+      lookup_invitation: {
+        Args: { lookup_invitation_token: string };
         Returns: Json;
       };
       update_account_user_role: {
         Args: {
           account_id: string;
           user_id: string;
-          new_account_role: "owner" | "member";
+          new_account_role: Database["public"]["Enums"]["account_role"];
           make_primary_owner: boolean;
         };
         Returns: undefined;
       };
-      get_account_billing_status: {
-        Args: { lookup_account_id: string };
-        Returns: Json;
-      };
-      accept_invitation: {
-        Args: { lookup_invitation_token: string };
-        Returns: string;
-      };
-      lookup_invitation: {
-        Args: { lookup_invitation_token: string };
-        Returns: Json;
-      };
+    };
+    Enums: {
+      account_role: "owner" | "member";
+      billing_providers: "stripe";
+      invitation_type: "one-time" | "24-hour";
+      pricing_plan_interval: "day" | "week" | "month" | "year";
+      pricing_type: "one_time" | "recurring";
+      subscription_status:
+        | "trialing"
+        | "active"
+        | "canceled"
+        | "incomplete"
+        | "incomplete_expired"
+        | "past_due"
+        | "unpaid";
     };
   };
 }

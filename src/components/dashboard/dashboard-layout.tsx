@@ -17,14 +17,15 @@ const DashboardLayout = ({ children }) => {
     setIsSidebarOpen(!isSidebarOpen);
   }
 
+  const { data, refetch: refetchDashboardOverview } = useDashboardOverview();
+
   useEffect(() => {
     /**
      * Close sidebar when route changes
      */
     setIsSidebarOpen(false);
+    refetchDashboardOverview();
   }, [router.asPath]);
-  const { data } = useDashboardOverview();
-
   const currentAccount = useMemo(() => {
     if (!accountId) {
       return data?.find((a) => a.personal_account);
@@ -64,9 +65,10 @@ const DashboardLayout = ({ children }) => {
           {children}
         </main>
       </Drawer>
-      {!["active", "trialing"].includes(subscriptionData?.status) && (
-        <AccountSubscriptionTakeover currentAccount={currentAccount} />
-      )}
+      {subscriptionData?.billing_enabled &&
+        !["active", "trialing"].includes(subscriptionData?.status) && (
+          <AccountSubscriptionTakeover currentAccount={currentAccount} />
+        )}
     </div>
   );
 };

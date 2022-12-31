@@ -32,30 +32,43 @@ const AccountSubscription = ({ accountId }: Props) => {
     }
   );
   return (
-    <SettingsCard
-      title={t("accountSubscription.title")}
-      description={t("accountSubscription.description")}
-    >
-      <SettingsCard.Body>
-        <h2 className="h4">
-          {data?.plan_name} - {data?.status}
-        </h2>
-        <p>
-          {t("accountSubscription.billingEmail", {
-            email: data?.billing_email,
-          })}
-        </p>
-      </SettingsCard.Body>
-      <SettingsCard.Footer>
-        <Button
-          color="primary"
-          loading={getSubscriptionUrl.isLoading}
-          onClick={() => getSubscriptionUrl.mutate()}
+    <>
+      {data?.billing_enabled === false ? (
+        <div className="flex flex-col items-center justify-center gap-y-4 max-w-screen-md mx-auto">
+          <h2 className="text-2xl font-bold text-center">
+            {t("accountSubscription.billingDisabled")}
+          </h2>
+          <p className="text-center">
+            {t("accountSubscription.billingDisabledDescription")}
+          </p>
+        </div>
+      ) : (
+        <SettingsCard
+          title={t("accountSubscription.title")}
+          description={t("accountSubscription.description")}
         >
-          {t("accountSubscription.updatePlan")}
-        </Button>
-      </SettingsCard.Footer>
-    </SettingsCard>
+          <SettingsCard.Body>
+            <h2 className="h4">
+              {data?.plan_name} - {data?.status}
+            </h2>
+            <p>
+              {t("accountSubscription.billingEmail", {
+                email: data?.billing_email,
+              })}
+            </p>
+          </SettingsCard.Body>
+          <SettingsCard.Footer>
+            <Button
+              color="primary"
+              loading={getSubscriptionUrl.isLoading}
+              onClick={() => getSubscriptionUrl.mutate()}
+            >
+              {t("accountSubscription.updatePlan")}
+            </Button>
+          </SettingsCard.Footer>
+        </SettingsCard>
+      )}
+    </>
   );
 };
 
