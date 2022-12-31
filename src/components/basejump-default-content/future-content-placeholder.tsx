@@ -3,8 +3,12 @@ import Image from "next/image";
 
 type Props = {
   filePath: string;
+  title?: string;
 };
-const FutureContentPlaceholder = ({ filePath }: Props) => {
+const FutureContentPlaceholder = ({
+  title = "Here's where you bring the awesome!",
+  filePath,
+}: Props) => {
   return (
     <div className="max-w-xl mx-auto pt-10 px-6">
       <Image
@@ -13,9 +17,7 @@ const FutureContentPlaceholder = ({ filePath }: Props) => {
         width={500}
         height={400}
       />
-      <h1 className="h1 text-center mb-8 px-12">
-        Here&apos;s where you bring the awesome!
-      </h1>
+      <h1 className="h1 text-center mb-8 px-12">{title}</h1>
       {!!filePath && (
         <div className="text-center">
           <p className="mb-3">To edit this page, check it out at:</p>
