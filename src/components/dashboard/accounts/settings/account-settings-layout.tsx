@@ -29,7 +29,7 @@ const AccountSettingsLayout = ({ children }) => {
           router.asPath === `/dashboard/teams/${accountId}/settings/billing`,
       },
     ];
-  }, [router.pathname, accountId]);
+  }, [accountId, router.asPath, t]);
   return (
     <DashboardContent>
       <DashboardContent.Title>

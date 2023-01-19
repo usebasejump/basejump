@@ -7,260 +7,282 @@ export type Json =
   | Json[];
 
 export interface Database {
+  graphql_public: {
+    Tables: {
+      [_ in never]: never;
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      graphql: {
+        Args: {
+          operationName: string;
+          query: string;
+          variables: Json;
+          extensions: Json;
+        };
+        Returns: Json;
+      };
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+  };
   public: {
     Tables: {
       account_user: {
         Row: {
-          user_id: string;
           account_id: string;
           account_role: Database["public"]["Enums"]["account_role"];
+          user_id: string;
         };
         Insert: {
-          user_id: string;
           account_id: string;
           account_role: Database["public"]["Enums"]["account_role"];
+          user_id: string;
         };
         Update: {
-          user_id?: string;
           account_id?: string;
           account_role?: Database["public"]["Enums"]["account_role"];
+          user_id?: string;
         };
       };
       accounts: {
         Row: {
+          created_at: string | null;
           id: string;
+          personal_account: boolean;
           primary_owner_user_id: string;
           team_name: string | null;
-          personal_account: boolean;
           updated_at: string | null;
-          created_at: string | null;
         };
         Insert: {
+          created_at?: string | null;
           id?: string;
+          personal_account?: boolean;
           primary_owner_user_id?: string;
           team_name?: string | null;
-          personal_account?: boolean;
           updated_at?: string | null;
-          created_at?: string | null;
         };
         Update: {
+          created_at?: string | null;
           id?: string;
+          personal_account?: boolean;
           primary_owner_user_id?: string;
           team_name?: string | null;
-          personal_account?: boolean;
           updated_at?: string | null;
-          created_at?: string | null;
         };
       };
       billing_customers: {
         Row: {
           account_id: string;
+          active: boolean | null;
           customer_id: string | null;
           email: string | null;
-          active: boolean | null;
           provider: Database["public"]["Enums"]["billing_providers"] | null;
         };
         Insert: {
           account_id: string;
+          active?: boolean | null;
           customer_id?: string | null;
           email?: string | null;
-          active?: boolean | null;
           provider?: Database["public"]["Enums"]["billing_providers"] | null;
         };
         Update: {
           account_id?: string;
+          active?: boolean | null;
           customer_id?: string | null;
           email?: string | null;
-          active?: boolean | null;
           provider?: Database["public"]["Enums"]["billing_providers"] | null;
         };
       };
       billing_prices: {
         Row: {
-          id: string;
-          billing_product_id: string | null;
           active: boolean | null;
-          description: string | null;
-          unit_amount: number | null;
+          billing_product_id: string | null;
           currency: string | null;
-          type: Database["public"]["Enums"]["pricing_type"] | null;
+          description: string | null;
+          id: string;
           interval: Database["public"]["Enums"]["pricing_plan_interval"] | null;
           interval_count: number | null;
-          trial_period_days: number | null;
           metadata: Json | null;
           provider: Database["public"]["Enums"]["billing_providers"] | null;
+          trial_period_days: number | null;
+          type: Database["public"]["Enums"]["pricing_type"] | null;
+          unit_amount: number | null;
         };
         Insert: {
-          id: string;
-          billing_product_id?: string | null;
           active?: boolean | null;
-          description?: string | null;
-          unit_amount?: number | null;
+          billing_product_id?: string | null;
           currency?: string | null;
-          type?: Database["public"]["Enums"]["pricing_type"] | null;
+          description?: string | null;
+          id: string;
           interval?:
             | Database["public"]["Enums"]["pricing_plan_interval"]
             | null;
           interval_count?: number | null;
-          trial_period_days?: number | null;
           metadata?: Json | null;
           provider?: Database["public"]["Enums"]["billing_providers"] | null;
+          trial_period_days?: number | null;
+          type?: Database["public"]["Enums"]["pricing_type"] | null;
+          unit_amount?: number | null;
         };
         Update: {
-          id?: string;
-          billing_product_id?: string | null;
           active?: boolean | null;
-          description?: string | null;
-          unit_amount?: number | null;
+          billing_product_id?: string | null;
           currency?: string | null;
-          type?: Database["public"]["Enums"]["pricing_type"] | null;
+          description?: string | null;
+          id?: string;
           interval?:
             | Database["public"]["Enums"]["pricing_plan_interval"]
             | null;
           interval_count?: number | null;
-          trial_period_days?: number | null;
           metadata?: Json | null;
           provider?: Database["public"]["Enums"]["billing_providers"] | null;
+          trial_period_days?: number | null;
+          type?: Database["public"]["Enums"]["pricing_type"] | null;
+          unit_amount?: number | null;
         };
       };
       billing_products: {
         Row: {
-          id: string;
           active: boolean | null;
-          name: string | null;
           description: string | null;
+          id: string;
           image: string | null;
           metadata: Json | null;
+          name: string | null;
           provider: Database["public"]["Enums"]["billing_providers"] | null;
         };
         Insert: {
-          id: string;
           active?: boolean | null;
-          name?: string | null;
           description?: string | null;
+          id: string;
           image?: string | null;
           metadata?: Json | null;
+          name?: string | null;
           provider?: Database["public"]["Enums"]["billing_providers"] | null;
         };
         Update: {
-          id?: string;
           active?: boolean | null;
-          name?: string | null;
           description?: string | null;
+          id?: string;
           image?: string | null;
           metadata?: Json | null;
+          name?: string | null;
           provider?: Database["public"]["Enums"]["billing_providers"] | null;
         };
       };
       billing_subscriptions: {
         Row: {
-          id: string;
           account_id: string;
-          status: Database["public"]["Enums"]["subscription_status"] | null;
+          cancel_at: string | null;
+          cancel_at_period_end: boolean | null;
+          canceled_at: string | null;
+          created: string;
+          current_period_end: string;
+          current_period_start: string;
+          ended_at: string | null;
+          id: string;
           metadata: Json | null;
           price_id: string | null;
-          quantity: number | null;
-          cancel_at_period_end: boolean | null;
-          created: string;
-          current_period_start: string;
-          current_period_end: string;
-          ended_at: string | null;
-          cancel_at: string | null;
-          canceled_at: string | null;
-          trial_start: string | null;
-          trial_end: string | null;
           provider: Database["public"]["Enums"]["billing_providers"] | null;
+          quantity: number | null;
+          status: Database["public"]["Enums"]["subscription_status"] | null;
+          trial_end: string | null;
+          trial_start: string | null;
         };
         Insert: {
-          id: string;
           account_id: string;
-          status?: Database["public"]["Enums"]["subscription_status"] | null;
+          cancel_at?: string | null;
+          cancel_at_period_end?: boolean | null;
+          canceled_at?: string | null;
+          created?: string;
+          current_period_end?: string;
+          current_period_start?: string;
+          ended_at?: string | null;
+          id: string;
           metadata?: Json | null;
           price_id?: string | null;
-          quantity?: number | null;
-          cancel_at_period_end?: boolean | null;
-          created?: string;
-          current_period_start?: string;
-          current_period_end?: string;
-          ended_at?: string | null;
-          cancel_at?: string | null;
-          canceled_at?: string | null;
-          trial_start?: string | null;
-          trial_end?: string | null;
           provider?: Database["public"]["Enums"]["billing_providers"] | null;
+          quantity?: number | null;
+          status?: Database["public"]["Enums"]["subscription_status"] | null;
+          trial_end?: string | null;
+          trial_start?: string | null;
         };
         Update: {
-          id?: string;
           account_id?: string;
-          status?: Database["public"]["Enums"]["subscription_status"] | null;
+          cancel_at?: string | null;
+          cancel_at_period_end?: boolean | null;
+          canceled_at?: string | null;
+          created?: string;
+          current_period_end?: string;
+          current_period_start?: string;
+          ended_at?: string | null;
+          id?: string;
           metadata?: Json | null;
           price_id?: string | null;
-          quantity?: number | null;
-          cancel_at_period_end?: boolean | null;
-          created?: string;
-          current_period_start?: string;
-          current_period_end?: string;
-          ended_at?: string | null;
-          cancel_at?: string | null;
-          canceled_at?: string | null;
-          trial_start?: string | null;
-          trial_end?: string | null;
           provider?: Database["public"]["Enums"]["billing_providers"] | null;
+          quantity?: number | null;
+          status?: Database["public"]["Enums"]["subscription_status"] | null;
+          trial_end?: string | null;
+          trial_start?: string | null;
         };
       };
       invitations: {
         Row: {
-          id: string;
-          account_role: Database["public"]["Enums"]["account_role"];
           account_id: string;
-          token: string;
-          invited_by_user_id: string;
+          account_role: Database["public"]["Enums"]["account_role"];
           account_team_name: string | null;
-          updated_at: string | null;
           created_at: string | null;
+          id: string;
           invitation_type: Database["public"]["Enums"]["invitation_type"];
+          invited_by_user_id: string;
+          token: string;
+          updated_at: string | null;
         };
         Insert: {
-          id?: string;
-          account_role: Database["public"]["Enums"]["account_role"];
           account_id: string;
-          token?: string;
-          invited_by_user_id: string;
+          account_role: Database["public"]["Enums"]["account_role"];
           account_team_name?: string | null;
-          updated_at?: string | null;
           created_at?: string | null;
+          id?: string;
           invitation_type: Database["public"]["Enums"]["invitation_type"];
+          invited_by_user_id: string;
+          token?: string;
+          updated_at?: string | null;
         };
         Update: {
-          id?: string;
-          account_role?: Database["public"]["Enums"]["account_role"];
           account_id?: string;
-          token?: string;
-          invited_by_user_id?: string;
+          account_role?: Database["public"]["Enums"]["account_role"];
           account_team_name?: string | null;
-          updated_at?: string | null;
           created_at?: string | null;
+          id?: string;
           invitation_type?: Database["public"]["Enums"]["invitation_type"];
+          invited_by_user_id?: string;
+          token?: string;
+          updated_at?: string | null;
         };
       };
       profiles: {
         Row: {
+          created_at: string | null;
           id: string;
           name: string | null;
           updated_at: string | null;
-          created_at: string | null;
         };
         Insert: {
+          created_at?: string | null;
           id: string;
           name?: string | null;
           updated_at?: string | null;
-          created_at?: string | null;
         };
         Update: {
+          created_at?: string | null;
           id?: string;
           name?: string | null;
           updated_at?: string | null;
-          created_at?: string | null;
         };
       };
     };
@@ -312,6 +334,135 @@ export interface Database {
         | "incomplete_expired"
         | "past_due"
         | "unpaid";
+    };
+  };
+  storage: {
+    Tables: {
+      buckets: {
+        Row: {
+          created_at: string | null;
+          id: string;
+          name: string;
+          owner: string | null;
+          public: boolean | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          created_at?: string | null;
+          id: string;
+          name: string;
+          owner?: string | null;
+          public?: boolean | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          created_at?: string | null;
+          id?: string;
+          name?: string;
+          owner?: string | null;
+          public?: boolean | null;
+          updated_at?: string | null;
+        };
+      };
+      migrations: {
+        Row: {
+          executed_at: string | null;
+          hash: string;
+          id: number;
+          name: string;
+        };
+        Insert: {
+          executed_at?: string | null;
+          hash: string;
+          id: number;
+          name: string;
+        };
+        Update: {
+          executed_at?: string | null;
+          hash?: string;
+          id?: number;
+          name?: string;
+        };
+      };
+      objects: {
+        Row: {
+          bucket_id: string | null;
+          created_at: string | null;
+          id: string;
+          last_accessed_at: string | null;
+          metadata: Json | null;
+          name: string | null;
+          owner: string | null;
+          path_tokens: string[] | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          bucket_id?: string | null;
+          created_at?: string | null;
+          id?: string;
+          last_accessed_at?: string | null;
+          metadata?: Json | null;
+          name?: string | null;
+          owner?: string | null;
+          path_tokens?: string[] | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          bucket_id?: string | null;
+          created_at?: string | null;
+          id?: string;
+          last_accessed_at?: string | null;
+          metadata?: Json | null;
+          name?: string | null;
+          owner?: string | null;
+          path_tokens?: string[] | null;
+          updated_at?: string | null;
+        };
+      };
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      extension: {
+        Args: { name: string };
+        Returns: string;
+      };
+      filename: {
+        Args: { name: string };
+        Returns: string;
+      };
+      foldername: {
+        Args: { name: string };
+        Returns: string[];
+      };
+      get_size_by_bucket: {
+        Args: Record<PropertyKey, never>;
+        Returns: { size: number; bucket_id: string }[];
+      };
+      search: {
+        Args: {
+          prefix: string;
+          bucketname: string;
+          limits: number;
+          levels: number;
+          offsets: number;
+          search: string;
+          sortcolumn: string;
+          sortorder: string;
+        };
+        Returns: {
+          name: string;
+          id: string;
+          updated_at: string;
+          created_at: string;
+          last_accessed_at: string;
+          metadata: Json;
+        }[];
+      };
+    };
+    Enums: {
+      [_ in never]: never;
     };
   };
 }

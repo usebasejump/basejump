@@ -12,7 +12,7 @@ export default function useThemeStorage(defaultTheme?: string) {
 
   useEffect(() => {
     setTheme(value);
-  }, [value]);
+  }, [value, setTheme]);
 
   function setInternalTheme(theme: string) {
     setValue(theme);

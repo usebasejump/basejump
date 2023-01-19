@@ -19,7 +19,7 @@ export default function useTeamRole(
 ) {
   const user = useUser();
   const supabaseClient = useSupabaseClient<Database>();
-  const { data, isLoading } = useQuery<UseTeamRoleResponse, Error>(
+  const { data, isLoading } = useQuery(
     ["teamRole", accountId],
     async () => {
       const { data, error } = await supabaseClient

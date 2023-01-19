@@ -19,7 +19,7 @@ const DashboardProfileButton = ({ className }: Props) => {
 
   const menuButtonText = useMemo(
     () => profile?.name || t("profileButton.yourAccount"),
-    [profile]
+    [profile, t]
   );
   return (
     <div className={className}>

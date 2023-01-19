@@ -25,7 +25,7 @@ const DashboardLayout = ({ children }) => {
      */
     setIsSidebarOpen(false);
     refetchDashboardOverview();
-  }, [router.asPath]);
+  }, [router.asPath, refetchDashboardOverview]);
   const currentAccount = useMemo(() => {
     if (!accountId) {
       return data?.find((a) => a.personal_account);
