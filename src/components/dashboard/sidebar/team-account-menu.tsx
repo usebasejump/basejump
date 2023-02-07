@@ -32,7 +32,7 @@ const TeamAccountMenu = ({ currentAccount }: Props) => {
       });
     }
     return items;
-  }, [router.asPath, currentAccount]);
+  }, [currentAccount, router.pathname, t]);
   return (
     <Menu>
       {menu.map((item) => (

@@ -31,6 +31,7 @@ const Logo = ({ size = "lg", className }: Props) => {
           src={"/images/basejump-logo.png"}
           height={height}
           width={width}
+          alt="Basejump Logo"
         />
       </div>
       <h1

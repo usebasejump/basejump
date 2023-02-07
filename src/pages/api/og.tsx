@@ -5,7 +5,7 @@ export const config = {
   runtime: "experimental-edge",
 };
 
-export default function (req: NextRequest) {
+export default function SocialImage(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
 

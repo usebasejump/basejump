@@ -12,7 +12,7 @@ const ContentLayout = ({ children }) => {
 
   useEffect(() => {
     toggleSidebar(false);
-  }, [router.asPath]);
+  }, [router.asPath, toggleSidebar]);
   return (
     <Drawer
       side={<ContentHeaderMobile onClose={toggleSidebar} />}

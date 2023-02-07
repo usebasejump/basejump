@@ -148,10 +148,10 @@ const createOrRetrieveSubscription = async ({
 
   if (!error && data) {
     return {
-      id: data.id,
-      status: data.status,
-      billing_email: data.billing_email,
-      plan_name: data.plan_name,
+      id: data["id"],
+      status: data["status"],
+      billing_email: data["billing_email"],
+      plan_name: data["plan_name"],
     };
   }
 
@@ -179,21 +179,21 @@ const createOrRetrieveSubscription = async ({
     const { data: price } = await supabaseAdmin
       .from("billing_prices")
       .select("unit_amount")
-      .eq("id", config.stripe_default_account_price_id)
+      .eq("id", config["stripe_default_account_price_id"])
       .single();
 
     if (
       !price ||
-      (price.unit_amount > 0 && !config.stripe_default_trial_period_days)
+      (price.unit_amount > 0 && !config["stripe_default_trial_period_days"])
     ) {
       throw new Error(MANUAL_SUBSCRIPTION_REQUIRED);
     }
 
     const newSubscription = await stripe.subscriptions.create({
       customer: customerId,
-      items: [{ price: config.stripe_default_account_price_id }],
+      items: [{ price: config["stripe_default_account_price_id"] }],
       expand: ["latest_invoice.payment_intent"],
-      trial_period_days: config.stripe_default_trial_period_days,
+      trial_period_days: config["stripe_default_trial_period_days"],
     });
     // now we upsert the subscription record. Upsert b/c the stripe webhook also hits this and so there could b
     await upsertSubscriptionRecord(newSubscription, accountId);
@@ -221,29 +221,29 @@ const upsertSubscriptionRecord = async (
     quantity: subscription.items.data[0].quantity,
     cancel_at_period_end: subscription.cancel_at_period_end,
     cancel_at: subscription.cancel_at
-      ? fromUnixTime(subscription.cancel_at)
+      ? fromUnixTime(subscription.cancel_at).toISOString()
       : null,
     canceled_at: subscription.canceled_at
-      ? fromUnixTime(subscription.canceled_at)
+      ? fromUnixTime(subscription.canceled_at).toISOString()
       : null,
-    current_period_start: fromUnixTime(subscription.current_period_start),
-    current_period_end: fromUnixTime(subscription.current_period_end),
-    created: fromUnixTime(subscription.created),
+    current_period_start: fromUnixTime(subscription.current_period_start).toISOString(),
+    current_period_end: fromUnixTime(subscription.current_period_end).toISOString(),
+    created: fromUnixTime(subscription.created).toISOString(),
     ended_at: subscription.ended_at
-      ? fromUnixTime(subscription.ended_at)
+      ? fromUnixTime(subscription.ended_at).toISOString()
       : null,
     trial_start: subscription.trial_start
-      ? fromUnixTime(subscription.trial_start)
+      ? fromUnixTime(subscription.trial_start).toISOString()
       : null,
     trial_end: subscription.trial_end
-      ? fromUnixTime(subscription.trial_end)
+      ? fromUnixTime(subscription.trial_end).toISOString()
       : null,
     provider: BILLING_PROVIDERS.stripe,
   };
 
   const { error } = await supabaseAdmin
     .from("billing_subscriptions")
-    .upsert([subscriptionData]);
+    .upsert(subscriptionData);
   if (error) throw error;
   console.log(
     `Inserted/updated subscription [${subscription.id}] for account [${accountId}]`

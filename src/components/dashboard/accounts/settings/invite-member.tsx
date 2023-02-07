@@ -7,7 +7,7 @@ import { useState } from "react";
 import getInvitationUrl from "@/utils/get-invitation-url";
 import { useCopyToClipboard } from "react-use";
 import { ClipboardCopyIcon } from "@heroicons/react/outline";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { Database } from "@/types/supabase-types";
 
 type Props = {
@@ -54,6 +54,7 @@ const InviteMember = ({ accountId, onComplete }: Props) => {
   const [invitationLink, setInvitationLink] = useState<string | null>(null);
   const [state, copyToClipboard] = useCopyToClipboard();
   const { t } = useTranslation("dashboard");
+  const user = useUser();
   const supabaseClient = useSupabaseClient<Database>();
   const {
     register,
@@ -66,6 +67,7 @@ const InviteMember = ({ accountId, onComplete }: Props) => {
       .from("invitations")
       .insert({
         invitation_type: invitation.invitationType,
+        invited_by_user_id: user.id,
         account_id: accountId,
         account_role: invitation.userType,
       })

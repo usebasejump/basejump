@@ -34,7 +34,7 @@ const PersonalAccountMenu = ({ currentAccount }: Props) => {
       });
     }
     return internal;
-  }, [router.asPath, currentAccount]);
+  }, [router.asPath, currentAccount, t]);
   return (
     <Menu>
       {menu.map((item) => (

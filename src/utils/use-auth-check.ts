@@ -17,7 +17,7 @@ const useAuthCheck = (redirectedFrom?: string) => {
     if (session && redirectedFrom) {
       replace(redirectedFrom as string);
     }
-  }, [session, redirectedFrom]);
+  }, [session, redirectedFrom, replace]);
 };
 
 export default useAuthCheck;
