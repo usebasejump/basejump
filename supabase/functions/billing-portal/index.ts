@@ -11,14 +11,18 @@ import {
 } from "../_shared/stripe-billing-helpers.ts";
 import stripeClient from "../_shared/stripe-client.ts";
 import billingReturnUrl from "../_shared/billing-return-url.ts";
+import { corsHeaders } from "../_shared/cors-headers.ts";
 
 serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
   const { accountId, priceId }: { accountId: string; priceId?: string } =
     await req.json();
   if (!accountId) {
     return new Response(JSON.stringify({ error: "Missing account ID" }), {
       status: 400,
-      headers: { "Content-Type": "application/json" },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 
@@ -41,7 +45,7 @@ serve(async (req) => {
   if (!data || !user) {
     return new Response(JSON.stringify({ error: "Not found" }), {
       status: 404,
-      headers: { "Content-Type": "application/json" },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 
@@ -53,7 +57,7 @@ serve(async (req) => {
         billing_enabled: false,
       }),
       {
-        headers: { "Content-Type": "application/json" },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
   }
@@ -105,7 +109,7 @@ serve(async (req) => {
           billing_enabled: true,
         }),
         {
-          headers: { "Content-Type": "application/json" },
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         }
       );
     }
@@ -125,7 +129,7 @@ serve(async (req) => {
         billing_enabled: true,
       }),
       {
-        headers: { "Content-Type": "application/json" },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
   } catch (error) {

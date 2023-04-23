@@ -8,7 +8,6 @@ type UseAccountBillingStatusResponse = {
   status: string;
   is_primary_owner: boolean;
   billing_email?: string;
-  plan_name?: string;
   account_role: Database["public"]["Tables"]["account_user"]["Row"]["account_role"];
   billing_enabled: boolean;
 };
@@ -27,13 +26,17 @@ export default function useAccountBillingStatus(
   return useQuery<UseAccountBillingStatusResponse, Error>(
     ["accountBillingStatus", accountId],
     async () => {
-      const response = await fetch(
-        `/api/billing/status?accountId=${accountId}`
+      const { data, error } = await supabaseClient.functions.invoke(
+        "billing-status",
+        {
+          body: {
+            accountId,
+          },
+        }
       );
-      if (!response.ok) {
-        throw new Error(response.statusText);
+      if (error) {
+        throw new Error(error);
       }
-      const data = await response.json();
       return data;
     },
     {

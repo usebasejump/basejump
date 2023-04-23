@@ -3,6 +3,7 @@ import useTranslation from "next-translate/useTranslation";
 import useAccountBillingStatus from "@/utils/api/use-account-billing-status";
 import { Button } from "react-daisyui";
 import { useMutation } from "@tanstack/react-query";
+import { useSessionContext } from "@supabase/auth-helpers-react";
 
 type Props = {
   accountId: string;
@@ -12,18 +13,23 @@ const AccountSubscription = ({ accountId }: Props) => {
   const { t } = useTranslation("dashboard");
 
   const { data } = useAccountBillingStatus(accountId);
+  const { supabaseClient } = useSessionContext();
 
   const getSubscriptionUrl = useMutation(
     async () => {
-      const res = await fetch("/api/billing/portal-link", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ accountId }),
-      });
-      const { url } = await res.json();
-      return url;
+      const { data, error } = await supabaseClient.functions.invoke(
+        "billing-portal",
+        {
+          body: {
+            accountId,
+          },
+        }
+      );
+
+      if (error) {
+        throw new Error(error);
+      }
+      return data.billing_portal_url;
     },
     {
       onSuccess(url) {
@@ -49,7 +55,7 @@ const AccountSubscription = ({ accountId }: Props) => {
         >
           <SettingsCard.Body>
             <h2 className="h4">
-              {data?.plan_name} - {data?.status}
+              {t("accountSubscription.planName")} - {data?.status}
             </h2>
             <p>
               {t("accountSubscription.billingEmail", {

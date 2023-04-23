@@ -44,7 +44,7 @@ export default function useDashboardOverview(
     },
     {
       ...options,
-      enabled: !!user && !!supabaseClient,
+      enabled: !!user?.id && !!supabaseClient,
     }
   );
 }

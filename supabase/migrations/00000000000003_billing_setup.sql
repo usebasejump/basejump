@@ -27,79 +27,6 @@ create policy "Can only view own customer data." on billing_customers for
     using (account_id IN
            (SELECT basejump.get_accounts_for_current_user() AS get_accounts_for_current_user));
 
--- No policies as this is a private table that the user must not have access to.
-/**
- * PRODUCTS
- * Note: products are created and managed in Stripe and synced to our DB via Stripe webhooks.
- */
-create table billing_products
-(
-    -- Product ID from Stripe, e.g. prod_1234.
-    id          text primary key,
-    -- Whether the product is currently available for purchase.
-    active      boolean,
-    -- The product's name, meant to be displayable to the customer. Whenever this product is sold via a subscription, name will show up on associated invoice line item descriptions.
-    name        text,
-    -- The product's description, meant to be displayable to the customer. Use this field to optionally store a long form explanation of the product being sold for your own rendering purposes.
-    description text,
-    -- A URL of the product image in Stripe, meant to be displayable to the customer.
-    image       text,
-    -- Set of key-value pairs, used to store additional information about the object in a structured format.
-    metadata    jsonb,
-    provider    billing_providers
-);
-
-alter table
-    billing_products
-    enable row level security;
-
-create policy "Allow public read-only access." on billing_products for
-    select
-    using (true);
-
-/**
- * PRICES
- * Note: prices are created and managed in Stripe and synced to our DB via Stripe webhooks.
- */
-create type pricing_type as enum ('one_time', 'recurring');
-
-create type pricing_plan_interval as enum ('day', 'week', 'month', 'year');
-
-create table billing_prices
-(
-    -- Price ID from Stripe, e.g. price_1234.
-    id                 text primary key,
-    -- The ID of the prduct that this price belongs to.
-    billing_product_id text references billing_products,
-    -- Whether the price can be used for new purchases.
-    active             boolean,
-    -- A brief description of the price.
-    description        text,
-    -- The unit amount as a positive integer in the smallest currency unit (e.g., 100 cents for US$1.00 or 100 for ¥100, a zero-decimal currency).
-    unit_amount        bigint,
-    -- Three-letter ISO currency code, in lowercase.
-    currency           text check (char_length(currency) = 3),
-    -- One of `one_time` or `recurring` depending on whether the price is for a one-time purchase or a recurring (subscription) purchase.
-    type               pricing_type,
-    -- The frequency at which a subscription is billed. One of `day`, `week`, `month` or `year`.
-    interval           pricing_plan_interval,
-    -- The number of intervals (specified in the `interval` attribute) between subscription billings. For example, `interval=month` and `interval_count=3` bills every 3 months.
-    interval_count     integer,
-    -- Default number of trial days when subscribing a customer to this price using [`trial_from_plan=true`](https://stripe.com/docs/api#create_subscription-trial_from_plan).
-    trial_period_days  integer,
-    -- Set of key-value pairs, used to store additional information about the object in a structured format.
-    metadata           jsonb,
-    provider           billing_providers
-);
-
-alter table
-    billing_prices
-    enable row level security;
-
-create policy "Allow public read-only access." on billing_prices for
-    select
-    using (true);
-
 /**
  * SUBSCRIPTIONS
  * Note: subscriptions are created and managed in Stripe and synced to our DB via Stripe webhooks.
@@ -124,7 +51,7 @@ create table billing_subscriptions
     -- Set of key-value pairs, used to store additional information about the object in a structured format.
     metadata             jsonb,
     -- ID of the price that created this subscription.
-    price_id             text references billing_prices,
+    price_id             text,
     -- Quantity multiplied by the unit amount of the price creates the amount of the subscription. Can be used to charge multiple seats.
     quantity             integer,
     -- If true the subscription has been canceled by the user and will be deleted at the end of the billing period.
@@ -195,4 +122,4 @@ alter table basejump.config
 alter table basejump.config
     add column stripe_default_trial_period_days integer default 30;
 alter table basejump.config
-    add column stripe_default_account_price_id text references billing_prices;
+    add column stripe_default_account_price_id text;

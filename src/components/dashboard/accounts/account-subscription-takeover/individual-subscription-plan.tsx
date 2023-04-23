@@ -5,6 +5,7 @@ import useTranslation from "next-translate/useTranslation";
 import { useMutation } from "@tanstack/react-query";
 import { UseDashboardOverviewResponse } from "@/utils/api/use-dashboard-overview";
 import { toast } from "react-toastify";
+import { useSessionContext } from "@supabase/auth-helpers-react";
 
 type Props = {
   plan: UseAccountBillingOptionsResponse[0];
@@ -13,30 +14,27 @@ type Props = {
 const IndividualSubscriptionPlan = ({ plan, currentAccount }: Props) => {
   const router = useRouter();
   const { t } = useTranslation("dashboard");
+  const { supabaseClient } = useSessionContext();
 
   const setupCheckoutLink = useMutation(
     async () => {
-      const res = await fetch("/api/billing/setup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          accountId: currentAccount?.account_id,
-          priceId: plan.price_id,
-        }),
-      });
+      const { data, error } = await supabaseClient.functions.invoke(
+        "billing-portal",
+        {
+          body: {
+            accountId: currentAccount?.account_id,
+            priceId: plan.price_id,
+          },
+        }
+      );
 
-      const jsonResponse = await res.json();
-
-      if (!res.ok) {
-        throw new Error(jsonResponse.error);
+      if (error) {
+        throw new Error(error);
       }
-      return jsonResponse.url;
+      return data.billing_portal_url;
     },
     {
       onSuccess(url) {
-        console.log("whoooop", url);
         if (!url) return;
         window.location.href = url;
       },

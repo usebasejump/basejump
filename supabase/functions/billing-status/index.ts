@@ -6,8 +6,12 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import supabaseUserClient from "../_shared/supabase-user-client.ts";
 import supabaseAdmin from "../_shared/supabase-admin-client.ts";
 import { createOrRetrieveSubscription } from "../_shared/stripe-billing-helpers.ts";
+import { corsHeaders } from "../_shared/cors-headers.ts";
 
 serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
   const { accountId }: { accountId: string } = await req.json();
   if (!accountId) {
     return new Response(JSON.stringify({ error: "Missing acocunt ID" }), {
@@ -35,7 +39,7 @@ serve(async (req) => {
   if (!data || !user) {
     return new Response(JSON.stringify({ error: "Not found" }), {
       status: 404,
-      headers: { "Content-Type": "application/json" },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 
@@ -52,7 +56,7 @@ serve(async (req) => {
         billing_enabled: false,
       }),
       {
-        headers: { "Content-Type": "application/json" },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
   }
@@ -77,7 +81,7 @@ serve(async (req) => {
           billing_enabled: true,
         }),
         {
-          headers: { "Content-Type": "application/json" },
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         }
       );
     }
@@ -95,7 +99,7 @@ serve(async (req) => {
         billing_enabled: true,
       }),
       {
-        headers: { "Content-Type": "application/json" },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
   } catch (error) {

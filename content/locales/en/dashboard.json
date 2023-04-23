@@ -126,6 +126,7 @@
   },
   "accountSubscription": {
     "title": "Your Plan",
+    "planName": "Current Plan",
     "description": "You can upgrade or downgrade your plan at any time",
     "updatePlan": "Update plan settings",
     "billingEmail": "Your billing email is {{email}}",
