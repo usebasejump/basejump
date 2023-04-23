@@ -166,11 +166,9 @@ DECLARE
 BEGIN
     select s.id,
            s.status,
-           c.email as billing_email,
-           p.name  as plan_name
+           c.customer_id,
+           c.email as billing_email
     from billing_subscriptions s
-             join billing_prices pr on pr.id = s.price_id
-             join billing_products p on p.id = pr.billing_product_id
              join billing_customers c on c.account_id = s.account_id
     where s.account_id = lookup_account_id
     order by s.created desc
