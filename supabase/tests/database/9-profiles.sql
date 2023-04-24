@@ -7,8 +7,8 @@ update basejump.config
 set enable_team_accounts = true;
 
 -- setup the users we need for testing
-select tests.create_supabase_user('test1');
-select tests.create_supabase_user('test2');
+select tests.create_supabase_user('test1', 'test@test.com');
+select tests.create_supabase_user('test2', 'test2@test.com');
 
 
 --- start acting as an authenticated user

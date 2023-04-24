@@ -10,14 +10,6 @@ set enable_team_accounts = true;
 select tests.create_supabase_user('primary');
 select tests.create_supabase_user('owner');
 select tests.create_supabase_user('member');
---- we insert a user into auth.users and return the id into user_id to use
--- INSERT INTO auth.users (email, id)
--- VALUES ('primary@test.com', tests.get_supabase_uid('primary'));
--- INSERT INTO auth.users (email, id)
--- VALUES ('owner@test.com', '5d94cce7-054f-4d01-a9ec-51e7b7ba8d59');
--- '5d94cce7-054f-4d01-a9ec-51e7b7ba8d59'
--- INSERT INTO auth.users (email, id)
--- VALUES ('member@test.com', tests.get_supabase_uid('member'));
 
 --- start acting as an authenticated user
 select tests.authenticate_as('primary');

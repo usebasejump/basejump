@@ -11,11 +11,6 @@ set enable_team_accounts = true;
 select tests.create_supabase_user('test1');
 select tests.create_supabase_user('invited');
 
--- INSERT INTO auth.users (email, id)
--- VALUES ('test@test.com', '1009e39a-fa61-4aab-a762-e7b1f3b014f3');
--- INSERT INTO auth.users (email, id)
--- VALUES ('invited_test@test.com', tests.get_supabase_uid('invited'));
-
 --- start acting as an authenticated user
 select tests.authenticate_as('test1');
 
