@@ -11,10 +11,9 @@ set enable_personal_accounts = true;
 
 --- we insert a user into auth.users and return the id into user_id to use
 
-select tests.create_supabase_user('test1') as test1_id
-\gset;
-select tests.create_supabase_user('test2') as test2_id
-\gset;
+select tests.create_supabase_user('test1');
+
+select tests.create_supabase_user('test2');
 
 ------------
 --- Primary Owner
@@ -24,14 +23,14 @@ select tests.authenticate_as('test1');
 -- should create the personal account automatically
 SELECT row_eq(
                $$ select primary_owner_user_id, personal_account from accounts order by created_at desc limit 1 $$,
-               ROW (:test1_id::uuid, true),
+               ROW (tests.get_supabase_uid('test1'), true),
                'Inserting a user should create a personal account when personal accounts are enabled'
            );
 
 -- should add that user to the account as an owner
 SELECT row_eq(
                $$ select user_id, account_id, account_role from account_user $$,
-               ROW (test1_id::uuid, (select id from accounts where personal_account = true), 'owner'::account_role),
+               ROW (tests.get_supabase_uid('test1'), (select id from accounts where personal_account = true), 'owner'::account_role),
                'Inserting a user should also add an account_user for the created account'
            );
 
@@ -55,10 +54,10 @@ SELECT throws_ok(
 -- cannot delete the primary_owner_user_id from the account_user table
 select row_eq(
                $$
-    	delete from account_user where user_id = :test1_id::uuid;
-    	select user_id from account_user where user_id = :test1_id::uuid;
+    	delete from account_user where user_id = tests.get_supabase_uid('test1');
+    	select user_id from account_user where user_id = tests.get_supabase_uid('test1');
     $$,
-               ROW (:test1_id::uuid),
+               ROW (tests.get_supabase_uid('test1')),
                'Should not be able to delete the primary_owner_user_id from the account_user table'
            );
 
@@ -101,7 +100,7 @@ select tests.authenticate_as('test2');
 
 -- non members / owner cannot update team name
 SELECT results_ne(
-               $$ update accounts set team_name = 'test' where primary_owner_user_id = :test1_id returning 1$$,
+               $$ update accounts set team_name = 'test' where primary_owner_user_id = tests.get_supabase_uid('test1') returning 1$$,
                $$ select 1 $$
            );
 
@@ -109,7 +108,7 @@ SELECT results_ne(
 SELECT is(
                (select count(*)::int
                 from accounts
-                where primary_owner_user_id <> :test2_id),
+                where primary_owner_user_id <> tests.get_supabase_uid('test2')),
                0,
                'Non members / owner should receive no results from accounts'
            );

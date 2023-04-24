@@ -1,26 +1,27 @@
 BEGIN;
+CREATE EXTENSION "basejump-supabase_test_helpers";
 
 select plan(1);
 
 -- make sure we're setup for enabling personal accounts
-update basejump.config set enable_team_accounts = false;
+update basejump.config
+set enable_team_accounts = false;
 
 --- we insert a user into auth.users and return the id into user_id to use
-INSERT INTO auth.users (email, id) VALUES ('test@test.com', '1009e39a-fa61-4aab-a762-e7b1f3b014f3');
+select tests.create_supabase_user('test1');
 
 ------------
 --- Primary Owner
 ------------
-set local search_path = core, public, extensions;
-set local role authenticated;
-set local "request.jwt.claims" to '{ "sub": "1009e39a-fa61-4aab-a762-e7b1f3b014f3", "email": "test@test.com" }';
+select tests.authenticate_as('test1');
 
 -- check to see if we can create an accoiunt
 select throws_ok(
-        $$ insert into accounts (team_name, personal_account) values ('test team', false) $$,
-        'new row violates row-level security policy for table "accounts"'
-    );
+               $$ insert into accounts (team_name, personal_account) values ('test team', false) $$,
+               'new row violates row-level security policy for table "accounts"'
+           );
 
-SELECT * FROM finish();
+SELECT *
+FROM finish();
 
 ROLLBACK;
