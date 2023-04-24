@@ -2,6 +2,7 @@
  * We want to enable pgtap for testing
  */
 create extension if not exists pgtap with schema extensions;
+select dbdev.install('basejump-supabase_test_helpers');
 
 /**
   * By default we want to revoke execute from public
