@@ -1,5 +1,10 @@
 # Basejump SaaS starter for Supabase
 
+Basejump is an open source starter for Supabase. It provides personal accounts, shared team accounts, billing
+subscriptions with Stripe and a dashboard template.
+
+[Learn more at usebasejump.com](https://usebasejump.com).
+
 ## Installation
 
 ```bash
@@ -39,4 +44,15 @@ Basejump uses NextJS built in internationalization, and adds `next-translate` fo
 
 * [NextJS Internationalization](https://nextjs.org/docs/basic-features/i18n)
 * [next-translate](https://github.com/aralroca/next-translate)
+
+## Thanks & Credits
+
+<p>Hosting has generously been provided by Vercel</p>
+<a
+href="https://vercel.com?utm_source=basejump&utm_campaign=oss"
+target="_blank"
+rel="noopener noreferrer"
+>
+    <img src="public/images/vercel-logo.svg" alt="Powered by Vercel" />
+</a>
 
