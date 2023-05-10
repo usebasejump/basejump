@@ -23,7 +23,7 @@ select ok((basejump.get_config() ->> 'stripe_default_trial_period_days')::int = 
        'Basejump config should have a default trial period';
 
 
-select function_returns('basejump', 'generate_token', Array ['integer'], 'bytea',
+select function_returns('basejump', 'generate_token', Array ['integer'], 'text',
                         'Basejump generate_token function should exist');
 select function_returns('basejump', 'trigger_set_timestamps', 'trigger',
                         'Basejump trigger_set_timestamps function should exist');
