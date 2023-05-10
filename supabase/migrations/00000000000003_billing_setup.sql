@@ -7,15 +7,15 @@ create type billing_providers as enum ('stripe');
 create table billing_customers
 (
     -- UUID from auth.users
-    account_id  uuid references accounts not null primary key,
+    account_id uuid references accounts not null,
     -- The user's customer ID in Stripe. User must not be able to update this.
-    customer_id text,
+    id         text primary key,
     -- The email address the customer wants to use for invoicing
-    email       text,
+    email      text,
     -- The active status of a customer
-    active      boolean,
+    active     boolean,
     -- The billing provider the customer is using
-    provider    billing_providers
+    provider   billing_providers
 );
 
 alter table
@@ -46,6 +46,7 @@ create table billing_subscriptions
     -- Subscription ID from Stripe, e.g. sub_1234.
     id                   text primary key,
     account_id           uuid references accounts                                        not null,
+    billing_customer_id  text references billing_customers (id)                          not null,
     -- The status of the subscription object, one of subscription_status type above.
     status               subscription_status,
     -- Set of key-value pairs, used to store additional information about the object in a structured format.
@@ -93,7 +94,7 @@ DECLARE
 BEGIN
     select s.id,
            s.status,
-           c.customer_id,
+           c.id    as billing_customer_id,
            c.email as billing_email
     from billing_subscriptions s
              join billing_customers c on c.account_id = s.account_id
