@@ -26,31 +26,13 @@ export default function useAccountBillingOptions(
   return useQuery<UseAccountBillingOptionsResponse, Error>(
     ["accountBillingOptions", accountId],
     async () => {
-      const { data, error } = await supabaseClient
-        .from("billing_products")
-        .select(
-          "name, description, billing_prices (currency, unit_amount, id, interval, type)"
-        );
+      const { data, error } = await supabaseClient.functions.invoke(
+        "billing-plans"
+      );
 
       handleSupabaseErrors(data, error);
 
-      const results = [];
-
-      data?.forEach((product) => {
-        // @ts-ignore
-        product.billing_prices?.forEach((price) => {
-          results.push({
-            product_name: product.name,
-            product_description: product.description,
-            currency: price.currency,
-            price: price.unit_amount,
-            price_id: price.id,
-            interval: price.type === "one_time" ? "one_time" : price.interval,
-          });
-        });
-      });
-
-      return results;
+      return data;
     },
     {
       ...options,

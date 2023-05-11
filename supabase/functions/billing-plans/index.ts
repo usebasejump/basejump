@@ -5,6 +5,16 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { corsHeaders } from "../_shared/cors-headers.ts";
 import stripeClient from "../_shared/stripe-client.ts";
+import Stripe from "https://esm.sh/stripe@11.1.0?target=deno";
+
+type PRICE = {
+  product_name: string;
+  product_description: string;
+  currency: string;
+  price: number;
+  price_id: string;
+  interval: string;
+};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -15,19 +25,19 @@ serve(async (req) => {
     expand: ["data.product"],
   });
 
-  console.log("prices", prices);
-  const { name } = await req.json();
-  const data = {
-    message: `Hello ${name}!`,
-  };
+  const cleanedPrices: PRICE[] = prices?.data?.map((price: Stripe.Price) => {
+    return {
+      product_name: price.product.name,
+      product_description: price.product.description,
+      currency: price.currency,
+      price: price.unit_amount,
+      price_id: price.id,
+      interval:
+        price.type === "one_time" ? "one_time" : price.recurring?.interval,
+    };
+  });
 
-  return new Response(JSON.stringify(prices), {
+  return new Response(JSON.stringify(cleanedPrices), {
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 });
-
-// To invoke:
-// curl -i --location --request POST 'http://localhost:54321/functions/v1/billing-status' \
-//   --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
-//   --header 'Content-Type: application/json' \
-//   --data '{"name":"Functions"}'
