@@ -106,6 +106,26 @@ BEGIN
 END
 $$ LANGUAGE plpgsql;
 
+
+/**
+  * Automatic handling for maintaining created_by and updated_by timestamps
+  * on tables
+ */
+CREATE OR REPLACE FUNCTION basejump.trigger_set_user_tracking()
+    RETURNS TRIGGER AS
+$$
+BEGIN
+    if TG_OP = 'INSERT' then
+        NEW.created_by = auth.uid();
+        NEW.updated_by = auth.uid();
+    else
+        NEW.updated_by = auth.uid();
+        NEW.created_by = OLD.created_by;
+    end if;
+    RETURN NEW;
+END
+$$ LANGUAGE plpgsql;
+
 /**
   Generates a secure token - used internally for invitation tokens
   but could be used elsewhere.  Check out the invitations table for more info on
@@ -122,13 +142,3 @@ select regexp_replace(replace(
 $$ LANGUAGE sql;
 
 grant execute on function basejump.generate_token(int) to authenticated;
-
--- TODO: is this needed?
--- CREATE OR REPLACE FUNCTION trigger_id_protection()
---     RETURNS TRIGGER AS
--- $$
--- BEGIN
---     NEW.id = OLD.id;
---     RETURN NEW;
--- END
--- $$ LANGUAGE plpgsql;

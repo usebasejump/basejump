@@ -17,7 +17,7 @@ select tests.authenticate_as('test1');
 
 -- check to see if we can create an accoiunt
 select throws_ok(
-               $$ insert into accounts (team_name, personal_account) values ('test team', false) $$,
+               $$ insert into basejump.accounts (team_name, personal_account) values ('test team', false) $$,
                'new row violates row-level security policy for table "accounts"'
            );
 

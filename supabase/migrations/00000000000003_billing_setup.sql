@@ -1,13 +1,13 @@
-create type billing_providers as enum ('stripe');
+create type basejump.billing_providers as enum ('stripe');
 
 /**
  * CUSTOMERS
  * Note: this is a private table that contains a mapping of user IDs to Strip customer IDs.
  */
-create table billing_customers
+create table basejump.billing_customers
 (
     -- UUID from auth.users
-    account_id uuid references accounts not null,
+    account_id uuid references basejump.accounts not null,
     -- The user's customer ID in Stripe. User must not be able to update this.
     id         text primary key,
     -- The email address the customer wants to use for invoicing
@@ -15,23 +15,28 @@ create table billing_customers
     -- The active status of a customer
     active     boolean,
     -- The billing provider the customer is using
-    provider   billing_providers
+    provider   basejump.billing_providers
 );
 
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE basejump.billing_customers TO service_role;
+GRANT SELECT ON TABLE basejump.billing_customers TO authenticated;
+
+
+
 alter table
-    billing_customers
+    basejump.billing_customers
     enable row level security;
 
-create policy "Can only view own customer data." on billing_customers for
+create policy "Can only view own customer data." on basejump.billing_customers for
     select
     using (account_id IN
-           (SELECT basejump.get_accounts_for_current_user() AS get_accounts_for_current_user));
+           (SELECT basejump.get_accounts_with_current_user_role() AS get_accounts_with_current_user_role));
 
 /**
  * SUBSCRIPTIONS
  * Note: subscriptions are created and managed in Stripe and synced to our DB via Stripe webhooks.
  */
-create type subscription_status as enum (
+create type basejump.subscription_status as enum (
     'trialing',
     'active',
     'canceled',
@@ -41,14 +46,14 @@ create type subscription_status as enum (
     'unpaid'
     );
 
-create table billing_subscriptions
+create table basejump.billing_subscriptions
 (
     -- Subscription ID from Stripe, e.g. sub_1234.
     id                   text primary key,
-    account_id           uuid references accounts                                        not null,
-    billing_customer_id  text references billing_customers (id)                          not null,
+    account_id           uuid references basejump.accounts                               not null,
+    billing_customer_id  text references basejump.billing_customers (id)                 not null,
     -- The status of the subscription object, one of subscription_status type above.
-    status               subscription_status,
+    status               basejump.subscription_status,
     -- Set of key-value pairs, used to store additional information about the object in a structured format.
     metadata             jsonb,
     -- ID of the price that created this subscription.
@@ -73,17 +78,20 @@ create table billing_subscriptions
     trial_start          timestamp with time zone default timezone('utc' :: text, now()),
     -- If the subscription has a trial, the end of that trial.
     trial_end            timestamp with time zone default timezone('utc' :: text, now()),
-    provider             billing_providers
+    provider             basejump.billing_providers
 );
 
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE basejump.billing_subscriptions TO service_role;
+GRANT SELECT ON TABLE basejump.billing_subscriptions TO authenticated;
+
 alter table
-    billing_subscriptions
+    basejump.billing_subscriptions
     enable row level security;
 
-create policy "Can only view own subs data." on billing_subscriptions for
+create policy "Can only view own subs data." on basejump.billing_subscriptions for
     select
     using (account_id IN
-           (SELECT basejump.get_accounts_for_current_user() AS get_accounts_for_current_user));
+           (SELECT basejump.get_accounts_with_current_user_role() AS get_accounts_with_current_user_role));
 
 
 CREATE OR REPLACE FUNCTION public.get_account_billing_status(lookup_account_id uuid)
@@ -96,8 +104,8 @@ BEGIN
            s.status,
            c.id    as billing_customer_id,
            c.email as billing_email
-    from billing_subscriptions s
-             join billing_customers c on c.account_id = s.account_id
+    from basejump.billing_subscriptions s
+             join basejump.billing_customers c on c.account_id = s.account_id
     where s.account_id = lookup_account_id
     order by s.created desc
     limit 1
@@ -119,7 +127,7 @@ grant execute on function public.get_account_billing_status(uuid) to authenticat
 alter table basejump.config
     add column enable_account_billing boolean not null default true;
 alter table basejump.config
-    add column billing_provider billing_providers default 'stripe';
+    add column billing_provider basejump.billing_providers default 'stripe';
 alter table basejump.config
     add column stripe_default_trial_period_days integer default 30;
 alter table basejump.config

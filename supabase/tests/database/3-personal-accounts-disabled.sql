@@ -13,7 +13,7 @@ select tests.create_supabase_user('test1');
 
 -- should create the personal account automatically
 SELECT is_empty(
-               $$ select * from accounts $$,
+               $$ select * from basejump.accounts $$,
                'No personal account should be created when personal acounts are disabled'
            );
 

@@ -14,12 +14,12 @@ select tests.create_supabase_user('invited');
 --- start acting as an authenticated user
 select tests.authenticate_as('test1');
 
-insert into accounts (id, team_name, personal_account)
+insert into basejump.accounts (id, team_name, personal_account)
 values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'test', false);
 
 -- create invitation
 SELECT row_eq(
-               $$ insert into invitations (account_id, account_role, token, invitation_type) values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'owner', 'test_owner_single_use_token', 'one-time') returning 1 $$,
+               $$ insert into basejump.invitations (account_id, account_role, token, invitation_type) values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'owner', 'test_owner_single_use_token', 'one-time') returning 1 $$,
                ROW (1),
                'Owners should be able to add invitations for new owners'
            );
@@ -29,7 +29,7 @@ select tests.authenticate_as('invited');
 
 -- should NOT be able to lookup invitations directly
 SELECT is(
-               (select count(*)::int from invitations),
+               (select count(*)::int from basejump.invitations),
                0,
                'Cannot load invitations directly'
            );
@@ -66,23 +66,24 @@ SELECT lives_ok(
                'Should be able to accept an invitation'
            );
 
--- should be able to get the team from get_accounts_for_current_user
+-- should be able to get the team from get_accounts_with_current_user_role
 SELECT ok(
-               (select 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' IN (select basejump.get_accounts_for_current_user())),
+               (select 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' IN
+                       (select basejump.get_accounts_with_current_user_role())),
                'Should now be a part of the team'
            );
 
--- should be able to get the team from get_accounts_for_current_user
+-- should be able to get the team from get_accounts_with_current_user_role
 SELECT ok(
                (select 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' IN
-                       (select basejump.get_accounts_for_current_user('owner'))),
+                       (select basejump.get_accounts_with_current_user_role('owner'))),
                'Should now be a part of the team as an owner'
            );
 
 -- should have the correct role on the team
 SELECT row_eq(
-               $$ select account_role from account_user where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f'::uuid and user_id = tests.get_supabase_uid('invited') $$,
-               ROW ('owner'::account_role),
+               $$ select account_role from basejump.account_user where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f'::uuid and user_id = tests.get_supabase_uid('invited') $$,
+               ROW ('owner'::basejump.account_role),
                'Should have the correct account role after accepting an invitation'
            );
 

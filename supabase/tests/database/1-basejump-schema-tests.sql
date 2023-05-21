@@ -1,11 +1,17 @@
 BEGIN;
 CREATE EXTENSION "basejump-supabase_test_helpers";
 
-select plan(22);
+select plan(28);
 
 select has_schema('basejump', 'Basejump schema should exist');
 
 select has_table('basejump', 'config', 'Basejump config table should exist');
+select has_table('basejump', 'accounts', 'Basejump accounts table should exist');
+select has_table('basejump', 'account_user', 'Basejump account_users table should exist');
+select has_table('basejump', 'invitations', 'Basejump invitations table should exist');
+select has_table('public', 'profiles', 'Public profiles table should exist');
+select has_table('basejump', 'billing_customers', 'Basejump billing_customers table should exist');
+select has_table('basejump', 'billing_subscriptions', 'Basejump billing_subscriptions table should exist');
 
 select tests.rls_enabled('public');
 

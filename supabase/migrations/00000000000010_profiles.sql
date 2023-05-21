@@ -15,13 +15,13 @@ create table public.profiles
     -- when the profile was created
     updated_at timestamp with time zone,
     -- when the profile was last updated
-    created_at timestamp with time zone,
+    created_at timestamp with time zone
     primary key (id)
 );
 
 -- Create the relationship with auth.users so we can do a join query
 -- using postgREST
-ALTER TABLE public.account_user
+ALTER TABLE basejump.account_user
     ADD CONSTRAINT account_user_profiles_fkey FOREIGN KEY (user_id)
         REFERENCES profiles (id) MATCH SIMPLE
         ON UPDATE NO ACTION
@@ -33,7 +33,6 @@ CREATE TRIGGER set_profiles_timestamp
     ON public.profiles
     FOR EACH ROW
 EXECUTE FUNCTION basejump.trigger_set_timestamps();
-
 
 alter table public.profiles
     enable row level security;
@@ -51,9 +50,9 @@ create policy "Users can view their teammates profiles" on profiles
     for select
     to authenticated
     using (
-        id IN (SELECT account_user.user_id
-               FROM account_user
-               WHERE (account_user.user_id <> auth.uid()))
+        id IN (SELECT user_id
+               FROM basejump.account_user
+               WHERE (user_id <> auth.uid()))
     );
 
 
@@ -95,12 +94,12 @@ begin
     -- only create the first account if private accounts is enabled
     if basejump.is_set('enable_personal_accounts') = true then
         -- create the new users's personal account
-        insert into public.accounts (primary_owner_user_id, personal_account)
+        insert into basejump.accounts (primary_owner_user_id, personal_account)
         values (NEW.id, true)
         returning id into first_account_id;
 
         -- add them to the account_user table so they can act on it
-        insert into public.account_user (account_id, user_id, account_role)
+        insert into basejump.account_user (account_id, user_id, account_role)
         values (first_account_id, NEW.id, 'owner');
     end if;
     return NEW;

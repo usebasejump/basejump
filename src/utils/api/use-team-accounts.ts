@@ -18,15 +18,14 @@ export default function useTeamAccounts(
       const { data, error } = await supabaseClient
         .from("account_user")
         .select("account_role, account:account_id (*)")
-        .eq("user_id", user?.id);
+        .eq("user_id", user?.id)
+        .eq("account.personal_account", false);
       handleSupabaseErrors(data, error);
 
-      return data
-        ?.filter((a) => a.account?.personal_account === false)
-        ?.map(({ account_role, account }) => ({
-          ...account,
-          account_role,
-        }));
+      return data?.map(({ account_role, account }) => ({
+        ...account,
+        account_role,
+      }));
     },
     {
       ...options,

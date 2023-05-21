@@ -42,13 +42,13 @@ select results_ne(
            );
 
 -- Create a new account so you can start sharing profiles
-insert into accounts (id, team_name, personal_account)
+insert into basejump.accounts (id, team_name, personal_account)
 values ('eb3a0306-7331-4c42-a580-970e7ba6a11d', 'test team', false);
 
 -- set role to postgres, and then insert an account_user for the second user
 select tests.clear_authentication();
 set local role postgres;
-insert into account_user (account_id, user_id, account_role)
+insert into basejump.account_user (account_id, user_id, account_role)
 values ('eb3a0306-7331-4c42-a580-970e7ba6a11d', tests.get_supabase_uid('test2'), 'owner');
 
 -- back to authenticated user
