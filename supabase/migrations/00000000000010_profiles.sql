@@ -15,7 +15,7 @@ create table public.profiles
     -- when the profile was created
     updated_at timestamp with time zone,
     -- when the profile was last updated
-    created_at timestamp with time zone
+    created_at timestamp with time zone,
     primary key (id)
 );
 
