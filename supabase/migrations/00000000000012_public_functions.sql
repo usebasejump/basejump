@@ -2,11 +2,80 @@
   * Public Functions
   * Each of these functions exists in the public name space because they are accessible
   * via the API.  it is the primary way developers can interact with Basejump accounts
+  * TODO: Add support for avatars to accounts/profiles.  Add getter/setter rpc functions for basejump.profiles
  */
 
 /**
-  * Returns the current user's role within a given account_id
+  * Returns the current user's account
  */
+create or replace function public.get_profile(user_id uuid default null)
+    returns jsonb
+    language plpgsql
+as
+$$
+declare
+    response jsonb;
+begin
+    select jsonb_build_object(
+                   'user_id', p.id,
+                   'name', p.name,
+                   'metadata', p.public_metadata,
+                   'created_at', p.created_at,
+                   'updated_at', p.updated_at
+               )
+    into response
+    from basejump.profiles p
+    where p.id = coalesce(get_profile.user_id, auth.uid());
+
+    if response is null then
+        raise exception 'Not found';
+    end if;
+
+    return response;
+end;
+$$;
+
+grant execute on function public.get_profile(uuid) to authenticated, service_role;
+
+/**
+  Update a user's profile
+ */
+
+create or replace function public.update_profile(user_id uuid default auth.uid(), name text default null,
+                                                 public_metadata jsonb default null,
+                                                 replace_metadata boolean default false)
+    returns jsonb
+    language plpgsql
+as
+$$
+declare
+    profile_updated uuid;
+begin
+    -- if the user is not able to update the profile, throw an error
+    update basejump.profiles p
+    set name            = coalesce(update_profile.name, p.name),
+        public_metadata = case
+                              when update_profile.public_metadata is null then p.public_metadata -- do nothing
+                              when p.public_metadata IS NULL then update_profile.public_metadata -- set metadata
+                              when update_profile.replace_metadata
+                                  then update_profile.public_metadata -- replace metadata
+                              else p.public_metadata || update_profile.public_metadata end -- merge metadata
+    where p.id = coalesce(update_profile.user_id, auth.uid())
+    returning p.id into profile_updated;
+
+    if profile_updated is null then
+        raise exception 'Unauthorized';
+    end if;
+
+    return public.get_profile(coalesce(update_profile.user_id, auth.uid()));
+end;
+$$;
+
+grant execute on function public.update_profile(uuid, text, jsonb, boolean) to authenticated, service_role;
+
+/**
+ * Returns the current user's role within a given account_id
+*/
 create or replace function public.current_user_account_role(lookup_account_id uuid)
     returns jsonb
     language plpgsql
@@ -37,6 +106,120 @@ END
 $$;
 
 grant execute on function public.current_user_account_role(uuid) to authenticated;
+
+/**
+  * Returns the current billing status for an account
+  * TODO: Add tests that confirm this raises an error if the user is not a member of the account
+ */
+CREATE OR REPLACE FUNCTION public.get_account_billing_status(lookup_account_id uuid)
+    RETURNS jsonb
+    security definer
+    set search_path = public, basejump
+AS
+$$
+DECLARE
+    result          jsonb;
+    role_result     jsonb;
+    billing_enabled jsonb;
+BEGIN
+    select public.current_user_account_role(lookup_account_id) into role_result;
+
+    -- pull billing status directly because otherwise we won't be able to load it since there may not be a subscription
+    select jsonb_build_object(
+                   'billing_enabled', config.enable_account_billing
+               )
+    into billing_enabled
+    from basejump.config config
+    limit 1;
+
+    if billing_enabled ->> 'billing_enabled' = 'false' then
+        return role_result || billing_enabled;
+    end if;
+
+    select jsonb_build_object(
+                   'account_id', s.account_id,
+                   'billing_subscription_id', s.id,
+                   'billing_status', s.status,
+                   'billing_customer_id', c.id,
+                   'billing_provider', config.billing_provider,
+                   'billing_default_plan_id', config.default_account_plan_id,
+                   'billing_default_trial_days', config.default_trial_period_days,
+                   'billing_email',
+                   coalesce(c.email, u.email) -- if we don't have a customer email, use the user's email as a fallback
+               )
+    into result
+    from basejump.accounts a
+             join auth.users u on u.id = a.primary_owner_user_id
+             left join basejump.billing_subscriptions s on s.account_id = a.id
+             left join basejump.billing_customers c on c.account_id = s.account_id
+             join basejump.config config on true
+    where a.id = lookup_account_id
+    order by s.created desc
+    limit 1;
+
+    return result || role_result || billing_enabled;
+END;
+$$ LANGUAGE plpgsql;
+
+grant execute on function public.get_account_billing_status(uuid) to authenticated;
+
+/**
+  * Allow service accounts to upsert the billing data for an account
+ */
+
+CREATE OR REPLACE FUNCTION public.service_role_upsert_customer_subscription(account_id uuid default null,
+                                                                            customer jsonb default null,
+                                                                            subscription jsonb default null)
+    RETURNS void AS
+$$
+BEGIN
+    -- if the customer is not null, upsert the data into billing_customers, only upsert fields that are present in the jsonb object
+    if customer is not null then
+        insert into basejump.billing_customers (id, account_id, email, provider)
+        values (customer ->> 'id', service_role_upsert_customer_subscription.account_id, customer ->> 'billing_email',
+                (customer ->> 'provider')::basejump.billing_providers)
+        on conflict (id) do update
+            set email = customer ->> 'billing_email';
+    end if;
+
+    -- if the subscription is not null, upsert the data into billing_subscriptions, only upsert fields that are present in the jsonb object
+    if subscription is not null then
+        insert into basejump.billing_subscriptions (id, account_id, billing_customer_id, status, metadata, price_id,
+                                                    quantity, cancel_at_period_end, created, current_period_start,
+                                                    current_period_end, ended_at, cancel_at, canceled_at, trial_start,
+                                                    trial_end, plan_name, provider)
+        values (subscription ->> 'id', service_role_upsert_customer_subscription.account_id,
+                subscription ->> 'billing_customer_id', (subscription ->> 'status')::basejump.subscription_status,
+                subscription -> 'metadata',
+                subscription ->> 'price_id', (subscription ->> 'quantity')::int,
+                (subscription ->> 'cancel_at_period_end')::boolean,
+                (subscription ->> 'created')::timestamptz, (subscription ->> 'current_period_start')::timestamptz,
+                (subscription ->> 'current_period_end')::timestamptz, (subscription ->> 'ended_at')::timestamptz,
+                (subscription ->> 'cancel_at')::timestamptz,
+                (subscription ->> 'canceled_at')::timestamptz, (subscription ->> 'trial_start')::timestamptz,
+                (subscription ->> 'trial_end')::timestamptz,
+                subscription ->> 'plan_name', (subscription ->> 'provider')::basejump.billing_providers)
+        on conflict (id) do update
+            set billing_customer_id  = subscription ->> 'billing_customer_id',
+                status               = (subscription ->> 'status')::basejump.subscription_status,
+                metadata             = subscription -> 'metadata',
+                price_id             = subscription ->> 'price_id',
+                quantity             = (subscription ->> 'quantity')::int,
+                cancel_at_period_end = (subscription ->> 'cancel_at_period_end')::boolean,
+                current_period_start = (subscription ->> 'current_period_start')::timestamptz,
+                current_period_end   = (subscription ->> 'current_period_end')::timestamptz,
+                ended_at             = (subscription ->> 'ended_at')::timestamptz,
+                cancel_at            = (subscription ->> 'cancel_at')::timestamptz,
+                canceled_at          = (subscription ->> 'canceled_at')::timestamptz,
+                trial_start          = (subscription ->> 'trial_start')::timestamptz,
+                trial_end            = (subscription ->> 'trial_end')::timestamptz,
+                plan_name            = subscription ->> 'plan_name';
+    end if;
+end;
+$$ LANGUAGE plpgsql;
+
+GRANT EXECUTE ON FUNCTION public.service_role_upsert_customer_subscription(uuid, jsonb, jsonb) TO service_role;
+
 
 /**
   * Let's you update a users role within an account if you are an owner of that account
@@ -150,7 +333,7 @@ BEGIN
                )
     into members
     from basejump.account_user wu
-             join public.profiles p on p.id = wu.user_id
+             join basejump.profiles p on p.id = wu.user_id
              join basejump.accounts a on a.id = wu.account_id
     where wu.account_id = get_account.account_id;
 

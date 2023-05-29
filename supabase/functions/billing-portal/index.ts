@@ -74,10 +74,7 @@ serve(async (req) => {
         accountId,
       });
 
-      if (
-        !customerId ||
-        (!priceId && !config.stripe_default_account_price_id)
-      ) {
+      if (!customerId || (!priceId && !config.default_account_plan_id)) {
         throw "Invalid setup";
       }
       // this means that the user has not yet subscribed so we want to generate a checkout link
@@ -85,7 +82,7 @@ serve(async (req) => {
         customer: customerId,
         line_items: [
           {
-            price: priceId || config.stripe_default_account_price_id,
+            price: priceId || config.default_account_plan_id,
             quantity: 1,
           },
         ],

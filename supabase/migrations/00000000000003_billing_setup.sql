@@ -58,6 +58,7 @@ create table basejump.billing_subscriptions
     metadata             jsonb,
     -- ID of the price that created this subscription.
     price_id             text,
+    plan_name            text,
     -- Quantity multiplied by the unit amount of the price creates the amount of the subscription. Can be used to charge multiple seats.
     quantity             integer,
     -- If true the subscription has been canceled by the user and will be deleted at the end of the billing period.
@@ -93,34 +94,6 @@ create policy "Can only view own subs data." on basejump.billing_subscriptions f
     using (account_id IN
            (SELECT basejump.get_accounts_with_current_user_role() AS get_accounts_with_current_user_role));
 
-
-CREATE OR REPLACE FUNCTION public.get_account_billing_status(lookup_account_id uuid)
-    RETURNS json AS
-$$
-DECLARE
-    result RECORD;
-BEGIN
-    select s.id,
-           s.status,
-           c.id    as billing_customer_id,
-           c.email as billing_email
-    from basejump.billing_subscriptions s
-             join basejump.billing_customers c on c.account_id = s.account_id
-    where s.account_id = lookup_account_id
-    order by s.created desc
-    limit 1
-    into result;
-
-    if result is null then
-        raise 'No billing data found for account %', lookup_account_id;
-    end if;
-
-    return row_to_json(result);
-END;
-$$ LANGUAGE plpgsql;
-
-grant execute on function public.get_account_billing_status(uuid) to authenticated, service_role;
-
 /**
   Add config options to basejump.config to setup the stripe requirements on new accounts
  */
@@ -129,6 +102,6 @@ alter table basejump.config
 alter table basejump.config
     add column billing_provider basejump.billing_providers default 'stripe';
 alter table basejump.config
-    add column stripe_default_trial_period_days integer default 30;
+    add column default_trial_period_days integer default 30;
 alter table basejump.config
-    add column stripe_default_account_price_id text;
+    add column default_account_plan_id text;

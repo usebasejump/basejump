@@ -6,47 +6,51 @@
   * You cannot edit the email directly in the profile, you must change
   * the email of the user using the provided Supabase methods
  */
-create table public.profiles
+create table if not exists basejump.profiles
 (
     -- the user's ID from the auth.users table out of supabase
-    id         uuid unique references auth.users not null,
+    id               uuid unique references auth.users not null,
     -- the user's name
-    name       text,
+    name             text,
     -- when the profile was created
-    updated_at timestamp with time zone,
+    updated_at       timestamp with time zone,
     -- when the profile was last updated
-    created_at timestamp with time zone,
+    created_at       timestamp with time zone,
+    private_metadata jsonb default '{}'::jsonb,
+    public_metadata  jsonb default '{}'::jsonb,
     primary key (id)
 );
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE basejump.profiles TO authenticated, service_role;
 
 -- Create the relationship with auth.users so we can do a join query
 -- using postgREST
 ALTER TABLE basejump.account_user
     ADD CONSTRAINT account_user_profiles_fkey FOREIGN KEY (user_id)
-        REFERENCES profiles (id) MATCH SIMPLE
+        REFERENCES basejump.profiles (id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION;
 
 -- manage timestamps
-CREATE TRIGGER set_profiles_timestamp
+CREATE TRIGGER basejump_set_profiles_timestamp
     BEFORE INSERT OR UPDATE
-    ON public.profiles
+    ON basejump.profiles
     FOR EACH ROW
 EXECUTE FUNCTION basejump.trigger_set_timestamps();
 
-alter table public.profiles
+alter table basejump.profiles
     enable row level security;
 
 -- permissions for viewing profiles for user and team members (ideally as two separate policies)
 -- add permissions for updating profiles for the user only
-create policy "Users can view their own profiles" on profiles
+create policy "Users can view their own profiles" on basejump.profiles
     for select
     to authenticated
     using (
     id = auth.uid()
     );
 
-create policy "Users can view their teammates profiles" on profiles
+create policy "Users can view their teammates profiles" on basejump.profiles
     for select
     to authenticated
     using (
@@ -56,7 +60,7 @@ create policy "Users can view their teammates profiles" on profiles
     );
 
 
-create policy "Profiles are editable by their own user only" on profiles
+create policy "Profiles are editable by their own user only" on basejump.profiles
     for update
     to authenticated
     using (
@@ -89,7 +93,7 @@ begin
         generated_user_name := split_part(new.email, '@', 1);
     end if;
 
-    insert into public.profiles (id, name) values (new.id, generated_user_name);
+    insert into basejump.profiles (id, name) values (new.id, generated_user_name);
 
     -- only create the first account if private accounts is enabled
     if basejump.is_set('enable_personal_accounts') = true then

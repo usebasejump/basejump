@@ -31,6 +31,7 @@ select is(
                'get_accounts returns 2 accounts'
            );
 
+
 -- insert known account id into accounts table for testing later
 insert into basejump.accounts (id, slug, team_name)
 values ('00000000-0000-0000-0000-000000000000', 'my-known-account', 'My Known Account');
