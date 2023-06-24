@@ -23,7 +23,7 @@ create table basejump.invitations
     -- who created the invitation
     invited_by_user_id uuid references auth.users        not null,
     -- account name. filled in by a trigger
-    account_team_name  text,
+    account_name       text,
     -- when the invitation was last updated
     updated_at         timestamp with time zone,
     -- when the invitation was created
@@ -53,7 +53,7 @@ CREATE OR REPLACE FUNCTION basejump.trigger_set_invitation_details()
 $$
 BEGIN
     NEW.invited_by_user_id = auth.uid();
-    NEW.account_team_name = (select team_name from basejump.accounts where id = NEW.account_id);
+    NEW.account_name = (select name from basejump.accounts where id = NEW.account_id);
     RETURN NEW;
 END
 $$ LANGUAGE plpgsql;
@@ -151,17 +151,17 @@ create or replace function public.lookup_invitation(lookup_invitation_token text
 as
 $$
 declare
-    team_name         text;
+    name              text;
     invitation_active boolean;
 begin
-    select account_team_name,
+    select account_name,
            case when id IS NOT NULL then true else false end as active
-    into team_name, invitation_active
+    into name, invitation_active
     from basejump.invitations
     where token = lookup_invitation_token
       and created_at > now() - interval '24 hours'
     limit 1;
-    return json_build_object('active', coalesce(invitation_active, false), 'team_name', team_name);
+    return json_build_object('active', coalesce(invitation_active, false), 'name', name);
 end;
 $$;
 

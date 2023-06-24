@@ -33,7 +33,7 @@ select throws_ok(
                'get_profile() throws an error if trying to get another users info you dont have access to'
            );
 
-insert into basejump.accounts (id, slug, team_name)
+insert into basejump.accounts (id, slug, name)
 values ('00000000-0000-0000-0000-000000000000', 'my-known-account', 'My Known Account');
 
 select tests.clear_authentication();

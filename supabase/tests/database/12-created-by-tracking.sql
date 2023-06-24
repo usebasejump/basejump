@@ -19,10 +19,10 @@ select tests.create_supabase_user('test_member');
 ------------
 select tests.authenticate_as('test1');
 
-insert into basejump.accounts (id, team_name, slug)
+insert into basejump.accounts (id, name, slug)
 values ('00000000-0000-0000-0000-000000000000', 'test', 'test');
 
-insert into basejump.accounts (id, team_name, slug)
+insert into basejump.accounts (id, name, slug)
 values ('00000000-0000-0000-0000-000000000001', 'test', 'test2');
 
 select is(
@@ -44,7 +44,7 @@ insert into basejump.account_user (account_id, account_role, user_id)
 values ('00000000-0000-0000-0000-000000000000', 'owner', tests.get_supabase_uid('test_member'));
 
 update basejump.accounts
-set team_name = 'test update'
+set name = 'test update'
 where id = '00000000-0000-0000-0000-000000000001';
 
 select is(

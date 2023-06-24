@@ -14,8 +14,8 @@ select tests.create_supabase_user('member');
 --- start acting as an authenticated user
 select tests.authenticate_as('primary');
 
-insert into basejump.accounts (id, team_name, personal_account)
-values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'test', false);
+insert into basejump.accounts (id, name, slug, personal_account)
+values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'test', 'test', false);
 
 -- setup users for tests
 set local role postgres;

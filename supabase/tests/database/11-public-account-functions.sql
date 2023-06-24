@@ -17,7 +17,7 @@ select tests.create_supabase_user('test_member');
 
 select tests.authenticate_as('test1');
 select create_account('my-account', 'My account');
-select create_account(team_name => 'My Account 2');
+select create_account(name => 'My Account 2', slug => 'my-account-2');
 
 select is(
                (select (get_account_by_slug('my-account') ->> 'account_id')::uuid),
@@ -33,7 +33,7 @@ select is(
 
 
 -- insert known account id into accounts table for testing later
-insert into basejump.accounts (id, slug, team_name)
+insert into basejump.accounts (id, slug, name)
 values ('00000000-0000-0000-0000-000000000000', 'my-known-account', 'My Known Account');
 
 select is(
@@ -51,10 +51,10 @@ select is(
                'Updating slug should have been successful for the owner'
            );
 
-select update_account('00000000-0000-0000-0000-000000000000', team_name => 'My Updated Account Name');
+select update_account('00000000-0000-0000-0000-000000000000', name => 'My Updated Account Name');
 
 select is(
-               (select team_name from basejump.accounts where id = '00000000-0000-0000-0000-000000000000'),
+               (select name from basejump.accounts where id = '00000000-0000-0000-0000-000000000000'),
                'My Updated Account Name',
                'Updating team name should have been successful for the owner'
            );
@@ -110,7 +110,7 @@ select is(
                'get_account should return public metadata'
            );
 
-select update_account('00000000-0000-0000-0000-000000000000', team_name => 'My Updated Account Name 2');
+select update_account('00000000-0000-0000-0000-000000000000', name => 'My Updated Account Name 2');
 
 select is(
                (select public_metadata from basejump.accounts where id = '00000000-0000-0000-0000-000000000000'),

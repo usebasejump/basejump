@@ -290,7 +290,7 @@ select coalesce(json_agg(
                                 'id', wu.account_id,
                                 'account_role', wu.account_role,
                                 'is_primary_owner', a.primary_owner_user_id = auth.uid(),
-                                'name', a.team_name,
+                                'name', a.name,
                                 'slug', a.slug,
                                 'personal_account', a.personal_account,
                                 'created_at', a.created_at,
@@ -352,7 +352,7 @@ BEGIN
                            'account_id', a.id,
                            'account_role', wu.account_role,
                            'is_primary_owner', a.primary_owner_user_id = auth.uid(),
-                           'name', a.team_name,
+                           'name', a.name,
                            'slug', a.slug,
                            'personal_account', a.personal_account,
                            'billing_status', bs.status,
@@ -398,7 +398,7 @@ $$;
 
 grant execute on function public.get_account_by_slug(text) to authenticated;
 
-create or replace function public.create_account(slug text default null, team_name text default null)
+create or replace function public.create_account(slug text default null, name text default null)
     returns json
     language plpgsql
 as
@@ -406,15 +406,15 @@ $$
 DECLARE
     new_account_id uuid;
 BEGIN
-    insert into basejump.accounts (slug, team_name)
-    values (create_account.slug, create_account.team_name)
+    insert into basejump.accounts (slug, name)
+    values (create_account.slug, create_account.name)
     returning id into new_account_id;
 
     return public.get_account(new_account_id);
 END;
 $$;
 
-grant execute on function public.create_account(slug text, team_name text) to authenticated;
+grant execute on function public.create_account(slug text, name text) to authenticated;
 
 /**
   Update an account with passed in info. None of the info is required except for account ID.
@@ -422,7 +422,7 @@ grant execute on function public.create_account(slug text, team_name text) to au
   If you set replace_meta to true, the metadata will be replaced with the passed in metadata.
   If you set replace_meta to false, the metadata will be merged with the passed in metadata.
  */
-create or replace function public.update_account(account_id uuid, slug text default null, team_name text default null,
+create or replace function public.update_account(account_id uuid, slug text default null, name text default null,
                                                  public_metadata jsonb default null,
                                                  replace_metadata boolean default false)
     returns json
@@ -439,7 +439,7 @@ BEGIN
 
     update basejump.accounts accounts
     set slug            = coalesce(update_account.slug, accounts.slug),
-        team_name       = coalesce(update_account.team_name, accounts.team_name),
+        name            = coalesce(update_account.name, accounts.name),
         public_metadata = case
                               when update_account.public_metadata is null then accounts.public_metadata -- do nothing
                               when accounts.public_metadata IS NULL then update_account.public_metadata -- set metadata

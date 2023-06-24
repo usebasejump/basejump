@@ -79,7 +79,7 @@ SELECT throws_ok(
 
 -- owner can update their team name
 SELECT results_eq(
-               $$ update basejump.accounts set team_name = 'test' where id = (select id from basejump.accounts where personal_account = true) returning team_name $$,
+               $$ update basejump.accounts set name = 'test' where id = (select id from basejump.accounts where personal_account = true) returning name $$,
                $$ select 'test' $$,
                'Owner can update their team name'
            );
@@ -98,7 +98,7 @@ select tests.authenticate_as('test2');
 
 -- non members / owner cannot update team name
 SELECT results_ne(
-               $$ update basejump.accounts set team_name = 'test' where primary_owner_user_id = tests.get_supabase_uid('test1') returning 1$$,
+               $$ update basejump.accounts set name = 'test' where primary_owner_user_id = tests.get_supabase_uid('test1') returning 1$$,
                $$ select 1 $$
            );
 
@@ -125,7 +125,7 @@ SELECT throws_ok(
 
 -- anonymous cannot update team name
 SELECT throws_ok(
-               $$ update basejump.accounts set team_name = 'test' returning 1 $$,
+               $$ update basejump.accounts set name = 'test' returning 1 $$,
                'permission denied for schema basejump'
            );
 

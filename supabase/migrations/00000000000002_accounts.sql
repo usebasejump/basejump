@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS basejump.accounts
     -- the primary owner first
     primary_owner_user_id uuid references auth.users not null default auth.uid(),
     -- Account name
-    team_name             text,
+    name                  text,
     slug                  text unique,
     personal_account      boolean                             default false not null,
     updated_at            timestamp with time zone,

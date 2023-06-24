@@ -42,8 +42,8 @@ select results_ne(
            );
 
 -- Create a new account so you can start sharing profiles
-insert into basejump.accounts (id, team_name, personal_account)
-values ('eb3a0306-7331-4c42-a580-970e7ba6a11d', 'test team', false);
+insert into basejump.accounts (id, name, slug, personal_account)
+values ('eb3a0306-7331-4c42-a580-970e7ba6a11d', 'test team', 'test-team', false);
 
 -- set role to postgres, and then insert an account_user for the second user
 select tests.clear_authentication();

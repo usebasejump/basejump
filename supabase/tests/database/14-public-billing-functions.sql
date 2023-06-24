@@ -16,10 +16,10 @@ select plan(5);
 select tests.create_supabase_user('test1');
 select tests.authenticate_as('test1');
 
-insert into basejump.accounts (id, slug, team_name)
+insert into basejump.accounts (id, slug, name)
 values ('00000000-0000-0000-0000-000000000000', 'my-known-account', 'My Known Account');
 
-insert into basejump.accounts (id, slug, team_name)
+insert into basejump.accounts (id, slug, name)
 values ('00000000-0000-0000-0000-000000000001', 'my-known-account-2', 'My Known Account 2');
 
 select tests.clear_authentication();

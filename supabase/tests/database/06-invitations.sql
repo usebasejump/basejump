@@ -21,8 +21,8 @@ select tests.create_supabase_user('expired');
 select tests.authenticate_as('test1');
 
 -- create the taem account
-insert into basejump.accounts (id, team_name, personal_account)
-values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'test', false);
+insert into basejump.accounts (id, name, slug, personal_account)
+values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'test', 'test', false);
 
 -- insert some invitations
 SELECT row_eq(
@@ -45,14 +45,14 @@ select tests.authenticate_as('invited_member1');
 -- should be able to lookup an invitation I know the token for
 SELECT results_eq(
                $$ select lookup_invitation('test_member_single_use_token')::text $$,
-               $$ select json_build_object('active', true, 'team_name', 'test')::text $$,
+               $$ select json_build_object('active', true, 'name', 'test')::text $$,
                'Should be able to lookup an invitation I know the token for'
            );
 
 -- should be able to lookup an invitation I know the token for
 SELECT results_eq(
                $$ select lookup_invitation('not-a-real-token')::text $$,
-               $$ select json_build_object('active', false, 'team_name', null)::text $$,
+               $$ select json_build_object('active', false, 'name', null)::text $$,
                'Fake tokens should fail lookup gracefully'
            );
 
@@ -95,7 +95,7 @@ select tests.authenticate_as('invited_member2');
 -- should not be able to lookup a consumed token
 SELECT row_eq(
                $$ select lookup_invitation('test_member_single_use_token')::text $$,
-               ROW (json_build_object('active', false, 'team_name', null)::text),
+               ROW (json_build_object('active', false, 'name', null)::text),
                'Should not be able to lookup a consumed token'
            );
 
@@ -108,7 +108,7 @@ SELECT throws_ok(
 -- should be able to lookup an invitation I know the token for
 SELECT results_eq(
                $$ select lookup_invitation('test_member_24_hour_token')::text $$,
-               $$ select json_build_object('active', true, 'team_name', 'test')::text $$,
+               $$ select json_build_object('active', true, 'name', 'test')::text $$,
                'Should be able to lookup an invitation I know the token for'
            );
 
@@ -151,7 +151,7 @@ select tests.authenticate_as('invited_member3');
 -- should be able to lookup an invitation I know the token for
 SELECT results_eq(
                $$ select lookup_invitation('test_member_24_hour_token')::text $$,
-               $$ select json_build_object('active', true, 'team_name', 'test')::text $$,
+               $$ select json_build_object('active', true, 'name', 'test')::text $$,
                'Should be able to lookup an invitation I know the token for'
            );
 
@@ -238,7 +238,7 @@ select tests.authenticate_as('expired');
 -- should not be able to lookup an expired token
 SELECT row_eq(
                $$ select lookup_invitation('expired_token')::text $$,
-               ROW (json_build_object('active', false, 'team_name', null)::text),
+               ROW (json_build_object('active', false, 'name', null)::text),
                'Should not be able to lookup an expired token'
            );
 

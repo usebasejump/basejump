@@ -18,8 +18,8 @@ select tests.create_supabase_user('test_random_owner');
 select tests.authenticate_as('test_random_owner');
 
 -- setup inaccessible tests for a known account ID
-insert into basejump.accounts (id, team_name, personal_account)
-values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'nobody in test can access me', false);
+insert into basejump.accounts (id, name, slug, personal_account)
+values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'nobody in test can access me', 'no-access', false);
 
 ------------
 --- Primary Owner
@@ -28,7 +28,7 @@ select tests.authenticate_as('test1');
 
 -- should be able to create a team account when they're enabled
 SELECT row_eq(
-               $$ insert into basejump.accounts (id, team_name, personal_account) values ('8fcec130-27cd-4374-9e47-3303f9529479', 'test team', false) returning 1$$,
+               $$ insert into basejump.accounts (id, name, slug, personal_account) values ('8fcec130-27cd-4374-9e47-3303f9529479', 'test team', 'test-team', false) returning 1$$,
                ROW (1),
                'Should be able to create a new team account'
            );
@@ -101,7 +101,7 @@ SELECT throws_ok(
 
 -- owner can update their team name
 SELECT results_eq(
-               $$ update basejump.accounts set team_name = 'test' where id = '8fcec130-27cd-4374-9e47-3303f9529479' returning team_name $$,
+               $$ update basejump.accounts set name = 'test' where id = '8fcec130-27cd-4374-9e47-3303f9529479' returning name $$,
                $$ values('test') $$,
                'Owner can update their team name'
            );
@@ -147,7 +147,7 @@ SELECT is(
 
 -- members cannot update account info
 SELECT results_ne(
-               $$ update basejump.accounts set team_name = 'test' where id = '8fcec130-27cd-4374-9e47-3303f9529479' returning 1 $$,
+               $$ update basejump.accounts set name = 'test' where id = '8fcec130-27cd-4374-9e47-3303f9529479' returning 1 $$,
                $$ values(1) $$,
                'Member cannot can update their team name'
            );
@@ -230,7 +230,7 @@ SELECT ok(
            );
 
 SELECT results_eq(
-               $$ update basejump.accounts set team_name = 'test2' where id = '8fcec130-27cd-4374-9e47-3303f9529479' returning team_name $$,
+               $$ update basejump.accounts set name = 'test2' where id = '8fcec130-27cd-4374-9e47-3303f9529479' returning name $$,
                $$ values('test2') $$,
                'New owners can update their team name'
            );
@@ -243,7 +243,7 @@ select tests.authenticate_as('test2');
 
 -- non members / owner cannot update team name
 SELECT results_ne(
-               $$ update basejump.accounts set team_name = 'test3' where id = '8fcec130-27cd-4374-9e47-3303f9529479' returning 1$$,
+               $$ update basejump.accounts set name = 'test3' where id = '8fcec130-27cd-4374-9e47-3303f9529479' returning 1$$,
                $$ select 1 $$
            );
 -- non member / owner should receive no results from accounts
@@ -266,7 +266,7 @@ SELECT throws_ok(
 
 -- anonymous cannot update team name
 SELECT throws_ok(
-               $$ update basejump.accounts set team_name = 'test' returning 1 $$,
+               $$ update basejump.accounts set name = 'test' returning 1 $$,
                'permission denied for schema basejump'
            );
 

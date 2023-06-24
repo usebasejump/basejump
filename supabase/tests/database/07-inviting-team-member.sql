@@ -14,8 +14,8 @@ select tests.create_supabase_user('invited');
 --- start acting as an authenticated user
 select tests.authenticate_as('test1');
 
-insert into basejump.accounts (id, team_name, personal_account)
-values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'test', false);
+insert into basejump.accounts (id, name, slug, personal_account)
+values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'test', 'test', false);
 
 -- create invitation
 SELECT row_eq(
@@ -39,7 +39,7 @@ SELECT row_eq(
                $$ select lookup_invitation('test_member_single_use_token')::text $$,
                ROW (json_build_object(
                        'active', true,
-                       'team_name', 'test')::text
+                       'name', 'test')::text
                    ),
                'Should be able to lookup an invitation I know the token for'
            );
@@ -49,7 +49,7 @@ SELECT row_eq(
                $$ select lookup_invitation('not-real-token')::text $$,
                ROW (json_build_object(
                        'active', false,
-                       'team_name', null)::text
+                       'name', null)::text
                    ),
                'Fake tokens should fail lookup gracefully'
            );
