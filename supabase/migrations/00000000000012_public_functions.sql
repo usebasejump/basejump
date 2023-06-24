@@ -288,7 +288,7 @@ $$
 select coalesce(json_agg(
                         json_build_object(
                                 'id', wu.account_id,
-                                'role', wu.account_role,
+                                'account_role', wu.account_role,
                                 'is_primary_owner', a.primary_owner_user_id = auth.uid(),
                                 'name', a.team_name,
                                 'slug', a.slug,
@@ -326,7 +326,7 @@ BEGIN
     select json_agg(
                    json_build_object(
                            'user_id', wu.user_id,
-                           'role', wu.account_role,
+                           'account_role', wu.account_role,
                            'name', p.name,
                            'is_primary_owner', a.primary_owner_user_id = auth.uid()
                        )
@@ -340,7 +340,7 @@ BEGIN
 
     select json_agg(
                    json_build_object(
-                           'role', i.account_role,
+                           'account_role', i.account_role,
                            'created_at', i.created_at
                        )
                )
@@ -350,7 +350,7 @@ BEGIN
 
     return (select json_build_object(
                            'account_id', a.id,
-                           'role', wu.account_role,
+                           'account_role', wu.account_role,
                            'is_primary_owner', a.primary_owner_user_id = auth.uid(),
                            'name', a.team_name,
                            'slug', a.slug,

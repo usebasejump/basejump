@@ -33,6 +33,13 @@ CREATE TABLE IF NOT EXISTS basejump.accounts
     PRIMARY KEY (id)
 );
 
+-- constraint that conditionally allows nulls on the slug ONLY if personal_account is true
+ALTER TABLE basejump.accounts
+    ADD CONSTRAINT accounts_slug_null_if_personal_account_true CHECK (
+            (personal_account = true AND slug is null)
+            OR (personal_account = false AND slug is not null)
+        );
+
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE basejump.accounts TO authenticated, service_role;
 
 /**
@@ -75,7 +82,7 @@ BEGIN
     if NEW.slug is not null then
         NEW.slug = lower(regexp_replace(NEW.slug, '[^a-zA-Z0-9-]+', '-', 'g'));
     end if;
-    
+
     RETURN NEW;
 END
 $$ LANGUAGE plpgsql;
