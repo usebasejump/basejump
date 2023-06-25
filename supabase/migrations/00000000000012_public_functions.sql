@@ -349,7 +349,7 @@ BEGIN
     where i.account_id = get_account.account_id;
 
     return (select json_build_object(
-                           'account_id', a.id,
+                           'id', a.id,
                            'account_role', wu.account_role,
                            'is_primary_owner', a.primary_owner_user_id = auth.uid(),
                            'name', a.name,

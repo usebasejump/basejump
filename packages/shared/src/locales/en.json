@@ -1,0 +1,55 @@
+{
+  "sign_in_button": {
+    "button_label": "Sign In"
+  },
+  "sign_up_button": {
+    "button_label": "Sign Up"
+  },
+  "user_button": {
+    "sign_out": "Sign Out",
+    "edit_profile": "Edit Profile"
+  },
+  "edit_account_button": {
+    "button_label": "Edit Account",
+    "header_text": "Edit your account",
+    "general_tab_label": "Basic Info",
+    "billing_tab_label": "Billing",
+    "members_tab_label": "Members"
+  },
+  "edit_profile_button": {
+    "button_label": "Edit Profile"
+  },
+  "create_account_button": {
+    "button_label": "Create Team",
+    "header_text": "Create a new team account",
+    "description_text": "Team accounts can be shared with multiple members"
+  },
+  "account_selector": {
+    "create_new_team": "Create New Team",
+    "personal_account": "Personal Account",
+    "team_accounts": "Teams",
+    "search_placeholder": "Search...",
+    "no_results": "No results",
+    "my_account": "My Account"
+  },
+  "edit_account_form": {
+    "account_name_label": "Name",
+    "account_name_input_placeholder": "Enter an account name",
+    "slug_label": "Unique account ID",
+    "slug_input_placeholder": "Enter a unique account ID",
+    "button_label": "Update Account",
+    "loading_button_label": "Updating Account...",
+    "missing_fields_error": "All fields are required",
+    "cancel_button_label": "Cancel"
+  },
+  "create_account_form": {
+    "account_name_label": "Name",
+    "account_name_input_placeholder": "Enter an account name",
+    "slug_label": "Unique account ID",
+    "slug_input_placeholder": "Enter a unique account ID",
+    "button_label": "Create Account",
+    "loading_button_label": "Creating Account...",
+    "missing_fields_error": "All fields are required",
+    "cancel_button_label": "Cancel"
+  }
+}

@@ -34,8 +34,9 @@ CREATE TABLE IF NOT EXISTS basejump.accounts
 );
 
 -- constraint that conditionally allows nulls on the slug ONLY if personal_account is true
+-- remove this if you want to ignore accounts slugs entirely
 ALTER TABLE basejump.accounts
-    ADD CONSTRAINT accounts_slug_null_if_personal_account_true CHECK (
+    ADD CONSTRAINT basejump_accounts_slug_null_if_personal_account_true CHECK (
             (personal_account = true AND slug is null)
             OR (personal_account = false AND slug is not null)
         );
