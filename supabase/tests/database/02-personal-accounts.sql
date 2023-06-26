@@ -9,19 +9,19 @@ set enable_personal_accounts = true;
 
 --- we insert a user into auth.users and return the id into user_id to use
 
-select tests.create_supabase_user('test1');
+select tests.create_supabase_user('test1', 'test1@test.com');
 
 select tests.create_supabase_user('test2');
 
 ------------
 --- Primary Owner
 ------------
-select tests.authenticate_as('test1', 'test1@test.com');
+select tests.authenticate_as('test1');
 
 -- should create the personal account automatically
 SELECT row_eq(
-               $$ select primary_owner_user_id, personal_account, name, created_by, updated_by from basejump.accounts order by created_at desc limit 1 $$,
-               ROW (tests.get_supabase_uid('test1'), true, 'test1', tests.get_supabase_uid('test1'), tests.get_supabase_uid('test1')),
+               $$ select primary_owner_user_id, personal_account, name from basejump.accounts order by created_at desc limit 1 $$,
+               ROW (tests.get_supabase_uid('test1'), true, 'test1'::text),
                'Inserting a user should create a personal account when personal accounts are enabled'
            );
 

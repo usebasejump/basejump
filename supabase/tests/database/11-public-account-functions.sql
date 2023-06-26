@@ -8,7 +8,7 @@ update basejump.config
 set enable_team_accounts = true;
 
 update basejump.config
-set enable_personal_accounts = false;
+set enable_personal_accounts = true;
 
 --- we insert a user into auth.users and return the id into user_id to use
 select tests.create_supabase_user('test1');
@@ -27,7 +27,7 @@ select is(
 
 select is(
                (select json_array_length(get_accounts())),
-               2,
+               3,
                'get_accounts returns 2 accounts'
            );
 
@@ -157,8 +157,8 @@ select throws_ok(
 
 select is(
                (select json_array_length(get_accounts())),
-               0,
-               'get_accounts returns 0 accounts'
+               1,
+               'get_accounts returns 1 accounts (personal)'
            );
 
 
@@ -175,8 +175,8 @@ select is(
 
 select is(
                (select json_array_length(get_accounts())),
-               1,
-               'get_accounts returns 0 accounts'
+               2,
+               'get_accounts returns 2 accounts (personal and team)'
            );
 
 

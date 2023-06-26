@@ -23,9 +23,8 @@ begin
         generated_user_name := split_part(new.email, '@', 1);
     end if;
     -- create the new users's personal account
-    insert into basejump.accounts (name, primary_owner_user_id, personal_account, created_by,
-                                   updated_by)
-    values (generated_user_name, NEW.id, true, NEW.id, NEW.id)
+    insert into basejump.accounts (name, primary_owner_user_id, personal_account)
+    values (generated_user_name, NEW.id, true)
     returning id into first_account_id;
 
     -- add them to the account_user table so they can act on it
