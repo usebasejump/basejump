@@ -16,12 +16,12 @@ select tests.create_supabase_user('test2');
 ------------
 --- Primary Owner
 ------------
-select tests.authenticate_as('test1');
+select tests.authenticate_as('test1', 'test1@test.com');
 
 -- should create the personal account automatically
 SELECT row_eq(
-               $$ select primary_owner_user_id, personal_account from basejump.accounts order by created_at desc limit 1 $$,
-               ROW (tests.get_supabase_uid('test1'), true),
+               $$ select primary_owner_user_id, personal_account, name, created_by, updated_by from basejump.accounts order by created_at desc limit 1 $$,
+               ROW (tests.get_supabase_uid('test1'), true, 'test1', tests.get_supabase_uid('test1'), tests.get_supabase_uid('test1')),
                'Inserting a user should create a personal account when personal accounts are enabled'
            );
 

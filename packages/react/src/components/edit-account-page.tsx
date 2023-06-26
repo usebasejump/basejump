@@ -9,6 +9,7 @@ import BasejumpTheme from "../themes/default-theme";
 import { en, I18nVariables } from "@usebasejump/shared";
 import { merge } from "@supabase/auth-ui-shared";
 import ThemeContainer from "./ui/theme-container";
+import { AccountMembers } from "./account-members.tsx";
 
 type Props = BasePropsWithClient &
   ComponentPropsWithoutRef<typeof Auth> & {
@@ -60,7 +61,10 @@ export const EditAccountPage = ({
               />
             </TabsContent>
             <TabsContent value={EditAccountTabs.members}>
-              {labels?.members_tab_label}
+              <AccountMembers
+                accountId={accountId}
+                supabaseClient={supabaseClient}
+              />
             </TabsContent>
             <TabsContent value={EditAccountTabs.billing}>
               {labels?.billing_tab_label}

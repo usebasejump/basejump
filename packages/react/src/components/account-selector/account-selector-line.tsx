@@ -65,7 +65,10 @@ export const AccountSelectorLine = ({
         {account?.personal_account ? labels?.my_account : account?.name}
       </CommandItem>
       {showEditButton && (
-        <button onClick={() => onEditClick?.(account.account_id)}>
+        <button
+          style={{ height: "100%" }}
+          onClick={() => onEditClick?.(account.account_id)}
+        >
           <SettingsIcon className={iconStyles()} />
         </button>
       )}

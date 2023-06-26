@@ -60,3 +60,16 @@ export type GET_ACCOUNTS_RESPONSE = {
   created_at: Date;
   updated_at: Date;
 }[];
+
+export type GET_ACCOUNT_MEMBERS_RESPONSE = {
+  user_id: string;
+  name: string;
+  account_role: Database["public"]["Tables"]["account_user"]["Row"]["account_role"];
+  is_primary_owner: boolean;
+}[];
+
+export type GET_ACCOUNT_INVITES_RESPONSE = {
+  account_role: Database["public"]["Tables"]["account_user"]["Row"]["account_role"];
+  invitation_type: Database["public"]["Tables"]["account_invitations"]["Row"]["invitation_type"];
+  created_at: Date;
+}[];

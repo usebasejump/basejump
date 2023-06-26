@@ -6,74 +6,6 @@
  */
 
 /**
-  * Returns the current user's account
- */
-create or replace function public.get_profile(user_id uuid default null)
-    returns jsonb
-    language plpgsql
-as
-$$
-declare
-    response jsonb;
-begin
-    select jsonb_build_object(
-                   'user_id', p.id,
-                   'name', p.name,
-                   'metadata', p.public_metadata,
-                   'created_at', p.created_at,
-                   'updated_at', p.updated_at
-               )
-    into response
-    from basejump.profiles p
-    where p.id = coalesce(get_profile.user_id, auth.uid());
-
-    if response is null then
-        raise exception 'Not found';
-    end if;
-
-    return response;
-end;
-$$;
-
-grant execute on function public.get_profile(uuid) to authenticated, service_role;
-
-/**
-  Update a user's profile
- */
-
-create or replace function public.update_profile(user_id uuid default auth.uid(), name text default null,
-                                                 public_metadata jsonb default null,
-                                                 replace_metadata boolean default false)
-    returns jsonb
-    language plpgsql
-as
-$$
-declare
-    profile_updated uuid;
-begin
-    -- if the user is not able to update the profile, throw an error
-    update basejump.profiles p
-    set name            = coalesce(update_profile.name, p.name),
-        public_metadata = case
-                              when update_profile.public_metadata is null then p.public_metadata -- do nothing
-                              when p.public_metadata IS NULL then update_profile.public_metadata -- set metadata
-                              when update_profile.replace_metadata
-                                  then update_profile.public_metadata -- replace metadata
-                              else p.public_metadata || update_profile.public_metadata end -- merge metadata
-    where p.id = coalesce(update_profile.user_id, auth.uid())
-    returning p.id into profile_updated;
-
-    if profile_updated is null then
-        raise exception 'Unauthorized';
-    end if;
-
-    return public.get_profile(coalesce(update_profile.user_id, auth.uid()));
-end;
-$$;
-
-grant execute on function public.update_profile(uuid, text, jsonb, boolean) to authenticated, service_role;
-
-/**
  * Returns the current user's role within a given account_id
 */
 create or replace function public.current_user_account_role(lookup_account_id uuid)
@@ -287,7 +219,7 @@ as
 $$
 select coalesce(json_agg(
                         json_build_object(
-                                'id', wu.account_id,
+                                'account_id', wu.account_id,
                                 'account_role', wu.account_role,
                                 'is_primary_owner', a.primary_owner_user_id = auth.uid(),
                                 'name', a.name,
@@ -312,9 +244,6 @@ create or replace function public.get_account(account_id uuid)
     language plpgsql
 as
 $$
-DECLARE
-    members     json;
-    invitations json;
 BEGIN
     -- check if the user is a member of the account or a service_role user
     if current_user IN ('anon', 'authenticated') and
@@ -323,33 +252,8 @@ BEGIN
     end if;
 
 
-    select json_agg(
-                   json_build_object(
-                           'user_id', wu.user_id,
-                           'account_role', wu.account_role,
-                           'name', p.name,
-                           'is_primary_owner', a.primary_owner_user_id = auth.uid()
-                       )
-               )
-    into members
-    from basejump.account_user wu
-             join basejump.profiles p on p.id = wu.user_id
-             join basejump.accounts a on a.id = wu.account_id
-    where wu.account_id = get_account.account_id;
-
-
-    select json_agg(
-                   json_build_object(
-                           'account_role', i.account_role,
-                           'created_at', i.created_at
-                       )
-               )
-    into invitations
-    from basejump.invitations i
-    where i.account_id = get_account.account_id;
-
     return (select json_build_object(
-                           'id', a.id,
+                           'account_id', a.id,
                            'account_role', wu.account_role,
                            'is_primary_owner', a.primary_owner_user_id = auth.uid(),
                            'name', a.name,
@@ -358,8 +262,6 @@ BEGIN
                            'billing_status', bs.status,
                            'created_at', a.created_at,
                            'updated_at', a.updated_at,
-                           'members', members,
-                           'invitations', invitations,
                            'metadata', a.public_metadata
                        )
             from basejump.accounts a
@@ -453,3 +355,75 @@ END;
 $$;
 
 grant execute on function public.update_account(uuid, text, text, jsonb, boolean) to authenticated, service_role;
+
+/**
+  Returns a list of current account members. Only account owners can access this function.
+  It's a security definer because it requries us to lookup personal_accounts for existing members so we can
+  get their names.
+ */
+create or replace function public.get_account_members(account_id uuid, results_limit integer default 50,
+                                                      results_offset integer default 0)
+    returns json
+    language plpgsql
+    security definer
+    set search_path = basejump
+as
+$$
+BEGIN
+
+    -- only account owners can access this function
+    if (select public.current_user_account_role(get_account_members.account_id) ->> 'account_role' <> 'owner') then
+        raise exception 'Only account owners can access this function';
+    end if;
+
+    return (select json_agg(
+                           json_build_object(
+                                   'user_id', wu.user_id,
+                                   'account_role', wu.account_role,
+                                   'name', p.name,
+                                   'email', u.email,
+                                   'is_primary_owner', a.primary_owner_user_id = wu.user_id
+                               )
+                       )
+            from basejump.account_user wu
+                     join basejump.accounts a on a.id = wu.account_id
+                     join basejump.accounts p on p.primary_owner_user_id = wu.user_id and p.personal_account = true
+                     join auth.users u on u.id = wu.user_id
+            where wu.account_id = get_account_members.account_id
+            limit coalesce(get_account_members.results_limit, 50) offset coalesce(get_account_members.results_offset, 0));
+END;
+$$;
+
+grant execute on function public.get_account_members(uuid, integer, integer) to authenticated;
+
+/**
+  Returns a list of currently active invitations for a given account
+ */
+
+create or replace function public.get_account_invitations(account_id uuid, results_limit integer default 25,
+                                                          results_offset integer default 0)
+    returns json
+    language plpgsql
+as
+$$
+BEGIN
+    -- only account owners can access this function
+    if (select public.current_user_account_role(get_account_invitations.account_id) ->> 'account_role' <> 'owner') then
+        raise exception 'Only account owners can access this function';
+    end if;
+
+    return (select json_agg(
+                           json_build_object(
+                                   'account_role', i.account_role,
+                                   'created_at', i.created_at,
+                                   'invitation_type', i.invitation_type
+                               )
+                       )
+            from basejump.invitations i
+            where i.account_id = get_account_invitations.account_id
+              and i.created > now() - interval '24 hours'
+            limit coalesce(get_account_invitations.results_limit, 25) offset coalesce(get_account_invitations.results_offset, 0));
+END;
+$$;
+
+grant execute on function public.get_account_invitations(uuid, integer, integer) to authenticated;

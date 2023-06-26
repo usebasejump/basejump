@@ -48,7 +48,7 @@ const dialogOverlayDefaultStyles = css({
   zIndex: "50",
   transitionProperty: "all",
   transitionDuration: "100ms",
-  // backdropFilter: "blur(4px)",
+  backgroundColor: "$dialogOverlayBackground",
   variants: {
     size: {
       default: {
