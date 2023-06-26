@@ -3,9 +3,11 @@ import { ThemeVariables as SupabaseThemeVariables } from "@supabase/auth-ui-shar
 
 type ThemeVariables = SupabaseThemeVariables & {
   colors?: {
+    headerText?: string;
     dialogContentBackground?: string;
     dialogContentText?: string;
     dialogOverlayBackground?: string;
+    dropdownItemBackground?: string;
     dropdownItemHoverBackground?: string;
     dropdownItemHoverText?: string;
     dropdownSearchPlaceholder?: string;
@@ -24,6 +26,8 @@ type ThemeVariables = SupabaseThemeVariables & {
   space?: {
     dropdownItemPadding?: string;
     dropdownLabelPadding?: string;
+    tableCellPadding?: string;
+    tableHeaderCellPadding?: string;
   };
   fontSizes?: {
     header1?: string;

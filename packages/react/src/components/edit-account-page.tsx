@@ -9,7 +9,7 @@ import BasejumpTheme from "../themes/default-theme";
 import { en, I18nVariables } from "@usebasejump/shared";
 import { merge } from "@supabase/auth-ui-shared";
 import ThemeContainer from "./ui/theme-container";
-import { AccountMembers } from "./account-members.tsx";
+import { AccountMembers } from "./edit-account-page/account-members.tsx";
 
 type Props = BasePropsWithClient &
   ComponentPropsWithoutRef<typeof Auth> & {

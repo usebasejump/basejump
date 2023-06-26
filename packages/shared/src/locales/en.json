@@ -51,5 +51,19 @@
     "loading_button_label": "Creating Account...",
     "missing_fields_error": "All fields are required",
     "cancel_button_label": "Cancel"
+  },
+  "account_members": {
+    "member_label": "User",
+    "role_label": "Role",
+    "remove_member": "Remove",
+    "change_role": "Change Role",
+    "primary_owner_label": "Primary Owner"
+  },
+  "update_member_role": {
+    "header_text": "Update user role",
+    "button_label": "Update Role",
+    "change_primary_owner_label": "Make this user the primary account owner",
+    "cancel_button_label": "Cancel",
+    "new_role_label": "Account role"
   }
 }

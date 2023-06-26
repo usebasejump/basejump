@@ -4,9 +4,11 @@ import { Theme } from "../types/appearance";
 const themeOverrides: Theme = {
   default: {
     colors: {
+      headerText: "black",
       dialogContentBackground: "white",
       dialogContentText: "black",
       dialogOverlayBackground: "rgba(0, 0, 0, 0.5)",
+      dropdownItemBackground: "white",
       dropdownItemHoverBackground: "$defaultButtonBackgroundHover",
       dropdownItemHoverText: "$defaultButtonText",
       dropdownSearchPlaceholder: "$inputPlaceholder",
@@ -25,6 +27,8 @@ const themeOverrides: Theme = {
     space: {
       dropdownItemPadding: "0.75rem 1.25rem",
       dropdownLabelPadding: "0.5rem 0.75rem",
+      tableCellPadding: "0.5rem 0.75rem",
+      tableHeaderCellPadding: "0.5rem 0.75rem",
     },
     fontSizes: {
       header1: "1.5rem",

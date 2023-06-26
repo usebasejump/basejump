@@ -113,15 +113,11 @@ export const AccountSelectorDropdown = ({
   }
 
   function internalOnEditClick(accountId: string) {
-    console.log("internal wooooo", accountId);
     if (onEditClick) {
       onEditClick(accountId);
     }
     setOpen(false);
   }
-
-  //TODO: Consider pulling edit account modal out of popover and closing the popover when it opens
-  // that would avoid the command from capturing all keyboard events and making it go wonky
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
