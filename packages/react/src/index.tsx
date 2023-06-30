@@ -5,6 +5,7 @@
  */
 export * from "./components/forms/create-account-form";
 export * from "./components/forms/edit-account-form";
+export * from "./components/forms/invite-member-form";
 export * from "./components/auth";
 
 /**

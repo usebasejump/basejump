@@ -3,7 +3,7 @@ import requireAuthorizedBillingUser from "./require-authorized-billing-user.ts";
 import getBillingStatus from "./wrappers/get-billing-status.ts";
 import createSupabaseClient from "../lib/create-supabase-client.ts";
 import { corsHeaders } from "../lib/cors-headers.ts";
-import {BASEJUMP_BILLING_DATA_UPSERT} from "../lib/upsert-data.ts";
+import { BASEJUMP_BILLING_DATA_UPSERT } from "../lib/upsert-data.ts";
 
 type GET_PLANS_ARGS = {
   accountId?: string;
@@ -17,7 +17,7 @@ type GET_PLANS_RESPONSE = Array<{
   description?: string;
   amount: number;
   currency: string;
-  interval: "month" | "year" | "one-time";
+  interval: "month" | "year" | "one_time";
   interval_count: 1;
   trial_period_days?: 30;
   metadata?: {

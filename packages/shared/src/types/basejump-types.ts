@@ -235,7 +235,7 @@ export interface Database {
     Enums: {
       account_role: "owner" | "member";
       billing_providers: "stripe";
-      invitation_type: "one-time" | "24-hour";
+      invitation_type: "one_time" | "24_hour";
       subscription_status:
         | "trialing"
         | "active"

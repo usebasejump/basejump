@@ -76,13 +76,13 @@ select row_eq(
 
 -- owners should be able to add invitations
 SELECT row_eq(
-               $$ insert into basejump.invitations (account_id, account_role, token, invitation_type) values ('8fcec130-27cd-4374-9e47-3303f9529479', 'member', 'test_member_single_use_token', 'one-time') returning 1 $$,
+               $$ insert into basejump.invitations (account_id, account_role, token, invitation_type) values ('8fcec130-27cd-4374-9e47-3303f9529479', 'member', 'test_member_single_use_token', 'one_time') returning 1 $$,
                ROW (1),
                'Owners should be able to add invitations for new members'
            );
 
 SELECT row_eq(
-               $$ insert into basejump.invitations (account_id, account_role, token, invitation_type) values ('8fcec130-27cd-4374-9e47-3303f9529479', 'owner', 'test_owner_single_use_token', 'one-time') returning 1 $$,
+               $$ insert into basejump.invitations (account_id, account_role, token, invitation_type) values ('8fcec130-27cd-4374-9e47-3303f9529479', 'owner', 'test_owner_single_use_token', 'one_time') returning 1 $$,
                ROW (1),
                'Owners should be able to add invitations for new owners'
            );

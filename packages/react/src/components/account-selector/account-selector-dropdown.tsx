@@ -126,14 +126,14 @@ export const AccountSelectorDropdown = ({
           <Avatar
             uniqueId={
               currentAccount?.personal_account
-                ? "personal-account"
+                ? currentAccount?.name || "personal-account"
                 : currentAccount?.slug || currentAccount?.id
             }
             size="large"
           />
           {currentAccount?.personal_account
-            ? labels?.my_account
-            : currentAccount?.name}
+            ? currentAccount?.name || labels?.my_account
+            : currentAccount?.name || currentAccount?.slug}
           <ChevronsUpDown className={newTeamIconStyles()} />
         </div>
       </PopoverTrigger>

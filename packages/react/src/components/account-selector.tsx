@@ -7,7 +7,10 @@ import { AccountSelectorDropdown } from "./account-selector/account-selector-dro
 import { Dialog, DialogContent } from "./ui/dialog";
 import ThemeContainer from "./ui/theme-container";
 import { EditAccountPage } from "./edit-account-page";
-import { useBasejumpClient } from "./basejump-user-session";
+import {
+  useBasejumpClient,
+  useBasejumpProvider,
+} from "./basejump-user-session";
 import { useState } from "react";
 
 type Props = BasePropsWithoutClient & {
@@ -28,12 +31,9 @@ export const AccountSelector = ({
   const [editingAccountId, setEditingAccountId] = useState<string | null>(null);
 
   const supabaseClient = useBasejumpClient();
-
-  //TODO: Consider pulling edit account modal out of popover and closing the popover when it opens
-  // that would avoid the command from capturing all keyboard events and making it go wonky
+  const { invitationUrlTemplate } = useBasejumpProvider();
 
   function toggleEditingAccount(accountId: string) {
-    console.log("wooooooo", accountId);
     if (editingAccountId === accountId) {
       setEditingAccountId(null);
     } else {
@@ -64,6 +64,7 @@ export const AccountSelector = ({
             appearance={appearance}
             localization={localization}
             theme={theme}
+            invitationUrlTemplate={invitationUrlTemplate}
           />
         </DialogContent>
       </Dialog>

@@ -5,7 +5,7 @@
  */
 DROP TYPE IF EXISTS basejump.invitation_type;
 
-CREATE TYPE basejump.invitation_type AS ENUM ('one-time', '24-hour');
+CREATE TYPE basejump.invitation_type AS ENUM ('one_time', '24_hour');
 /**
   * Invitations are sent to users to join a account
   * They pre-define the role the user should have once they join
@@ -133,7 +133,7 @@ begin
         insert into basejump.account_user (account_id, user_id, account_role)
         values (lookup_account_id, auth.uid(), new_member_role);
         -- email types of invitations are only good for one usage
-        delete from basejump.invitations where token = lookup_invitation_token and invitation_type = 'one-time';
+        delete from basejump.invitations where token = lookup_invitation_token and invitation_type = 'one_time';
     end if;
     return lookup_account_id;
 end;
@@ -165,6 +165,30 @@ begin
 end;
 $$;
 
+/**
+  Allows a user to create a new invitation if they are an owner of an account
+ */
+
+create or replace function create_invitation(account_id uuid, account_role basejump.account_role,
+                                             invitation_type basejump.invitation_type)
+    returns json
+    language plpgsql
+as
+$$
+declare
+    new_invitation basejump.invitations;
+begin
+    insert into basejump.invitations (account_id, account_role, invitation_type, invited_by_user_id)
+    values (account_id, account_role, invitation_type, auth.uid())
+    returning * into new_invitation;
+
+    return json_build_object('token', new_invitation.token);
+end
+$$;
+
+-- TODO: Test this function for creating a new invitation
+
 
 grant execute on function accept_invitation(text) to authenticated;
 grant execute on function lookup_invitation(text) to authenticated;
+grant execute on function create_invitation(uuid, basejump.account_role, basejump.invitation_type) to authenticated;

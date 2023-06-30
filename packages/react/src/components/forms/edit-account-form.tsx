@@ -2,24 +2,22 @@
 import {
   CREATE_ACCOUNT_RESPONSE,
   en,
+  GET_ACCOUNT_RESPONSE,
   I18nVariables,
 } from "@usebasejump/shared";
 import { BasePropsWithClient } from "../../types/base-props";
 import { ACCOUNT_FORM_DATA, AccountForm } from "./account-form";
-import { useAccount } from "../../api/use-account";
 import { merge } from "@supabase/auth-ui-shared";
 
 interface Props extends BasePropsWithClient {
   afterUpdate?: (account: CREATE_ACCOUNT_RESPONSE) => void;
   requireSlug?: boolean;
-  accountId?: string;
-  accountSlug?: string;
+  account: GET_ACCOUNT_RESPONSE;
   onCancel?: () => void;
 }
 
 export const EditAccountForm = ({
-  accountId,
-  accountSlug,
+  account,
   onCancel,
   requireSlug = true,
   afterUpdate,
@@ -29,12 +27,6 @@ export const EditAccountForm = ({
 }: Props) => {
   const i18n: I18nVariables = merge(en, localization?.variables ?? {});
   const labels = i18n?.edit_account_form;
-
-  const { data: account } = useAccount({
-    accountId,
-    accountSlug,
-    supabaseClient,
-  });
 
   async function onSave(data: ACCOUNT_FORM_DATA) {
     if (!account) {

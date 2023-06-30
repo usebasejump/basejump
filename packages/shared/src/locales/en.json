@@ -1,4 +1,9 @@
 {
+  "account_roles": {
+    "owner": "Owner",
+    "member": "Member",
+    "primary_owner": "Primary Owner"
+  },
   "sign_in_button": {
     "button_label": "Sign In"
   },
@@ -9,12 +14,32 @@
     "sign_out": "Sign Out",
     "edit_profile": "Edit Profile"
   },
+  "invite_member_button": {
+    "button_label": "Invite member",
+    "header_text": "Invite a new member",
+    "description_text": "Generate a link you can send to teammates to join this account"
+  },
+  "invite_member_form": {
+    "invitation_type_label": "Invitation link type",
+    "account_role_label": "Account role",
+    "button_label": "Create Invitation",
+    "loading_button_label": "Creating Invitation...",
+    "cancel_button_label": "Cancel",
+    "single_use_invitation": "Single use",
+    "multi_use_invitation": "Multiple use",
+    "reset_button_label": "Generate another link"
+  },
   "edit_account_button": {
-    "button_label": "Edit Account",
+    "button_label": "Edit Account"
+  },
+  "edit_account_page": {
     "header_text": "Edit your account",
     "general_tab_label": "Basic Info",
     "billing_tab_label": "Billing",
-    "members_tab_label": "Members"
+    "members_tab_label": "Members",
+    "new_member_button_label": "Invite Member",
+    "invitations_header_text": "Pending invitations",
+    "members_header_text": "Members"
   },
   "edit_profile_button": {
     "button_label": "Edit Profile"
@@ -56,8 +81,14 @@
     "member_label": "User",
     "role_label": "Role",
     "remove_member": "Remove",
-    "change_role": "Change Role",
-    "primary_owner_label": "Primary Owner"
+    "change_role": "Change Role"
+  },
+  "account_invitations": {
+    "invitation_type_label": "Invitation Type",
+    "role_label": "Role",
+    "created_label": "Created",
+    "invitation_type_one_time": "Single use",
+    "invitation_type_24_hour": "Multiple use"
   },
   "update_member_role": {
     "header_text": "Update user role",

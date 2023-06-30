@@ -1,17 +1,16 @@
 import { BasePropsWithClient } from "../../types/base-props.ts";
-import { useAccountMembers } from "../../api/use-account-members.ts";
 import { en, I18nVariables } from "@usebasejump/shared";
 import { merge } from "@supabase/auth-ui-shared";
 import { Table } from "../ui/table.tsx";
-import { Text } from "../ui/typography.tsx";
-import { IndividualAccountMemberDropdown } from "./individual-account-member-dropdown.tsx";
 import ThemeContainer from "../ui/theme-container.tsx";
+import { useAccountInvitations } from "../../api/use-account-invitations.ts";
+import { TrashIcon } from "lucide-react";
 
 type Props = BasePropsWithClient & {
   accountId: string;
 };
 
-export function AccountMembers({
+export function AccountInvitations({
   accountId,
   supabaseClient,
   localization = { variables: {} },
@@ -19,43 +18,36 @@ export function AccountMembers({
   theme,
 }: Props) {
   const i18n: I18nVariables = merge(en, localization?.variables ?? {});
-  const labels = i18n?.account_members;
+  const labels = i18n?.account_invitations;
   const roleLabels = i18n?.account_roles;
 
   const {
-    data: members,
+    data: invitations,
     error,
     loading,
-  } = useAccountMembers({ accountId, supabaseClient });
+  } = useAccountInvitations({ accountId, supabaseClient });
 
   return (
     <ThemeContainer appearance={appearance} theme={theme}>
       <Table>
         <thead>
           <tr>
-            <th>{labels?.member_label}</th>
+            <th>{labels?.invitation_type_label}</th>
             <th>{labels?.role_label}</th>
             <th width={0} />
           </tr>
         </thead>
         <tbody>
-          {members?.map((member) => (
-            <tr key={member.user_id}>
+          {invitations?.map((invitation) => (
+            <tr key={`invitation-${invitation.created_at}`}>
               <td>
-                <p>{member.name}</p>
-                <Text>{member.email}</Text>
+                <p>
+                  {labels?.[`invitation_type_${invitation.invitation_type}`]}
+                </p>
               </td>
-              <td>
-                {member.is_primary_owner
-                  ? roleLabels?.primary_owner
-                  : roleLabels?.[member.account_role]}
-              </td>
+              <td>{roleLabels?.[invitation.account_role]}</td>
               <td style={{ textAlign: "right" }}>
-                <IndividualAccountMemberDropdown
-                  accountId={accountId}
-                  member={member}
-                  supabaseClient={supabaseClient}
-                />
+                <TrashIcon style={{ width: "1rem", height: "1rem" }} />
               </td>
             </tr>
           ))}

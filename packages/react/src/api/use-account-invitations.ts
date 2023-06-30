@@ -3,9 +3,8 @@ import { useApiRequest } from "./use-api-request";
 import { GET_ACCOUNT_INVITES_RESPONSE } from "@usebasejump/shared";
 
 type Props = {
-  accountId?: string;
-  accountSlug?: string;
-  supabaseClient?: SupabaseClient<any> | null;
+  accountId: string;
+  supabaseClient: SupabaseClient<any> | null;
 };
 
 export const useAccountInvitations = ({ supabaseClient, accountId }: Props) => {
@@ -19,7 +18,7 @@ export const useAccountInvitations = ({ supabaseClient, accountId }: Props) => {
         throw new Error("Account ID required");
       }
 
-      const response = await supabaseClient.rpc("get_account_members", {
+      const response = await supabaseClient.rpc("get_account_invitations", {
         account_id: accountId,
       });
 

@@ -1,6 +1,11 @@
 import { I18nVariables as AuthUII18nVariables } from "@supabase/auth-ui-shared";
 
 export interface I18nVariables extends AuthUII18nVariables {
+  account_roles?: {
+    member?: string;
+    owner?: string;
+    primary_owner?: string;
+  };
   sign_in_button?: {
     button_label?: string;
   };
@@ -11,13 +16,33 @@ export interface I18nVariables extends AuthUII18nVariables {
     sign_out?: string;
     edit_profile?: string;
   };
+  invite_member_button?: {
+    button_label?: string;
+    header_text?: string;
+    description_text?: string;
+  };
+  invite_member_form?: {
+    invitation_type_label?: string;
+    account_role_label?: string;
+    button_label?: string;
+    loading_button_label?: string;
+    cancel_button_label?: string;
+    single_use_invitation?: string;
+    multi_use_invitation?: string;
+    reset_button_label?: string;
+  };
   edit_account_button?: {
     button_label?: string;
+  };
+  edit_account_page?: {
     header_text?: string;
     description_text?: string;
     general_tab_label?: string;
     billing_tab_label?: string;
     members_tab_label?: string;
+    new_member_button_label?: string;
+    invitations_header_text?: string;
+    members_header_text?: string;
   };
   create_account_button?: {
     button_label?: string;
@@ -62,7 +87,13 @@ export interface I18nVariables extends AuthUII18nVariables {
     role_label?: string;
     remove_member?: string;
     change_role?: string;
-    primary_owner_label?: string;
+  };
+  account_invitations?: {
+    created_label?: string;
+    role_label?: string;
+    invitation_type_label?: string;
+    invitation_type_24_hour?: string;
+    invitation_type_one_time?: string;
   };
   update_member_role?: {
     header_text?: string;

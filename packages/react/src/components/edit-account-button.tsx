@@ -1,30 +1,24 @@
 "use client";
 
-import {
-  ComponentPropsWithoutRef,
-  ForwardedRef,
-  forwardRef,
-  ReactNode,
-} from "react";
+import { ForwardedRef, forwardRef, ReactNode } from "react";
 import ensureChildComponent from "../utils/ensure-child-component";
 import ThemeContainer from "./ui/theme-container";
 import { BasePropsWithClient } from "../types/base-props";
 import { Dialog, DialogTrigger } from "@radix-ui/react-dialog";
 import { DialogContent } from "./ui/dialog";
 import BasejumpTheme from "../themes/default-theme";
-import { Auth } from "./auth";
 import { en, I18nVariables } from "@usebasejump/shared";
 import { merge } from "@supabase/auth-ui-shared";
 import { EditAccountPage } from "./edit-account-page";
 
 // load props from auth component
 
-type Props = BasePropsWithClient &
-  ComponentPropsWithoutRef<typeof Auth> & {
-    children?: ReactNode;
-    accountId?: string;
-    accountSlug?: string;
-  };
+type Props = BasePropsWithClient & {
+  children?: ReactNode;
+  accountId?: string;
+  accountSlug?: string;
+  invitationUrlTemplate?: string;
+};
 
 export const EditAccountButton = forwardRef(
   (
@@ -51,6 +45,7 @@ export const EditAccountButton = forwardRef(
         <ThemeContainer appearance={appearance} theme={theme}>
           <DialogContent appearance={appearance} size="large">
             <EditAccountPage
+              {...props}
               supabaseClient={supabaseClient}
               accountId={accountId}
               accountSlug={accountSlug}

@@ -19,7 +19,7 @@ values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'test', 'test', false);
 
 -- create invitation
 SELECT row_eq(
-               $$ insert into basejump.invitations (account_id, account_role, token, invitation_type) values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'owner', 'test_owner_single_use_token', 'one-time') returning 1 $$,
+               $$ insert into basejump.invitations (account_id, account_role, token, invitation_type) values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'owner', 'test_owner_single_use_token', 'one_time') returning 1 $$,
                ROW (1),
                'Owners should be able to add invitations for new owners'
            );

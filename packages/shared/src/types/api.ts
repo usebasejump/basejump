@@ -21,18 +21,6 @@ export type GET_ACCOUNT_BILLING_STATUS_RESPONSE = {
   billing_email?: string;
 };
 
-export type GET_PROFILE_RESPONSE = {
-  user_id: string;
-  name: string;
-  metadata: {
-    [key: string]: any;
-  };
-  created_at: Date;
-  updated_at: Date;
-};
-
-export type UPDATE_PROFILE_RESPONSE = GET_PROFILE_RESPONSE;
-
 export type GET_ACCOUNT_RESPONSE = {
   account_id: string;
   role: Database["public"]["Tables"]["account_user"]["Row"]["account_role"];
@@ -73,3 +61,7 @@ export type GET_ACCOUNT_INVITES_RESPONSE = {
   invitation_type: Database["public"]["Tables"]["account_invitations"]["Row"]["invitation_type"];
   created_at: Date;
 }[];
+
+export type CREATE_INVITATION_RESPONSE = {
+  token: string;
+};

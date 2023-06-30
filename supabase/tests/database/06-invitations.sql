@@ -1,5 +1,5 @@
 -- the main testing for invitations on accounts is in the team_accounts tests
--- this batch is to let us test the more complicated behaviors such as one-time, 24-hour, multiple use, etc...accounts
+-- this batch is to let us test the more complicated behaviors such as one_time, 24_hour, multiple use, etc...accounts
 BEGIN;
 CREATE EXTENSION "basejump-supabase_test_helpers";
 
@@ -26,19 +26,19 @@ values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'test', 'test', false);
 
 -- insert some invitations
 SELECT row_eq(
-               $$ insert into basejump.invitations (account_id, account_role, token, invitation_type) values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'owner', 'test_member_single_use_token', 'one-time') returning 1 $$,
+               $$ insert into basejump.invitations (account_id, account_role, token, invitation_type) values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'owner', 'test_member_single_use_token', 'one_time') returning 1 $$,
                ROW (1),
-               'Owners should be able to add one-time invitations for new members'
+               'Owners should be able to add one_time invitations for new members'
            );
 
 SELECT row_eq(
-               $$ insert into basejump.invitations (account_id, account_role, token, invitation_type) values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'member', 'test_member_24_hour_token', '24-hour') returning 1 $$,
+               $$ insert into basejump.invitations (account_id, account_role, token, invitation_type) values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'member', 'test_member_24_hour_token', '24_hour') returning 1 $$,
                ROW (1),
-               'Owners should be able to add 24-hour invitations for new members'
+               'Owners should be able to add 24_hour invitations for new members'
            );
 
 ----------
--- Team member 1 joining with one-time token
+-- Team member 1 joining with one_time token
 ----------
 select tests.authenticate_as('invited_member1');
 
@@ -88,7 +88,7 @@ SELECT ok(
            );
 
 ------------
--- Second member joining with 24-hour token
+-- Second member joining with 24_hour token
 ------------
 select tests.authenticate_as('invited_member2');
 
@@ -115,7 +115,7 @@ SELECT results_eq(
 -- should be able to accept an invitation
 SELECT lives_ok(
                $$ select accept_invitation('test_member_24_hour_token') $$,
-               'Should be able to accept a 24-hour invitation'
+               'Should be able to accept a 24_hour invitation'
            );
 
 -- should be able to get the team from get_accounts_with_current_user_role
@@ -139,12 +139,12 @@ SELECT ok(
 
 -- members should NOT be able to create new invitations
 SELECT throws_ok(
-               $$ insert into basejump.invitations (account_id, account_role, token, invitation_type) values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'member', 'test_permissions_token', 'one-time') returning 1 $$,
+               $$ insert into basejump.invitations (account_id, account_role, token, invitation_type) values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'member', 'test_permissions_token', 'one_time') returning 1 $$,
                'new row violates row-level security policy for table "invitations"'
            );
 
 ------------
--- Third member joining with 24-hour token
+-- Third member joining with 24_hour token
 ------------
 select tests.authenticate_as('invited_member3');
 
@@ -158,7 +158,7 @@ SELECT results_eq(
 -- should be able to accept an invitation
 SELECT lives_ok(
                $$ select accept_invitation('test_member_24_hour_token') $$,
-               'Should be able to accept a 24-hour invitation'
+               'Should be able to accept a 24_hour invitation'
            );
 
 -- should be able to get the team from get_accounts_with_current_user_role
@@ -193,7 +193,7 @@ SELECT is_empty(
 
 -- inserting an invitation for an account ID you know but aren't an owner of should NOT work
 SELECT throws_ok(
-               $$ insert into basejump.invitations (account_id, account_role, token, invitation_type) values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'owner', 'test', 'one-time') returning 1 $$,
+               $$ insert into basejump.invitations (account_id, account_role, token, invitation_type) values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'owner', 'test', 'one_time') returning 1 $$,
                'new row violates row-level security policy for table "invitations"'
            );
 
@@ -211,13 +211,13 @@ SELECT throws_ok(
 
 -- cannot create an invitation as an anonymous user for a known account ID
 SELECT throws_ok(
-               $$ insert into basejump.invitations (account_id, account_role, token, invitation_type) values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'owner', 'test', 'one-time') returning 1 $$,
+               $$ insert into basejump.invitations (account_id, account_role, token, invitation_type) values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'owner', 'test', 'one_time') returning 1 $$,
                'permission denied for schema basejump'
            );
 
 
 -----------
--- Expired 24-hour tokens
+-- Expired 24_hour tokens
 -----------
 set local role postgres;
 -- we need to remove the invitations timestamp trigger so we can force the token to expire
@@ -229,7 +229,7 @@ insert into basejump.invitations (account_id, account_role, token, invitation_ty
 values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f',
         'owner',
         'expired_token',
-        '24-hour',
+        '24_hour',
         now() - interval '25 hours',
         now() - interval '25 hours');
 

@@ -61,7 +61,7 @@ select row_eq(
 
 -- should not be able to add invitations to personal accounts
 SELECT throws_ok(
-               $$ insert into basejump.invitations (account_id, account_role, token, invitation_type) values ((select id from basejump.accounts where personal_account = true), 'owner', 'test', 'one-time') $$,
+               $$ insert into basejump.invitations (account_id, account_role, token, invitation_type) values ((select id from basejump.accounts where personal_account = true), 'owner', 'test', 'one_time') $$,
                'new row violates row-level security policy for table "invitations"'
            );
 

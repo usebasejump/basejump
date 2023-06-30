@@ -58,11 +58,13 @@ export const AccountSelectorLine = ({
         <Avatar
           uniqueId={
             account?.personal_account
-              ? "personal-account"
+              ? account?.name || "personal-account"
               : account.slug || account.id
           }
         />
-        {account?.personal_account ? labels?.my_account : account?.name}
+        {account?.personal_account
+          ? account?.name || labels?.my_account
+          : account?.name}
       </CommandItem>
       {showEditButton && (
         <button

@@ -11,11 +11,18 @@ import {
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { SignUpButton } from "@usebasejump/react/src/components/sign-up-button";
 
+const invitationUrlTemplate =
+  process.env.NEXT_PUBLIC_BASEJUMP_INVITATION_URL_TEMPLATE;
+
 export default function Header() {
   const supabaseClient = createClientComponentClient();
   const redirectTo = `${window?.location?.origin}/auth/callback`;
+
   return (
-    <BasejumpUserSession supabaseClient={supabaseClient}>
+    <BasejumpUserSession
+      supabaseClient={supabaseClient}
+      invitationUrlTemplate={invitationUrlTemplate}
+    >
       <nav className="flex justify-between p-6 max-w-screen-xl mx-auto">
         <div className="flex gap-x-4">
           <h1 className="text-2xl font-bold">Basejump</h1>

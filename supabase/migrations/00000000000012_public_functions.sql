@@ -421,9 +421,11 @@ BEGIN
                        )
             from basejump.invitations i
             where i.account_id = get_account_invitations.account_id
-              and i.created > now() - interval '24 hours'
+              and i.created_at > now() - interval '24 hours'
             limit coalesce(get_account_invitations.results_limit, 25) offset coalesce(get_account_invitations.results_offset, 0));
 END;
 $$;
 
 grant execute on function public.get_account_invitations(uuid, integer, integer) to authenticated;
+
+--TODO: Write tests for get_account_invitations and get_account_members

@@ -13,7 +13,7 @@ import {
 } from "@usebasejump/shared";
 import { merge } from "@supabase/auth-ui-shared";
 import { useState } from "react";
-import { UpdateMemberRole } from "./update-member-role.tsx";
+import { EditMemberRole } from "./edit-member-role.tsx";
 
 type Props = BasePropsWithClient & {
   accountId: string;
@@ -33,6 +33,10 @@ export const IndividualAccountMemberDropdown = ({
   const [changeRoleOpen, setChangeRoleOpen] = useState<boolean>(false);
   const i18n: I18nVariables = merge(en, localization?.variables ?? {});
   const labels = i18n?.account_members;
+
+  if (member?.is_primary_owner) {
+    return null;
+  }
   return (
     <>
       <DropdownMenu>
@@ -46,7 +50,7 @@ export const IndividualAccountMemberDropdown = ({
           <DropdownMenuItem>{labels?.remove_member}</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <UpdateMemberRole
+      <EditMemberRole
         supabaseClient={supabaseClient}
         member={member}
         onUpdate={() => alert("updated!")}
