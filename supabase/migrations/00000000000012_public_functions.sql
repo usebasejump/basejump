@@ -8,7 +8,7 @@
 /**
  * Returns the current user's role within a given account_id
 */
-create or replace function public.current_user_account_role(lookup_account_id uuid)
+create or replace function public.current_user_account_role(account_id uuid)
     returns jsonb
     language plpgsql
 as
@@ -26,7 +26,7 @@ BEGIN
     from basejump.account_user wu
              join basejump.accounts a on a.id = wu.account_id
     where wu.user_id = auth.uid()
-      and wu.account_id = lookup_account_id;
+      and wu.account_id = current_user_account_role.account_id;
 
     -- if the user is not a member of the account, throw an error
     if response ->> 'account_role' IS NULL then
@@ -158,7 +158,7 @@ GRANT EXECUTE ON FUNCTION public.service_role_upsert_customer_subscription(uuid,
   **/
 create or replace function public.update_account_user_role(account_id uuid, user_id uuid,
                                                            new_account_role basejump.account_role,
-                                                           make_primary_owner boolean)
+                                                           make_primary_owner boolean default false)
     returns void
     security definer
     set search_path = public

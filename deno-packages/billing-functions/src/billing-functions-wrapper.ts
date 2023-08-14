@@ -6,9 +6,7 @@ import { corsHeaders } from "../lib/cors-headers.ts";
 import { BASEJUMP_BILLING_DATA_UPSERT } from "../lib/upsert-data.ts";
 
 type GET_PLANS_ARGS = {
-  accountId?: string;
-  subscriptionId?: string;
-  customerId?: string;
+  account_id?: string;
 };
 
 type GET_PLANS_RESPONSE = Array<{
@@ -20,6 +18,7 @@ type GET_PLANS_RESPONSE = Array<{
   interval: "month" | "year" | "one_time";
   interval_count: 1;
   trial_period_days?: 30;
+  active?: boolean;
   metadata?: {
     [key: string]: string;
   };
@@ -98,7 +97,7 @@ export async function billingFunctionsWrapper(
               "Content-Type": "application/json",
             },
           });
-        case "getBillingPortalUrl":
+        case "get_billing_portal_url":
           return await requireAuthorizedBillingUser(req, {
             accountId: body.args.account_id,
             authorizedRoles: ["owner"],
@@ -119,7 +118,7 @@ export async function billingFunctionsWrapper(
               );
             },
           });
-        case "getNewSubscriptionUrl":
+        case "get_new_subscription_url":
           return await requireAuthorizedBillingUser(req, {
             accountId: body.args.accountId,
             authorizedRoles: ["owner"],
@@ -141,7 +140,7 @@ export async function billingFunctionsWrapper(
             },
           });
 
-        case "getBillingStatus":
+        case "get_billing_status":
           return await requireAuthorizedBillingUser(req, {
             accountId: body.args.accountId,
             authorizedRoles: ["owner"],

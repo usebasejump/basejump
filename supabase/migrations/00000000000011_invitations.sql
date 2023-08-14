@@ -109,7 +109,7 @@ create policy "Invitations can be deleted by account owners" on basejump.invitat
   * using the supabase rpc method
  */
 create or replace function accept_invitation(lookup_invitation_token text)
-    returns uuid
+    returns jsonb
     language plpgsql
     security definer set search_path = public, basejump
 as
@@ -117,9 +117,10 @@ $$
 declare
     lookup_account_id       uuid;
     declare new_member_role basejump.account_role;
+    lookup_account_slug     text;
 begin
-    select account_id, account_role
-    into lookup_account_id, new_member_role
+    select account_id, account_role, slug
+    into lookup_account_id, new_member_role, lookup_account_slug
     from basejump.invitations
     where token = lookup_invitation_token
       and created_at > now() - interval '24 hours';
@@ -135,7 +136,8 @@ begin
         -- email types of invitations are only good for one usage
         delete from basejump.invitations where token = lookup_invitation_token and invitation_type = 'one_time';
     end if;
-    return lookup_account_id;
+    return json_build_object('account_id', lookup_account_id, 'account_role', new_member_role, 'slug',
+                             lookup_account_slug);
 end;
 $$;
 
@@ -161,7 +163,7 @@ begin
     where token = lookup_invitation_token
       and created_at > now() - interval '24 hours'
     limit 1;
-    return json_build_object('active', coalesce(invitation_active, false), 'name', name);
+    return json_build_object('active', coalesce(invitation_active, false), 'account_name', name);
 end;
 $$;
 
