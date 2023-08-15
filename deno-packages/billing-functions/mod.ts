@@ -1,15 +1,4 @@
 /**
- * Types
- */
-
-import { Database } from "./types/basejump-database.ts";
-
-export type BASEJUMP_DATABASE_SCHEMA = Database;
-export { BASEJUMP_BILLING_DATA_UPSERT } from "./lib/upsert-data.ts";
-export { BILLING_FUNCTION_WRAPPER_HANDLERS } from "./src/billing-functions-wrapper.ts";
-export { BILLING_WEBHOOKS_WRAPPER_HANDLER } from "./src/billing-webhooks-wrapper.ts";
-
-/**
  * Utility functions devs
  */
 export { requireAuthorizedUser } from "./src/require-authorized-user.ts";
