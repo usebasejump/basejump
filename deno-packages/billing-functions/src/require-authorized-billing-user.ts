@@ -27,7 +27,7 @@ type REQUIRE_AUTHORIZED_BILLING_USER_OPTIONS = {
   onError?: (e: Error) => Promise<Response>;
 };
 
-export default async function requireAuthorizedBillingUser(
+export async function requireAuthorizedBillingUser(
   req: Request,
   options: REQUIRE_AUTHORIZED_BILLING_USER_OPTIONS
 ): Promise<Response> {

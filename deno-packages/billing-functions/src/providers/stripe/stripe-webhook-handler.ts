@@ -21,7 +21,7 @@ type Props = {
   supabaseClient: any;
 };
 
-export default async function stripeWebhookHandler({
+export async function stripeWebhookHandler({
   stripeClient,
   stripeWebhookSigningSecret,
   supabaseClient,

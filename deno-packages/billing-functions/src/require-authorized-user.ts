@@ -15,7 +15,7 @@ type REQUIRE_AUTHORIZED_USER_OPTIONS = {
   onError?: (e: Error) => Promise<Response>;
 };
 
-export default async function requireAuthorizedUser(
+export async function requireAuthorizedUser(
   req: Request,
   options: REQUIRE_AUTHORIZED_USER_OPTIONS
 ): Promise<Response> {

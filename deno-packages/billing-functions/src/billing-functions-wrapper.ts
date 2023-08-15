@@ -1,5 +1,5 @@
 import { BASEJUMP_DATABASE_SCHEMA } from "../mod.ts";
-import requireAuthorizedBillingUser from "./require-authorized-billing-user.ts";
+import { requireAuthorizedBillingUser } from "./require-authorized-billing-user.ts";
 import getBillingStatus from "./wrappers/get-billing-status.ts";
 import createSupabaseClient from "../lib/create-supabase-client.ts";
 import { corsHeaders } from "../lib/cors-headers.ts";

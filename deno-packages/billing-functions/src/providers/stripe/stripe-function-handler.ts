@@ -8,7 +8,7 @@ type Props = {
   stripeClient: Stripe.Client;
 };
 
-function stripeFunctionHandler({
+export async function stripeFunctionHandler({
   stripeClient,
 }: Props): BILLING_FUNCTION_WRAPPER_HANDLERS {
   return {
@@ -87,5 +87,3 @@ function stripeFunctionHandler({
     },
   };
 }
-
-export default stripeFunctionHandler;
