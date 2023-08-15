@@ -75,12 +75,14 @@ export type BILLING_FUNCTION_WRAPPER_HANDLERS = {
   ) => Promise<BASEJUMP_BILLING_DATA_UPSERT>;
 };
 
-export async function billingFunctionsWrapper(
+export function billingFunctionsWrapper(
   handlers: BILLING_FUNCTION_WRAPPER_HANDLERS
 ): (
   req: Request
-) => Response<
-  GENERIC_URL_RESPONSE | GET_PLANS_RESPONSE | GET_BILLING_STATUS_RESPONSE
+) => Promise<
+  Response<
+    GENERIC_URL_RESPONSE | GET_PLANS_RESPONSE | GET_BILLING_STATUS_RESPONSE
+  >
 > {
   return async function (req: Request) {
     // check for options preflight and handle cors

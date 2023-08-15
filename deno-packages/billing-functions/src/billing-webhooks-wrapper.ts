@@ -2,9 +2,9 @@ export type BILLING_WEBHOOKS_WRAPPER_HANDLER = (
   req: Request
 ) => Promise<Response>;
 
-export async function billingWebhooksWrapper(
+export function billingWebhooksWrapper(
   handler: BILLING_WEBHOOKS_WRAPPER_HANDLER
-): (req: Request) => Response {
+): (req: Request) => Promise<Response> {
   return async function (req: Request) {
     try {
       const response = await handler(req);
