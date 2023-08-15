@@ -2,9 +2,10 @@ import { BILLING_FUNCTION_WRAPPER_HANDLERS } from "../../billing-functions-wrapp
 import getPlans from "./billing-functions/get-plans.ts";
 import findOrCreateCustomer from "./billing-functions/find-or-create-customer.ts";
 import findOrCreateSubscription from "./billing-functions/find-or-create-subscription.ts";
+import { Stripe } from "../../../deps.ts";
 
 type Props = {
-  stripeClient: StripeClient;
+  stripeClient: Stripe.Client;
 };
 
 function stripeFunctionHandler({
