@@ -45,14 +45,14 @@ select tests.authenticate_as('invited_member1');
 -- should be able to lookup an invitation I know the token for
 SELECT results_eq(
                $$ select lookup_invitation('test_member_single_use_token')::text $$,
-               $$ select json_build_object('active', true, 'name', 'test')::text $$,
+               $$ select json_build_object('active', true, 'account_name', 'test')::text $$,
                'Should be able to lookup an invitation I know the token for'
            );
 
 -- should be able to lookup an invitation I know the token for
 SELECT results_eq(
                $$ select lookup_invitation('not-a-real-token')::text $$,
-               $$ select json_build_object('active', false, 'name', null)::text $$,
+               $$ select json_build_object('active', false, 'account_name', null)::text $$,
                'Fake tokens should fail lookup gracefully'
            );
 
@@ -68,22 +68,22 @@ SELECT lives_ok(
                'Should be able to accept an invitation'
            );
 
--- should be able to get the team from get_accounts_with_current_user_role
+-- should be able to get the team from get_accounts_with_role
 SELECT ok(
                (select 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' IN
-                       (select basejump.get_accounts_with_current_user_role('owner'))),
+                       (select basejump.get_accounts_with_role('owner'))),
                'Should now be a part of the team as owner'
            );
 
 SELECT ok(
                (select 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' NOT IN
-                       (select basejump.get_accounts_with_current_user_role('member'))),
+                       (select basejump.get_accounts_with_role('member'))),
                'Should not be part of the team as member role'
            );
 
 SELECT ok(
                (select 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' IN
-                       (select basejump.get_accounts_with_current_user_role())),
+                       (select basejump.get_accounts_with_role())),
                'Should now be a part of the team as lookup all'
            );
 
@@ -95,7 +95,7 @@ select tests.authenticate_as('invited_member2');
 -- should not be able to lookup a consumed token
 SELECT row_eq(
                $$ select lookup_invitation('test_member_single_use_token')::text $$,
-               ROW (json_build_object('active', false, 'name', null)::text),
+               ROW (json_build_object('active', false, 'account_name', null)::text),
                'Should not be able to lookup a consumed token'
            );
 
@@ -108,7 +108,7 @@ SELECT throws_ok(
 -- should be able to lookup an invitation I know the token for
 SELECT results_eq(
                $$ select lookup_invitation('test_member_24_hour_token')::text $$,
-               $$ select json_build_object('active', true, 'name', 'test')::text $$,
+               $$ select json_build_object('active', true, 'account_name', 'test')::text $$,
                'Should be able to lookup an invitation I know the token for'
            );
 
@@ -118,22 +118,22 @@ SELECT lives_ok(
                'Should be able to accept a 24_hour invitation'
            );
 
--- should be able to get the team from get_accounts_with_current_user_role
+-- should be able to get the team from get_accounts_with_role
 SELECT ok(
                (select 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' NOT IN
-                       (select basejump.get_accounts_with_current_user_role('owner'))),
+                       (select basejump.get_accounts_with_role('owner'))),
                'Should not be a part of the team as owner'
            );
 
 SELECT ok(
                (select 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' IN
-                       (select basejump.get_accounts_with_current_user_role('member'))),
+                       (select basejump.get_accounts_with_role('member'))),
                'Should be part of the team as member role'
            );
 
 SELECT ok(
                (select 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' IN
-                       (select basejump.get_accounts_with_current_user_role())),
+                       (select basejump.get_accounts_with_role())),
                'Should now be a part of the team as lookup all'
            );
 
@@ -151,7 +151,7 @@ select tests.authenticate_as('invited_member3');
 -- should be able to lookup an invitation I know the token for
 SELECT results_eq(
                $$ select lookup_invitation('test_member_24_hour_token')::text $$,
-               $$ select json_build_object('active', true, 'name', 'test')::text $$,
+               $$ select json_build_object('active', true, 'account_name', 'test')::text $$,
                'Should be able to lookup an invitation I know the token for'
            );
 
@@ -161,22 +161,22 @@ SELECT lives_ok(
                'Should be able to accept a 24_hour invitation'
            );
 
--- should be able to get the team from get_accounts_with_current_user_role
+-- should be able to get the team from get_accounts_with_role
 SELECT ok(
                (select 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' NOT IN
-                       (select basejump.get_accounts_with_current_user_role('owner'))),
+                       (select basejump.get_accounts_with_role('owner'))),
                'Should not be a part of the team as owner'
            );
 
 SELECT ok(
                (select 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' IN
-                       (select basejump.get_accounts_with_current_user_role('member'))),
+                       (select basejump.get_accounts_with_role('member'))),
                'Should be part of the team as member role'
            );
 
 SELECT ok(
                (select 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' IN
-                       (select basejump.get_accounts_with_current_user_role())),
+                       (select basejump.get_accounts_with_role())),
                'Should now be a part of the team as lookup all'
            );
 
@@ -238,7 +238,7 @@ select tests.authenticate_as('expired');
 -- should not be able to lookup an expired token
 SELECT row_eq(
                $$ select lookup_invitation('expired_token')::text $$,
-               ROW (json_build_object('active', false, 'name', null)::text),
+               ROW (json_build_object('active', false, 'account_name', null)::text),
                'Should not be able to lookup an expired token'
            );
 

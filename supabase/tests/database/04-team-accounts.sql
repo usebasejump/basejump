@@ -1,7 +1,7 @@
 BEGIN;
 CREATE EXTENSION "basejump-supabase_test_helpers";
 
-select plan(29);
+select plan(34);
 
 -- make sure we're setup for enabling personal accounts
 update basejump.config
@@ -106,18 +106,35 @@ SELECT results_eq(
                'Owner can update their team name'
            );
 
--- all accounts (personal and team) should be returned by get_accounts_with_current_user_role test
+-- all accounts (personal and team) should be returned by get_accounts_with_role test
 SELECT ok(
                (select '8fcec130-27cd-4374-9e47-3303f9529479' IN
-                       (select basejump.get_accounts_with_current_user_role())),
-               'Team account should be returned by the basejump.get_accounts_with_current_user_role function'
+                       (select basejump.get_accounts_with_role())),
+               'Team account should be returned by the basejump.get_accounts_with_role function'
            );
 
 -- shouoldn't return any accounts if you're not a member of
 SELECT ok(
                (select 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' NOT IN
-                       (select basejump.get_accounts_with_current_user_role())),
-               'Team accounts not a member of should NOT be returned by the basejump.get_accounts_with_current_user_role function'
+                       (select basejump.get_accounts_with_role())),
+               'Team accounts not a member of should NOT be returned by the basejump.get_accounts_with_role function'
+           );
+
+-- should return true for basejump.has_role_on_account
+SELECT ok(
+               (select basejump.has_role_on_account('8fcec130-27cd-4374-9e47-3303f9529479', 'owner')),
+               'Should return true for basejump.has_role_on_account'
+           );
+
+SELECT ok(
+               (select basejump.has_role_on_account('8fcec130-27cd-4374-9e47-3303f9529479')),
+               'Should return true for basejump.has_role_on_account'
+           );
+
+-- should return FALSE when not on the account
+SELECT ok(
+               (select NOT basejump.has_role_on_account('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f')),
+               'Should return false for basejump.has_role_on_account'
            );
 
 -----------
@@ -173,17 +190,28 @@ SELECT row_eq(
 -- Should NOT show up as an owner in the permissions check
 SELECT ok(
                (select '8fcec130-27cd-4374-9e47-3303f9529479' NOT IN
-                       (select basejump.get_accounts_with_current_user_role('owner'))),
-               'Newly added account ID should not be in the list of accounts returned by basejump.get_accounts_with_current_user_role("owner")'
+                       (select basejump.get_accounts_with_role('owner'))),
+               'Newly added account ID should not be in the list of accounts returned by basejump.get_accounts_with_role("owner")'
            );
 
 -- Should be able ot get a full list of accounts when no permission passed in
 SELECT ok(
                (select '8fcec130-27cd-4374-9e47-3303f9529479' IN
-                       (select basejump.get_accounts_with_current_user_role())),
-               'Newly added account ID should be in the list of accounts returned by basejump.get_accounts_with_current_user_role()'
+                       (select basejump.get_accounts_with_role())),
+               'Newly added account ID should be in the list of accounts returned by basejump.get_accounts_with_role()'
            );
 
+-- should return true for basejump.has_role_on_account
+SELECT ok(
+               (select basejump.has_role_on_account('8fcec130-27cd-4374-9e47-3303f9529479')),
+               'Should return true for basejump.has_role_on_account'
+           );
+
+-- should return false for the owner lookup
+SELECT ok(
+               (select NOT basejump.has_role_on_account('8fcec130-27cd-4374-9e47-3303f9529479', 'owner')),
+               'Should return false for basejump.has_role_on_account'
+           );
 
 -----------
 --- Non-Primary Owner
@@ -218,15 +246,15 @@ SELECT row_eq(
 -- Should NOT show up as an owner in the permissions check
 SELECT ok(
                (select '8fcec130-27cd-4374-9e47-3303f9529479' IN
-                       (select basejump.get_accounts_with_current_user_role('owner'))),
-               'Newly added account ID should not be in the list of accounts returned by basejump.get_accounts_with_current_user_role("owner")'
+                       (select basejump.get_accounts_with_role('owner'))),
+               'Newly added account ID should not be in the list of accounts returned by basejump.get_accounts_with_role("owner")'
            );
 
 -- Should be able ot get a full list of accounts when no permission passed in
 SELECT ok(
                (select '8fcec130-27cd-4374-9e47-3303f9529479' IN
-                       (select basejump.get_accounts_with_current_user_role())),
-               'Newly added account ID should be in the list of accounts returned by basejump.get_accounts_with_current_user_role()'
+                       (select basejump.get_accounts_with_role())),
+               'Newly added account ID should be in the list of accounts returned by basejump.get_accounts_with_role()'
            );
 
 SELECT results_eq(

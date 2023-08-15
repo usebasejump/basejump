@@ -1,7 +1,7 @@
 BEGIN;
 CREATE EXTENSION "basejump-supabase_test_helpers";
 
-select plan(27);
+select plan(25);
 
 select has_schema('basejump', 'Basejump schema should exist');
 
@@ -40,12 +40,11 @@ set role anon;
 select throws_ok('select basejump.get_config()');
 select throws_ok('select basejump.is_set(''enable_personal_accounts'')');
 select throws_ok('select basejump.generate_token(1)');
-select throws_ok('select public.get_service_role_config()');
 
 -- set the role to the service_role for testing access
 set role service_role;
-select ok(public.get_service_role_config() is not null),
-       'Basejump get_service_role_config should be accessible to the service role';
+select ok(basejump.get_config() is not null),
+       'Basejump get_config should be accessible to the service role';
 
 -- set the role to authenticated for tests
 set role authenticated;
@@ -54,7 +53,6 @@ select ok(basejump.is_set('enable_personal_accounts')),
        'Basejump is_set should be accessible to authenticated users';
 select ok(basejump.generate_token(1) is not null),
        'Basejump generate_token should be accessible to authenticated users';
-select throws_ok('select public.get_service_role_config()');
 select isnt_empty('select * from basejump.config', 'authenticated users should have access to Basejump config');
 
 SELECT *

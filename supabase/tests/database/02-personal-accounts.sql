@@ -1,7 +1,7 @@
 BEGIN;
 CREATE EXTENSION "basejump-supabase_test_helpers";
 
-select plan(14);
+select plan(15);
 
 -- make sure we're setup for enabling personal accounts
 update basejump.config
@@ -84,11 +84,18 @@ SELECT results_eq(
                'Owner can update their team name'
            );
 
--- personal account should be returned by the basejump.get_accounts_with_current_user_role functoin
+-- personal account should be returned by the basejump.get_accounts_with_role function
 SELECT results_eq(
-               $$ select basejump.get_accounts_with_current_user_role() $$,
+               $$ select basejump.get_accounts_with_role() $$,
                $$ select id from basejump.accounts where personal_account = true $$,
-               'Personal account should be returned by the basejump.get_accounts_with_current_user_role function'
+               'Personal account should be returned by the basejump.get_accounts_with_role function'
+           );
+
+-- should get true for personal account using has_role_on_account function
+SELECT results_eq(
+               $$ select basejump.has_role_on_account((select id from basejump.accounts where personal_account = true), 'owner') $$,
+               $$ select true $$,
+               'Should get true for personal account using has_role_on_account function'
            );
 
 -----------

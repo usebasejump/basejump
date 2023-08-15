@@ -18,9 +18,10 @@ const relevantEvents = new Set([
 type Props = {
   stripeClient: Stripe.Client;
   stripeWebhookSigningSecret: string;
+  supabaseClient: any;
 };
 
-export default async function ({
+export default async function stripeWebhookHandler({
   stripeClient,
   stripeWebhookSigningSecret,
   supabaseClient,
@@ -46,7 +47,7 @@ export default async function ({
     switch (receivedEvent.type) {
       case "customer.created":
       case "customer.updated":
-      case "customer.deleted":
+      case "customer.deleted": {
         const customerData = receivedEvent.data.object as Stripe.Customer;
         const accountId = customerData.metadata.basejump_account_id;
         if (!accountId) {
@@ -63,9 +64,10 @@ export default async function ({
           customer,
         });
         break;
+      }
       case "customer.subscription.created":
       case "customer.subscription.updated":
-      case "customer.subscription.deleted":
+      case "customer.subscription.deleted": {
         const subscriptionData = receivedEvent.data
           .object as Stripe.Subscription;
         const accountId = subscriptionData.metadata.basejump_account_id;
@@ -83,7 +85,8 @@ export default async function ({
           subscription,
         });
         break;
-      case "checkout.session.completed":
+      }
+      case "checkout.session.completed": {
         const checkoutSession = receivedEvent.data
           .object as Stripe.Checkout.Session;
         if (checkoutSession.mode === "subscription") {
@@ -98,6 +101,7 @@ export default async function ({
           });
         }
         break;
+      }
       default:
         throw new Error("Unhandled relevant event!");
     }

@@ -39,7 +39,7 @@ SELECT row_eq(
                $$ select lookup_invitation('test_owner_single_use_token')::text $$,
                ROW (json_build_object(
                        'active', true,
-                       'name', 'test')::text
+                       'account_name', 'test')::text
                    ),
                'Should be able to lookup an invitation I know the token for'
            );
@@ -49,7 +49,7 @@ SELECT row_eq(
                $$ select lookup_invitation('not-real-token')::text $$,
                ROW (json_build_object(
                        'active', false,
-                       'name', null)::text
+                       'account_name', null)::text
                    ),
                'Fake tokens should fail lookup gracefully'
            );
@@ -66,17 +66,17 @@ SELECT lives_ok(
                'Should be able to accept an invitation'
            );
 
--- should be able to get the team from get_accounts_with_current_user_role
+-- should be able to get the team from get_accounts_with_role
 SELECT ok(
                (select 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' IN
-                       (select basejump.get_accounts_with_current_user_role())),
+                       (select basejump.get_accounts_with_role())),
                'Should now be a part of the team'
            );
 
--- should be able to get the team from get_accounts_with_current_user_role
+-- should be able to get the team from get_accounts_with_role
 SELECT ok(
                (select 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' IN
-                       (select basejump.get_accounts_with_current_user_role('owner'))),
+                       (select basejump.get_accounts_with_role('owner'))),
                'Should now be a part of the team as an owner'
            );
 
