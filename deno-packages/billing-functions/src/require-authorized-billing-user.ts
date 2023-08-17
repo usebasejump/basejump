@@ -1,4 +1,4 @@
-import { createSupabaseClient } from "../deps.ts";
+import createSupabaseClient from "../lib/create-supabase-client.ts";
 import { BASEJUMP_DATABASE_SCHEMA } from "../mod.ts";
 
 export type AUTHORIZED_BILLING_USER_INFO = {
@@ -33,6 +33,7 @@ export async function requireAuthorizedBillingUser(
 ): Promise<Response> {
   try {
     const authToken = req.headers.get("Authorization");
+    const accountId = options.accountId;
     // we don't have what we need. instant block.
     if (!authToken || !accountId) {
       if (options.onUnauthorized) {
@@ -41,10 +42,12 @@ export async function requireAuthorizedBillingUser(
       return new Response("Unauthorized", { status: 401 });
     }
 
+
     const supabase = createSupabaseClient(authToken);
     const { data, error } = await supabase.rpc("get_account_billing_status", {
       account_id: options.accountId,
     });
+
     // means this user isn't a member of this account, block
     if (!data || error) {
       if (options.onUnauthorized) {

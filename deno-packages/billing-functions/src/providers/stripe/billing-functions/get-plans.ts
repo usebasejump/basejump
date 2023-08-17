@@ -9,7 +9,7 @@ export default async function getPlans(stripeClient) {
       product_description: price.product.description,
       currency: price.currency,
       price: price.unit_amount,
-      price_id: price.id,
+      id: price.id,
       interval:
         price.type === "one_time" ? "one_time" : price.recurring?.interval,
     };

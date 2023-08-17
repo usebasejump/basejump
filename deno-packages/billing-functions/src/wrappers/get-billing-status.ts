@@ -34,13 +34,13 @@ export default async function getBillingStatus(
   );
 
   return {
-    subscription_id: data.subscription?.id,
-    plan_name: data.subscription?.plan_name,
+    subscription_id: billingData?.subscription?.id,
+    plan_name: billingData?.subscription?.plan_name,
     subscription_active: ["trialing", "active"].includes(
-      data.subscription?.status
+      billingData?.subscription?.status
     ),
-    status: data.subscription?.status,
-    billing_email: data.customer?.billing_email,
+    status: billingData?.subscription?.status,
+    billing_email: billingData?.customer?.billing_email,
     account_role: roleInfo.account_role,
     is_primary_owner: roleInfo.is_primary_owner,
     billing_enabled: roleInfo.billing_enabled,

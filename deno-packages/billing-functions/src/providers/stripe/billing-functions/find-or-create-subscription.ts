@@ -2,10 +2,10 @@ import { Stripe } from "../../../../deps.ts";
 import { stripeSubscriptionToBasejumpSubscription } from "./stripe-utils.ts";
 import { BASEJUMP_BILLING_DATA_UPSERT } from "../../../../lib/upsert-data.ts";
 
-export default async function findOrCreateSubscription(
+export async function findOrCreateSubscription(
   stripeClient: Stripe.Client,
   { customerId, subscriptionId, accountId, defaultPlanId, defaultTrialDays }
-): Promise<undefined | BASEJUMP_BILLING_DATA_UPSERT["subscription"]> {
+): Promise<BASEJUMP_BILLING_DATA_UPSERT["subscription"]> {
   if (!customerId) {
     throw new Error("customerId is required");
   }

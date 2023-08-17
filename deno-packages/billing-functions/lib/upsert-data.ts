@@ -1,5 +1,4 @@
-import { BASEJUMP_DATABASE_SCHEMA } from "../mod.ts";
-
+import {Database as BASEJUMP_DATABASE_SCHEMA} from '../types/basejump-database.ts';
 export type BASEJUMP_BILLING_DATA_UPSERT = {
   provider: BASEJUMP_DATABASE_SCHEMA["public"]["Tables"]["billing_providers"]["Row"]["provider"];
   customer?: {
@@ -42,7 +41,6 @@ export async function upsertCustomerSubscription(
     "service_role_upsert_customer_subscription",
     {
       account_id: accountId,
-      provider: upsertData.provider,
       customer: upsertData.customer,
       subscription: upsertData.subscription,
     }

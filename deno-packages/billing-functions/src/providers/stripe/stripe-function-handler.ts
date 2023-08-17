@@ -1,14 +1,14 @@
 import { BILLING_FUNCTION_WRAPPER_HANDLERS } from "../../billing-functions-wrapper.ts";
 import getPlans from "./billing-functions/get-plans.ts";
-import findOrCreateCustomer from "./billing-functions/find-or-create-customer.ts";
-import findOrCreateSubscription from "./billing-functions/find-or-create-subscription.ts";
+import { findOrCreateCustomer } from "./billing-functions/find-or-create-customer.ts";
+import { findOrCreateSubscription } from "./billing-functions/find-or-create-subscription.ts";
 import { Stripe } from "../../../deps.ts";
 
 type Props = {
   stripeClient: Stripe.Client;
 };
 
-export async function stripeFunctionHandler({
+export function stripeFunctionHandler({
   stripeClient,
 }: Props): BILLING_FUNCTION_WRAPPER_HANDLERS {
   return {
@@ -33,13 +33,14 @@ export async function stripeFunctionHandler({
 
       const subscription = await findOrCreateSubscription(stripeClient, {
         subscriptionId,
-        customerId: customer.id,
+        customerId: customer?.id,
         defaultPlanId,
         accountId,
         defaultTrialDays,
       });
 
       return {
+        provider: 'stripe',
         customer,
         subscription,
       };
@@ -57,9 +58,16 @@ export async function stripeFunctionHandler({
         accountId,
       });
 
+      if (!customer) {
+        throw new Error("Customer not found");
+      }
+
       const session = await stripeClient.checkout.sessions.create({
         customer: customer.id,
         subscription_data: {
+          metadata: {
+            basejump_account_id: accountId,
+          },
           items: [
             {
               plan: planId,
@@ -69,6 +77,9 @@ export async function stripeFunctionHandler({
         mode: "subscription",
         success_url: returnUrl,
         cancel_url: returnUrl,
+        metadata: {
+          basejump_account_id: accountId,
+        },
       });
 
       return {

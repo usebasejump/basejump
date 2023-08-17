@@ -1,7 +1,7 @@
-import { BASEJUMP_DATABASE_SCHEMA } from "../mod.ts";
+import { Database as BASEJUMP_DATABASE_SCHEMA } from "../types/basejump-database.ts";
 import { requireAuthorizedBillingUser } from "./require-authorized-billing-user.ts";
 import getBillingStatus from "./wrappers/get-billing-status.ts";
-import createSupabaseClient from "../lib/create-supabase-client.ts";
+import createSupabaseServiceClient from "../lib/create-supabase-service-client.ts";
 import { corsHeaders } from "../lib/cors-headers.ts";
 import { BASEJUMP_BILLING_DATA_UPSERT } from "../lib/upsert-data.ts";
 
@@ -36,6 +36,7 @@ type GET_NEW_SUBSCRIPTION_URL_ARGS = {
   planId: string;
   returnUrl: string;
   billingEmail: string;
+  customerId?: string;
 };
 
 type GET_BILLING_STATUS_ARGS = {
@@ -79,11 +80,7 @@ export function billingFunctionsWrapper(
   handlers: BILLING_FUNCTION_WRAPPER_HANDLERS
 ): (
   req: Request
-) => Promise<
-  Response<
-    GENERIC_URL_RESPONSE | GET_PLANS_RESPONSE | GET_BILLING_STATUS_RESPONSE
-  >
-> {
+) => Promise<Response> {
   return async function (req: Request) {
     // check for options preflight and handle cors
     if (req.method === "OPTIONS") {
@@ -92,9 +89,9 @@ export function billingFunctionsWrapper(
     const body = await req.json();
     try {
       switch (body.action) {
-        case "getPlans":
+        case "get_plans":
           const plans = await handlers.getPlans(body.args);
-          return new Response(plans, {
+          return new Response(JSON.stringify(plans), {
             headers: {
               "Content-Type": "application/json",
             },
@@ -104,6 +101,7 @@ export function billingFunctionsWrapper(
             accountId: body.args.account_id,
             authorizedRoles: ["owner"],
             async onBillableAndAuthorized(roleInfo) {
+              console.log('boop', roleInfo);
               const response = await handlers.getBillingPortalUrl({
                 accountId: roleInfo.account_id,
                 subscriptionId: roleInfo.billing_subscription_id,
@@ -111,7 +109,10 @@ export function billingFunctionsWrapper(
                 returnUrl: body.args.return_url,
               });
               return new Response(
-                { billing_enabled: roleInfo.billing_enabled, ...response },
+                JSON.stringify({
+                  billing_enabled: roleInfo.billing_enabled,
+                  ...response,
+                }),
                 {
                   headers: {
                     "Content-Type": "application/json",
@@ -122,17 +123,21 @@ export function billingFunctionsWrapper(
           });
         case "get_new_subscription_url":
           return await requireAuthorizedBillingUser(req, {
-            accountId: body.args.accountId,
+            accountId: body.args.account_id,
             authorizedRoles: ["owner"],
             async onBillableAndAuthorized(roleInfo) {
-              const response = handlers.getNewSubscriptionUrl({
+              const response = await handlers.getNewSubscriptionUrl({
                 accountId: roleInfo.account_id,
                 planId: body.args.plan_id,
                 returnUrl: body.args.return_url,
-                billingEmail: body.args.billing_email,
+                billingEmail: roleInfo.billing_email,
+                customerId: roleInfo.billing_customer_id
               });
               return new Response(
-                { billing_enabled: roleInfo.billing_enabled, ...response },
+                JSON.stringify({
+                  billing_enabled: roleInfo.billing_enabled,
+                  ...response,
+                }),
                 {
                   headers: {
                     "Content-Type": "application/json",
@@ -144,19 +149,21 @@ export function billingFunctionsWrapper(
 
         case "get_billing_status":
           return await requireAuthorizedBillingUser(req, {
-            accountId: body.args.accountId,
+            accountId: body.args.account_id,
             authorizedRoles: ["owner"],
             async onBillableAndAuthorized(roleInfo) {
-              const supabaseClient = createSupabaseClient(
-                Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")
-              );
+              const supabaseClient = createSupabaseServiceClient();
               const response = await getBillingStatus(
                 supabaseClient,
                 roleInfo,
                 handlers
               );
+
               return new Response(
-                { billing_enabled: roleInfo.billing_enabled, ...response },
+                JSON.stringify({
+                  ...response,
+                  billing_enabled: roleInfo.billing_enabled,
+                }),
                 {
                   headers: {
                     "Content-Type": "application/json",
@@ -168,9 +175,9 @@ export function billingFunctionsWrapper(
 
         default:
           return new Response(
-            {
+            JSON.stringify({
               error: "Invalid action",
-            },
+            }),
             {
               status: 400,
               headers: {
@@ -180,9 +187,16 @@ export function billingFunctionsWrapper(
           );
       }
     } catch (e) {
-      return new Response("Unable to lookup account information", {
-        status: 400,
-      });
+      console.log(e);
+      return new Response(
+        JSON.stringify({ error: "Unable to lookup account information" }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
     }
   };
 }

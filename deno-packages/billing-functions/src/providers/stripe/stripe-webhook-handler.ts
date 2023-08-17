@@ -1,12 +1,10 @@
 import { Stripe } from "../../../deps.ts";
-import { stripeCustomerToBasejumpCustomer } from "./billing-functions/stripe-utils.ts";
-import { upsertCustomerSubscription } from "../../../lib/upsert-data.ts";
-import findOrCreateSubscription from "./billing-functions/find-or-create-subscription.ts";
+import { stripeCustomerToBasejumpCustomer, stripeSubscriptionToBasejumpSubscription } from "./billing-functions/stripe-utils.ts";
+import { BASEJUMP_BILLING_DATA_UPSERT } from "../../../lib/upsert-data.ts";
 
 const cryptoProvider = Stripe.createSubtleCryptoProvider();
 
 const relevantEvents = new Set([
-  "checkout.session.completed",
   "customer.subscription.created",
   "customer.subscription.updated",
   "customer.subscription.deleted",
@@ -18,14 +16,12 @@ const relevantEvents = new Set([
 type Props = {
   stripeClient: Stripe.Client;
   stripeWebhookSigningSecret: string;
-  supabaseClient: any;
 };
 
-export async function stripeWebhookHandler({
+export function stripeWebhookHandler({
   stripeClient,
   stripeWebhookSigningSecret,
-  supabaseClient,
-}: Props): (req: Request) => Promise<Response> {
+}: Props): (req: Request) => Promise<BASEJUMP_BILLING_DATA_UPSERT | undefined> {
   return async (req) => {
     const signature = req.headers.get("Stripe-Signature");
     const body = await req.text();
@@ -38,11 +34,10 @@ export async function stripeWebhookHandler({
     );
 
     if (!relevantEvents.has(receivedEvent.type)) {
-      return new Response("Event not relevant", {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      });
+      return;
     }
+
+    console.log('processing event', receivedEvent.type)
 
     switch (receivedEvent.type) {
       case "customer.created":
@@ -59,11 +54,8 @@ export async function stripeWebhookHandler({
           accountId,
           customerData
         );
-        await upsertCustomerSubscription(supabaseClient, accountId, {
-          provider: "stripe",
-          customer,
-        });
-        break;
+
+        return {provider: 'stripe', customer};
       }
       case "customer.subscription.created":
       case "customer.subscription.updated":
@@ -76,31 +68,18 @@ export async function stripeWebhookHandler({
             "Subscription created/updated/deleted event missing basejump_account_id"
           );
         }
+
         const subscription = stripeSubscriptionToBasejumpSubscription(
           accountId,
           subscriptionData
         );
-        await upsertCustomerSubscription(supabaseClient, accountId, {
+
+        console.log('wooooo', subscription);
+
+        return {
           provider: "stripe",
           subscription,
-        });
-        break;
-      }
-      case "checkout.session.completed": {
-        const checkoutSession = receivedEvent.data
-          .object as Stripe.Checkout.Session;
-        if (checkoutSession.mode === "subscription") {
-          const subscriptionId = checkoutSession.subscription;
-          const subscription = await findOrCreateSubscription(stripeClient, {
-            subscriptionId,
-          });
-          const accountId = subscription.account_id;
-          await upsertCustomerSubscription(supabaseClient, accountId, {
-            provider: "stripe",
-            subscription,
-          });
-        }
-        break;
+        };
       }
       default:
         throw new Error("Unhandled relevant event!");

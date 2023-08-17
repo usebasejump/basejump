@@ -1,7 +1,7 @@
 import { stripeCustomerToBasejumpCustomer } from "./stripe-utils.ts";
 import { BASEJUMP_BILLING_DATA_UPSERT } from "../../../../lib/upsert-data.ts";
 
-export default async function findOrCreateCustomer(
+export async function findOrCreateCustomer(
   stripeClient,
   { customerId, billingEmail, accountId }
 ): Promise<BASEJUMP_BILLING_DATA_UPSERT["customer"]> {

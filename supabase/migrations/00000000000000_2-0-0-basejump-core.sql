@@ -90,6 +90,10 @@ CREATE TABLE IF NOT EXISTS basejump.config
     default_account_plan_id   text
 );
 
+-- create config row
+INSERT INTO basejump.config (enable_personal_accounts, enable_team_accounts)
+VALUES (true, true);
+
 -- enable select on the config table
 GRANT SELECT ON basejump.config TO authenticated, service_role;
 
@@ -662,7 +666,7 @@ grant execute on function public.current_user_account_role(uuid) to authenticate
   * Returns the current billing status for an account
   * TODO: Add tests that confirm this raises an error if the user is not a member of the account
  */
-CREATE OR REPLACE FUNCTION public.get_account_billing_status(lookup_account_id uuid)
+CREATE OR REPLACE FUNCTION public.get_account_billing_status(account_id uuid)
     RETURNS jsonb
     security definer
     set search_path = public, basejump
@@ -673,7 +677,7 @@ DECLARE
     role_result     jsonb;
     billing_enabled jsonb;
 BEGIN
-    select public.current_user_account_role(lookup_account_id) into role_result;
+    select public.current_user_account_role(get_account_billing_status.account_id) into role_result;
 
     -- pull billing status directly because otherwise we won't be able to load it since there may not be a subscription
     select jsonb_build_object(
@@ -688,7 +692,7 @@ BEGIN
     end if;
 
     select jsonb_build_object(
-                   'account_id', s.account_id,
+                   'account_id', get_account_billing_status.account_id,
                    'billing_subscription_id', s.id,
                    'billing_status', s.status,
                    'billing_customer_id', c.id,
@@ -704,7 +708,7 @@ BEGIN
              left join basejump.billing_subscriptions s on s.account_id = a.id
              left join basejump.billing_customers c on c.account_id = s.account_id
              join basejump.config config on true
-    where a.id = lookup_account_id
+    where a.id = get_account_billing_status.account_id
     order by s.created desc
     limit 1;
 
@@ -717,7 +721,7 @@ grant execute on function public.get_account_billing_status(uuid) to authenticat
 /**
   * Allow service accounts to upsert the billing data for an account
  */
-CREATE OR REPLACE FUNCTION public.service_role_upsert_customer_subscription(account_id uuid default null,
+CREATE OR REPLACE FUNCTION public.service_role_upsert_customer_subscription(account_id uuid,
                                                                             customer jsonb default null,
                                                                             subscription jsonb default null)
     RETURNS void AS
