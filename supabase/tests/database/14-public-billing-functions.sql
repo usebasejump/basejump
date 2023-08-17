@@ -11,9 +11,11 @@ set default_account_plan_id = 'price_00000000000000';
 GRANT USAGE ON SCHEMA tests TO service_role;
 grant execute on all functions in schema tests to service_role;
 
-select plan(5);
+select plan(6);
 
 select tests.create_supabase_user('test1');
+select tests.create_supabase_user('non_member');
+
 select tests.authenticate_as('test1');
 
 insert into basejump.accounts (id, slug, name)
@@ -197,6 +199,13 @@ select row_eq(
                  "billing_enabled": true
                }'::jsonb),
                'get_account_billing_status should return the newly inserted data'
+           );
+
+select tests.authenticate_as('non_member');
+
+SELECT throws_ok(
+               $$ select get_account_billing_status('00000000-0000-0000-0000-000000000001') $$,
+               'P0001'
            );
 
 SELECT *

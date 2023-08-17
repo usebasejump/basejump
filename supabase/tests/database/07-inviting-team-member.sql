@@ -1,7 +1,7 @@
 BEGIN;
 CREATE EXTENSION "basejump-supabase_test_helpers";
 
-select plan(8);
+select plan(10);
 
 -- make sure we're setup for enabling personal accounts
 update basejump.config
@@ -78,6 +78,18 @@ SELECT row_eq(
                $$ select account_role from basejump.account_user where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f'::uuid and user_id = tests.get_supabase_uid('invited') $$,
                ROW ('member'::basejump.account_role),
                'Should have the correct account role after accepting an invitation'
+           );
+
+SELECT throws_ok(
+               $$ select get_account_members('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f')$$,
+               'Only account owners can access this function'
+           );
+
+select tests.authenticate_as('test1');
+SELECT row_eq(
+               $$ select json_array_length(get_account_members('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f')) $$,
+               ROW (2),
+               'Should be able to get account members as owner'
            );
 
 SELECT *

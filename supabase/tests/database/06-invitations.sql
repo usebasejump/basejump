@@ -3,14 +3,14 @@
 BEGIN;
 CREATE EXTENSION "basejump-supabase_test_helpers";
 
-select plan(28);
+select plan(32);
 
 -- make sure we're setup for enabling personal accounts
 update basejump.config
 set enable_team_accounts = true;
 
 -- create the users we need for testing
-select tests.create_supabase_user('test1');
+select tests.create_supabase_user('owner');
 select tests.create_supabase_user('stranger');
 select tests.create_supabase_user('invited_member1');
 select tests.create_supabase_user('invited_member2');
@@ -18,7 +18,7 @@ select tests.create_supabase_user('invited_member3');
 select tests.create_supabase_user('expired');
 
 --- start acting as an authenticated user
-select tests.authenticate_as('test1');
+select tests.authenticate_as('owner');
 
 -- create the taem account
 insert into basejump.accounts (id, name, slug, personal_account)
@@ -35,6 +35,20 @@ SELECT row_eq(
                $$ insert into basejump.invitations (account_id, account_role, token, invitation_type) values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'member', 'test_member_24_hour_token', '24_hour') returning 1 $$,
                ROW (1),
                'Owners should be able to add 24_hour invitations for new members'
+           );
+
+-- Creating an invitation with the create_invitation function should also work
+SELECT row_eq(
+               $$ select json_object_keys(create_invitation('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f'::uuid, 'member'::basejump.account_role, '24_hour'::basejump.invitation_type))$$,
+               ROW ('token'::text),
+               'Owners should be able to add 24_hour invitations for new members with create_invitation'
+           );
+
+-- listing invitations should work
+SELECT row_eq(
+               $$ select json_array_length(get_account_invitations('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f')) $$,
+               ROW (3),
+               'Should be able to list invitations for an account as an owner'
            );
 
 ----------
@@ -85,6 +99,12 @@ SELECT ok(
                (select 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' IN
                        (select basejump.get_accounts_with_role())),
                'Should now be a part of the team as lookup all'
+           );
+
+SELECT row_eq(
+               $$ select json_array_length(get_account_invitations('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f')) $$,
+               ROW (2),
+               'Should be able to list invitations for an account as an owner'
            );
 
 ------------
@@ -143,6 +163,10 @@ SELECT throws_ok(
                'new row violates row-level security policy for table "invitations"'
            );
 
+SELECT throws_ok(
+               $$ select json_array_length(get_account_invitations('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f')) $$,
+               'Only account owners can access this function'
+           );
 ------------
 -- Third member joining with 24_hour token
 ------------
@@ -223,7 +247,7 @@ set local role postgres;
 -- we need to remove the invitations timestamp trigger so we can force the token to expire
 drop trigger basejump_set_invitations_timestamp ON basejump.invitations;
 
-select tests.authenticate_as('test1');
+select tests.authenticate_as('owner');
 
 insert into basejump.invitations (account_id, account_role, token, invitation_type, created_at, updated_at)
 values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f',

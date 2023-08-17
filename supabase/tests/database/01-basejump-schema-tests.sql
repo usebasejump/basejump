@@ -20,8 +20,8 @@ select columns_are('basejump', 'config',
 
 select ok(basejump.is_set('enable_personal_accounts')), 'Basejump config should have personal accounts enabled';
 select ok(basejump.is_set('enable_team_accounts')), 'Basejump config should have team accounts enabled';
-select ok((basejump.get_config() ->> 'enable_account_billing')::boolean = false,
-          'Basejump config should have account billing disabled');
+select ok((basejump.get_config() ->> 'enable_account_billing')::boolean = true,
+          'Basejump config should have account billing enabled');
 select ok(basejump.get_config() ->> 'billing_provider' = 'stripe',
           'Basejump config should have stripe as the billing provider');
 select ok((basejump.get_config() ->> 'default_trial_period_days')::int = 30),

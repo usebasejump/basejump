@@ -390,7 +390,6 @@ begin
 
     -- first we setup the user profile
     -- TODO: see if we can get the user's name from the auth.users table once we learn how oauth works
-    -- TODO: If no name is provided, use the first part of the email address
     if new.email IS NOT NULL then
         generated_user_name := split_part(new.email, '@', 1);
     end if;
@@ -664,7 +663,6 @@ grant execute on function public.current_user_account_role(uuid) to authenticate
 
 /**
   * Returns the current billing status for an account
-  * TODO: Add tests that confirm this raises an error if the user is not a member of the account
  */
 CREATE OR REPLACE FUNCTION public.get_account_billing_status(account_id uuid)
     RETURNS jsonb
@@ -1144,9 +1142,6 @@ end
 $$;
 
 grant execute on function create_invitation(uuid, basejump.account_role, basejump.invitation_type) to authenticated;
-
--- TODO: Test this function for creating a new invitation
---TODO: Write tests for get_account_invitations and get_account_members
 
 /**
   * -------------------------
