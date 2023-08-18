@@ -1,5 +1,8 @@
 import createSupabaseServiceClient from "../lib/create-supabase-service-client.ts";
-import { BASEJUMP_BILLING_DATA_UPSERT, upsertCustomerSubscription } from "../lib/upsert-data.ts";
+import {
+  BASEJUMP_BILLING_DATA_UPSERT,
+  upsertCustomerSubscription,
+} from "../lib/upsert-data.ts";
 
 export type BILLING_WEBHOOKS_WRAPPER_HANDLER = (
   req: Request
@@ -11,8 +14,8 @@ export function billingWebhooksWrapper(
   return async function (req: Request) {
     try {
       const data = await handler(req);
-      const accountId = data?.customer?.account_id || data?.subscription?.account_id;
-      console.log('boop', data);
+      const accountId =
+        data?.customer?.account_id || data?.subscription?.account_id;
 
       if (data && accountId) {
         const supabaseClient = createSupabaseServiceClient();
@@ -20,21 +23,22 @@ export function billingWebhooksWrapper(
         await upsertCustomerSubscription(supabaseClient, accountId, data);
       }
 
-      console.log('post upsert');
-
-      return new Response(JSON.stringify({message: 'Webhook processed'}), {
+      return new Response(JSON.stringify({ message: "Webhook processed" }), {
         status: 200,
         headers: {
           "Content-Type": "application/json",
         },
       });
     } catch (e) {
-      return new Response(JSON.stringify({error: 'Error processing webhook'}), {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      return new Response(
+        JSON.stringify({ error: "Error processing webhook" }),
+        {
+          status: 500,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
     }
   };
 }

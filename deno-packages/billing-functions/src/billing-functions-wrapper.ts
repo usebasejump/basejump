@@ -78,9 +78,7 @@ export type BILLING_FUNCTION_WRAPPER_HANDLERS = {
 
 export function billingFunctionsWrapper(
   handlers: BILLING_FUNCTION_WRAPPER_HANDLERS
-): (
-  req: Request
-) => Promise<Response> {
+): (req: Request) => Promise<Response> {
   return async function (req: Request) {
     // check for options preflight and handle cors
     if (req.method === "OPTIONS") {
@@ -93,6 +91,7 @@ export function billingFunctionsWrapper(
           const plans = await handlers.getPlans(body.args);
           return new Response(JSON.stringify(plans), {
             headers: {
+              ...corsHeaders,
               "Content-Type": "application/json",
             },
           });
@@ -101,7 +100,6 @@ export function billingFunctionsWrapper(
             accountId: body.args.account_id,
             authorizedRoles: ["owner"],
             async onBillableAndAuthorized(roleInfo) {
-              console.log('boop', roleInfo);
               const response = await handlers.getBillingPortalUrl({
                 accountId: roleInfo.account_id,
                 subscriptionId: roleInfo.billing_subscription_id,
@@ -115,6 +113,7 @@ export function billingFunctionsWrapper(
                 }),
                 {
                   headers: {
+                    ...corsHeaders,
                     "Content-Type": "application/json",
                   },
                 }
@@ -131,7 +130,7 @@ export function billingFunctionsWrapper(
                 planId: body.args.plan_id,
                 returnUrl: body.args.return_url,
                 billingEmail: roleInfo.billing_email,
-                customerId: roleInfo.billing_customer_id
+                customerId: roleInfo.billing_customer_id,
               });
               return new Response(
                 JSON.stringify({
@@ -140,6 +139,7 @@ export function billingFunctionsWrapper(
                 }),
                 {
                   headers: {
+                    ...corsHeaders,
                     "Content-Type": "application/json",
                   },
                 }
@@ -166,6 +166,7 @@ export function billingFunctionsWrapper(
                 }),
                 {
                   headers: {
+                    ...corsHeaders,
                     "Content-Type": "application/json",
                   },
                 }
@@ -181,6 +182,7 @@ export function billingFunctionsWrapper(
             {
               status: 400,
               headers: {
+                ...corsHeaders,
                 "Content-Type": "application/json",
               },
             }
@@ -193,6 +195,7 @@ export function billingFunctionsWrapper(
         {
           status: 400,
           headers: {
+            ...corsHeaders,
             "Content-Type": "application/json",
           },
         }
