@@ -4,12 +4,14 @@ import {
   AccountSelector,
   BasejumpUserSession,
   ProfileButton,
+  ProfileButtonItem,
   SignedIn,
   SignedOut,
   SignInButton,
 } from "@usebasejump/react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { SignUpButton } from "@usebasejump/react/src/components/sign-up-button";
+import Link from "next/link";
 
 const invitationUrlTemplate =
   process.env.NEXT_PUBLIC_BASEJUMP_INVITATION_URL_TEMPLATE;
@@ -49,7 +51,11 @@ export default function Header() {
           </SignedOut>
           <SignedIn>
             <li>
-              <ProfileButton supabaseClient={supabaseClient} />
+              <ProfileButton supabaseClient={supabaseClient}>
+                <ProfileButtonItem>
+                  <Link href="/">Whatever</Link>
+                </ProfileButtonItem>
+              </ProfileButton>
             </li>
           </SignedIn>
         </ul>

@@ -33,7 +33,7 @@
     "button_label": "Edit Account"
   },
   "edit_account_page": {
-    "header_text": "Edit your account",
+    "header_text": "Manage your account",
     "general_tab_label": "Basic Info",
     "billing_tab_label": "Billing",
     "members_tab_label": "Members",
@@ -88,7 +88,8 @@
     "role_label": "Role",
     "created_label": "Created",
     "invitation_type_one_time": "Single use",
-    "invitation_type_24_hour": "Multiple use"
+    "invitation_type_24_hour": "Multiple use",
+    "no_invitations_text": "No pending invitations"
   },
   "update_member_role": {
     "header_text": "Update user role",
@@ -96,5 +97,11 @@
     "change_primary_owner_label": "Make this user the primary account owner",
     "cancel_button_label": "Cancel",
     "new_role_label": "Account role"
+  },
+  "account_billing": {
+    "billing_email_label": "Billing email",
+    "billing_status_label": "Account Status",
+    "billing_status_not_setup": "Not setup",
+    "manage_subscription": "Manage Subscription"
   }
 }

@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { AuthError, SupabaseClient } from "@supabase/supabase-js";
 import { Session } from "@supabase/auth-helpers-react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 type Props = {
   supabaseClient: SupabaseClient;
@@ -23,6 +24,8 @@ const BasejumpContext = createContext<BASEJUMP_PROVIDER | null>({
   error: null,
   session: null,
 });
+
+const queryClient = new QueryClient();
 
 export const BasejumpUserSession = ({
   supabaseClient,
@@ -112,7 +115,7 @@ export const BasejumpUserSession = ({
 
   return (
     <BasejumpContext.Provider value={providerValue}>
-      {children}
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </BasejumpContext.Provider>
   );
 };

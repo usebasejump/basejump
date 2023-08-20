@@ -54,7 +54,12 @@ export const AccountForm = ({
     event.preventDefault();
     setLoading(true);
     try {
-      if (!formData.accountName || !formData.slug) {
+      if (!formData.accountName) {
+        setError(labels?.missing_fields_error);
+        return;
+      }
+
+      if (requireSlug && !formData.slug) {
         setError(labels?.missing_fields_error);
         return;
       }

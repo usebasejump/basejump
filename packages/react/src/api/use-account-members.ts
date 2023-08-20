@@ -1,29 +1,32 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { useApiRequest } from "./use-api-request";
 import { GET_ACCOUNT_MEMBERS_RESPONSE } from "@usebasejump/shared";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 
 type Props = {
-  accountId?: string;
-  accountSlug?: string;
-  supabaseClient?: SupabaseClient<any> | null;
+  accountId: string;
+  supabaseClient: SupabaseClient<any> | null;
+  options?: UseQueryOptions;
 };
 
-export const useAccountMembers = ({ supabaseClient, accountId }: Props) => {
-  return useApiRequest<GET_ACCOUNT_MEMBERS_RESPONSE>({
-    supabaseClient,
-    apiRequest: async () => {
-      if (!supabaseClient) {
-        throw new Error("Client not yet loaded");
-      }
-      if (!accountId) {
-        throw new Error("Account ID required");
-      }
-
-      const response = await supabaseClient.rpc("get_account_members", {
+export const useAccountMembers = ({
+  supabaseClient,
+  accountId,
+  options,
+}: Props) => {
+  return useQuery<GET_ACCOUNT_MEMBERS_RESPONSE>({
+    queryKey: ["account-members", accountId],
+    queryFn: async () => {
+      const { data, error } = await supabaseClient.rpc("get_account_members", {
         account_id: accountId,
       });
 
-      return response;
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data;
     },
+    enabled: !!supabaseClient && !!accountId,
+    ...options,
   });
 };

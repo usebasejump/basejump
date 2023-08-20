@@ -39,6 +39,9 @@ const containerDefaultStyles = css({
       large: {
         gap: "16px",
       },
+      xlarge: {
+        gap: "32px",
+      },
     },
   },
 });
@@ -46,7 +49,7 @@ const containerDefaultStyles = css({
 export interface ContainerProps extends HtmlHTMLAttributes<HTMLDivElement> {
   children: ReactNode;
   direction?: "horizontal" | "vertical" | "inline";
-  gap?: "small" | "medium" | "large";
+  gap?: "small" | "medium" | "large" | "xlarge";
   position?: "start" | "end" | "center";
   appearance?: Appearance;
 }

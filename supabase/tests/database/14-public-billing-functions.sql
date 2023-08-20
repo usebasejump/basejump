@@ -2,7 +2,8 @@ BEGIN;
 CREATE EXTENSION "basejump-supabase_test_helpers";
 
 update basejump.config
-set enable_account_billing = TRUE;
+set enable_team_account_billing     = TRUE,
+    enable_personal_account_billing = true;
 
 update basejump.config
 set default_account_plan_id = 'price_00000000000000';

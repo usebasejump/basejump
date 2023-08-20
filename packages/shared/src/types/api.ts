@@ -65,3 +65,13 @@ export type GET_ACCOUNT_INVITES_RESPONSE = {
 export type CREATE_INVITATION_RESPONSE = {
   token: string;
 };
+
+export type GET_ACCOUNT_BILLING_STATUS_RESPONSE = {
+  subscription_id: string;
+  subscription_active: boolean;
+  status: Database["public"]["Tables"]["billing_subscriptions"]["Row"]["status"];
+  billing_email?: string;
+  account_role: Database["public"]["Tables"]["account_user"]["Row"]["account_role"];
+  is_primary_owner: boolean;
+  billing_enabled: boolean;
+};

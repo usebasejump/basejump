@@ -3,12 +3,9 @@ CREATE EXTENSION "basejump-supabase_test_helpers";
 
 select plan(5);
 
--- make sure we're setup for enabling personal accounts
+-- make sure we're setup for enabling team accounts
 update basejump.config
 set enable_team_accounts = true;
-
-update basejump.config
-set enable_personal_accounts = false;
 
 --- we insert a user into auth.users and return the id into user_id to use
 select tests.create_supabase_user('test1');

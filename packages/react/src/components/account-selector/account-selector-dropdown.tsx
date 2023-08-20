@@ -123,14 +123,7 @@ export const AccountSelectorDropdown = ({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger>
         <div className={selectedItemContainerStyles()}>
-          <Avatar
-            uniqueId={
-              currentAccount?.personal_account
-                ? currentAccount?.name || "personal-account"
-                : currentAccount?.slug || currentAccount?.id
-            }
-            size="large"
-          />
+          <Avatar uniqueId={currentAccount?.account_id} />
           {currentAccount?.personal_account
             ? currentAccount?.name || labels?.my_account
             : currentAccount?.name || currentAccount?.slug}
@@ -149,6 +142,7 @@ export const AccountSelectorDropdown = ({
                   supabaseClient={supabaseClient!}
                   localization={localization}
                   showEditButton={showEditButton}
+                  onEditClick={internalOnEditClick}
                 />
               </CommandGroup>
             )}

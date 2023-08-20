@@ -15,13 +15,14 @@ select has_table('basejump', 'billing_subscriptions', 'Basejump billing_subscrip
 select tests.rls_enabled('public');
 
 select columns_are('basejump', 'config',
-                   Array ['enable_personal_accounts', 'enable_team_accounts', 'enable_account_billing', 'billing_provider', 'default_trial_period_days', 'default_account_plan_id'],
+                   Array ['enable_team_accounts', 'enable_personal_account_billing', 'enable_team_account_billing', 'billing_provider', 'default_trial_period_days', 'default_account_plan_id'],
                    'Basejump config table should have the correct columns');
 
-select ok(basejump.is_set('enable_personal_accounts')), 'Basejump config should have personal accounts enabled';
+select ok(basejump.is_set('enable_personal_account_billing')),
+       'Basejump config should have personal account billing enabled';
 select ok(basejump.is_set('enable_team_accounts')), 'Basejump config should have team accounts enabled';
-select ok((basejump.get_config() ->> 'enable_account_billing')::boolean = true,
-          'Basejump config should have account billing enabled');
+select ok((basejump.get_config() ->> 'enable_team_account_billing')::boolean = true,
+          'Basejump config should have team account billing enabled');
 select ok(basejump.get_config() ->> 'billing_provider' = 'stripe',
           'Basejump config should have stripe as the billing provider');
 select ok((basejump.get_config() ->> 'default_trial_period_days')::int = 30),
@@ -38,7 +39,7 @@ SELECT schema_privs_are('basejump', 'anon', Array [NULL], 'Anon should not have 
 -- set the role to anonymous for verifying access tests
 set role anon;
 select throws_ok('select basejump.get_config()');
-select throws_ok('select basejump.is_set(''enable_personal_accounts'')');
+select throws_ok('select basejump.is_set(''enable_team_accounts'')');
 select throws_ok('select basejump.generate_token(1)');
 
 -- set the role to the service_role for testing access
@@ -49,7 +50,7 @@ select ok(basejump.get_config() is not null),
 -- set the role to authenticated for tests
 set role authenticated;
 select ok(basejump.get_config() is not null), 'Basejump get_config should be accessible to authenticated users';
-select ok(basejump.is_set('enable_personal_accounts')),
+select ok(basejump.is_set('enable_team_accounts')),
        'Basejump is_set should be accessible to authenticated users';
 select ok(basejump.generate_token(1) is not null),
        'Basejump generate_token should be accessible to authenticated users';

@@ -15,6 +15,7 @@ type ThemeVariables = SupabaseThemeVariables & {
     tabsSelectedText?: string;
     tabsSelectedBorder?: string;
     tabsUnselectedBorder?: string;
+    avatarBackgrounds?: string[];
   };
   sizes?: {
     userButtonAvatarSize?: string;

@@ -11,6 +11,9 @@ const lineItemContainerStyles = css({
   alignItems: "center",
   justifyContent: "space-between",
   width: "100%",
+  "&:has(*[aria-selected='true'])": {
+    backgroundColor: "$dropdownItemHoverBackground",
+  },
 });
 
 const lineItemButtonStyles = css({
@@ -20,9 +23,9 @@ const lineItemButtonStyles = css({
   columnGap: "0.5rem",
   flexGrow: 1,
   cursor: "pointer",
-  "&[aria-selected='true']": {
-    backgroundColor: "$dropdownItemHoverBackground",
-  },
+  // "&[aria-selected='true']": {
+  //   backgroundColor: "$dropdownItemHoverBackground",
+  // },
 });
 
 const iconStyles = css({
@@ -55,13 +58,7 @@ export const AccountSelectorLine = ({
   return (
     <div className={lineItemContainerStyles()}>
       <CommandItem className={lineItemButtonStyles()} onSelect={onSelect}>
-        <Avatar
-          uniqueId={
-            account?.personal_account
-              ? account?.name || "personal-account"
-              : account.slug || account.id
-          }
-        />
+        <Avatar uniqueId={account.account_id} />
         {account?.personal_account
           ? account?.name || labels?.my_account
           : account?.name}

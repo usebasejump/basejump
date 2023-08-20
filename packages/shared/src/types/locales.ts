@@ -94,6 +94,7 @@ export interface I18nVariables extends AuthUII18nVariables {
     invitation_type_label?: string;
     invitation_type_24_hour?: string;
     invitation_type_one_time?: string;
+    no_invitations_text?: string;
   };
   update_member_role?: {
     header_text?: string;
@@ -102,5 +103,11 @@ export interface I18nVariables extends AuthUII18nVariables {
     change_primary_owner_label?: string;
     cancel_button_label?: string;
     new_role_label?: string;
+  };
+  account_billing?: {
+    billing_email_label?: string;
+    billing_status_label?: string;
+    billing_status_not_setup?: string;
+    manage_subscription?: string;
   };
 }

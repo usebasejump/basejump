@@ -16,6 +16,13 @@ const themeOverrides: Theme = {
       tabsSelectedText: "$defaultButtonText",
       tabsSelectedBorder: "$brand",
       tabsUnselectedBorder: "$inputBorder",
+      avatarBackgrounds: [
+        "#92A1C6",
+        "#146A7C",
+        "#F0AB3D",
+        "#C271B4",
+        "#C20D90",
+      ],
     },
     sizes: {
       userButtonAvatarSize: "32px",

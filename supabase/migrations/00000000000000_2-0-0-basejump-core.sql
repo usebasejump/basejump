@@ -82,17 +82,17 @@ CREATE TYPE basejump.invitation_type AS ENUM ('one_time', '24_hour');
 
 CREATE TABLE IF NOT EXISTS basejump.config
 (
-    enable_personal_accounts  boolean                    default true,
-    enable_team_accounts      boolean                    default true,
-    enable_account_billing    boolean                    default true,
-    billing_provider          basejump.billing_providers default 'stripe',
-    default_trial_period_days integer                    default 30,
-    default_account_plan_id   text
+    enable_team_accounts            boolean                    default true,
+    enable_personal_account_billing boolean                    default true,
+    enable_team_account_billing     boolean                    default true,
+    billing_provider                basejump.billing_providers default 'stripe',
+    default_trial_period_days       integer                    default 30,
+    default_account_plan_id         text
 );
 
 -- create config row
-INSERT INTO basejump.config (enable_personal_accounts, enable_team_accounts)
-VALUES (true, true);
+INSERT INTO basejump.config (enable_team_accounts, enable_personal_account_billing, enable_team_account_billing)
+VALUES (true, true, true);
 
 -- enable select on the config table
 GRANT SELECT ON basejump.config TO authenticated, service_role;
@@ -374,7 +374,6 @@ EXECUTE FUNCTION basejump.add_current_user_to_new_account();
 /**
   * When a user signs up, we need to create a personal account for them
   * and add them to the account_user table so they can act on it
-  * Only do this if personal account are enabled
  */
 create function basejump.run_new_user_setup()
     returns trigger
@@ -671,27 +670,17 @@ CREATE OR REPLACE FUNCTION public.get_account_billing_status(account_id uuid)
 AS
 $$
 DECLARE
-    result          jsonb;
-    role_result     jsonb;
-    billing_enabled jsonb;
+    result      jsonb;
+    role_result jsonb;
 BEGIN
     select public.current_user_account_role(get_account_billing_status.account_id) into role_result;
-
-    -- pull billing status directly because otherwise we won't be able to load it since there may not be a subscription
-    select jsonb_build_object(
-                   'billing_enabled', config.enable_account_billing
-               )
-    into billing_enabled
-    from basejump.config config
-    limit 1;
-
-    if billing_enabled ->> 'billing_enabled' = 'false' then
-        return role_result || billing_enabled;
-    end if;
 
     select jsonb_build_object(
                    'account_id', get_account_billing_status.account_id,
                    'billing_subscription_id', s.id,
+                   'billing_enabled', case
+                                          when a.personal_account = true then config.enable_personal_account_billing
+                                          else config.enable_team_account_billing end,
                    'billing_status', s.status,
                    'billing_customer_id', c.id,
                    'billing_provider', config.billing_provider,
@@ -710,7 +699,7 @@ BEGIN
     order by s.created desc
     limit 1;
 
-    return result || role_result || billing_enabled;
+    return result || role_result;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -877,6 +866,12 @@ BEGIN
                            'name', a.name,
                            'slug', a.slug,
                            'personal_account', a.personal_account,
+                           'billing_enabled', case
+                                                  when a.personal_account = true then
+                                                      config.enable_personal_account_billing
+                                                  else
+                                                      config.enable_team_account_billing
+                               end,
                            'billing_status', bs.status,
                            'created_at', a.created_at,
                            'updated_at', a.updated_at,
@@ -884,6 +879,7 @@ BEGIN
                        )
             from basejump.accounts a
                      left join basejump.account_user wu on a.id = wu.account_id and wu.user_id = auth.uid()
+                     join basejump.config config on true
                      left join (select bs.account_id, status
                                 from basejump.billing_subscriptions bs
                                 where bs.account_id = get_account.account_id
@@ -917,6 +913,29 @@ END;
 $$;
 
 grant execute on function public.get_account_by_slug(text) to authenticated;
+
+/**
+  Returns the personal account for the current user
+ */
+create or replace function public.get_personal_account()
+    returns json
+    language plpgsql
+as
+$$
+DECLARE
+    internal_account_id uuid;
+BEGIN
+    select a.id
+    into internal_account_id
+    from basejump.accounts a
+    where a.personal_account = true
+      and a.primary_owner_user_id = auth.uid();
+
+    return public.get_account(internal_account_id);
+END;
+$$;
+
+grant execute on function public.get_personal_account() to authenticated;
 
 /**
   * Create an account

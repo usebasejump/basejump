@@ -1,28 +1,35 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { useApiRequest } from "./use-api-request";
 import { GET_ACCOUNT_INVITES_RESPONSE } from "@usebasejump/shared";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 
 type Props = {
   accountId: string;
   supabaseClient: SupabaseClient<any> | null;
+  options?: UseQueryOptions;
 };
 
-export const useAccountInvitations = ({ supabaseClient, accountId }: Props) => {
-  return useApiRequest<GET_ACCOUNT_INVITES_RESPONSE>({
-    supabaseClient,
-    apiRequest: async () => {
-      if (!supabaseClient) {
-        throw new Error("Client not yet loaded");
-      }
-      if (!accountId) {
-        throw new Error("Account ID required");
+export const useAccountInvitations = ({
+  supabaseClient,
+  accountId,
+  options,
+}: Props) => {
+  return useQuery<GET_ACCOUNT_INVITES_RESPONSE>({
+    queryKey: ["account-invitations", accountId],
+    queryFn: async () => {
+      const { data, error } = await supabaseClient.rpc(
+        "get_account_invitations",
+        {
+          account_id: accountId,
+        }
+      );
+
+      if (error) {
+        throw new Error(error.message);
       }
 
-      const response = await supabaseClient.rpc("get_account_invitations", {
-        account_id: accountId,
-      });
-
-      return response;
+      return data;
     },
+    enabled: !!supabaseClient && !!accountId,
+    ...options,
   });
 };

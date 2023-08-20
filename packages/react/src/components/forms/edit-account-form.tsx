@@ -19,7 +19,7 @@ interface Props extends BasePropsWithClient {
 export const EditAccountForm = ({
   account,
   onCancel,
-  requireSlug = true,
+  requireSlug,
   afterUpdate,
   supabaseClient,
   localization,
@@ -52,7 +52,7 @@ export const EditAccountForm = ({
       onCancel={onCancel}
       {...props}
       afterSave={afterUpdate}
-      requireSlug={requireSlug}
+      requireSlug={requireSlug || !account?.personal_account}
     />
   );
 };

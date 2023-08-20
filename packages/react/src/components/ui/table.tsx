@@ -8,7 +8,7 @@ const tableStyles = css({
     padding: "$tableHeaderCellPadding",
     fontWeight: "300",
     textTransform: "uppercase",
-    fontSize: ".75rem",
+    fontSize: ".65rem",
   },
   "& td": {
     padding: "$tableCellPadding",

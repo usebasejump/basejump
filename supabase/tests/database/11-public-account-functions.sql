@@ -7,9 +7,6 @@ select plan(27);
 update basejump.config
 set enable_team_accounts = true;
 
-update basejump.config
-set enable_personal_accounts = true;
-
 --- we insert a user into auth.users and return the id into user_id to use
 select tests.create_supabase_user('test1');
 select tests.create_supabase_user('test2');

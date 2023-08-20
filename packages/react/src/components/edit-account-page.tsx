@@ -12,6 +12,7 @@ import { InviteMemberButton } from "./invite-member-button.tsx";
 import { Button } from "./ui/button.tsx";
 import { useAccount } from "../api/use-account.ts";
 import { AccountInvitations } from "./edit-account-page/account-invitations.tsx";
+import { AccountBilling } from "./edit-account-page/account-billing.tsx";
 
 type Props = BasePropsWithClient & {
   accountId?: string;
@@ -55,12 +56,16 @@ export const EditAccountPage = ({
               <TabsTrigger value={EditAccountTabs.general}>
                 {labels?.general_tab_label}
               </TabsTrigger>
-              <TabsTrigger value={EditAccountTabs.members}>
-                {labels?.members_tab_label}
-              </TabsTrigger>
-              <TabsTrigger value={EditAccountTabs.billing}>
-                {labels?.billing_tab_label}
-              </TabsTrigger>
+              {account?.personal_account === false && (
+                <TabsTrigger value={EditAccountTabs.members}>
+                  {labels?.members_tab_label}
+                </TabsTrigger>
+              )}
+              {account?.billing_enabled && (
+                <TabsTrigger value={EditAccountTabs.billing}>
+                  {labels?.billing_tab_label}
+                </TabsTrigger>
+              )}
             </TabsList>
             <TabsContent value={EditAccountTabs.general}>
               <EditAccountForm
@@ -71,39 +76,59 @@ export const EditAccountPage = ({
                 theme={theme}
               />
             </TabsContent>
-            <TabsContent value={EditAccountTabs.members}>
-              <Container direction="vertical" gap="large">
-                <Container direction="inline" position="end">
-                  <InviteMemberButton
-                    supabaseClient={supabaseClient}
-                    accountId={account?.account_id}
-                    invitationUrlTemplate={invitationUrlTemplate}
-                  >
-                    <Button
-                      width="auto"
-                      appearance={appearance}
-                      theme={theme}
-                      color="primary"
+            {account?.personal_account === false && (
+              <TabsContent value={EditAccountTabs.members}>
+                <Container direction="vertical" gap="xlarge">
+                  <Container direction="inline" position="end">
+                    <InviteMemberButton
+                      supabaseClient={supabaseClient}
+                      accountId={account?.account_id}
+                      invitationUrlTemplate={invitationUrlTemplate}
                     >
-                      {labels?.new_member_button_label}
-                    </Button>
-                  </InviteMemberButton>
+                      <Button
+                        width="auto"
+                        appearance={appearance}
+                        theme={theme}
+                        color="primary"
+                      >
+                        {labels?.new_member_button_label}
+                      </Button>
+                    </InviteMemberButton>
+                  </Container>
+                  <div>
+                    <Header3>{labels?.invitations_header_text}</Header3>
+                    <AccountInvitations
+                      appearance={appearance}
+                      localization={localization}
+                      theme={theme}
+                      supabaseClient={supabaseClient}
+                      accountId={accountId}
+                    />
+                  </div>
+                  <div>
+                    <Header3>{labels?.members_header_text}</Header3>
+                    <AccountMembers
+                      appearance={appearance}
+                      localization={localization}
+                      them={theme}
+                      accountId={accountId}
+                      supabaseClient={supabaseClient}
+                    />
+                  </div>
                 </Container>
-                <Header3>{labels?.invitations_header_text}</Header3>
-                <AccountInvitations
-                  supabaseClient={supabaseClient}
+              </TabsContent>
+            )}
+            {account?.billing_enabled && (
+              <TabsContent value={EditAccountTabs.billing}>
+                <AccountBilling
+                  appearance={appearance}
+                  localization={localization}
+                  theme={theme}
                   accountId={accountId}
-                />
-                <Header3>{labels?.members_header_text}</Header3>
-                <AccountMembers
-                  accountId={accountId}
                   supabaseClient={supabaseClient}
                 />
-              </Container>
-            </TabsContent>
-            <TabsContent value={EditAccountTabs.billing}>
-              {labels?.billing_tab_label}
-            </TabsContent>
+              </TabsContent>
+            )}
           </Tabs>
         </div>
       </Container>

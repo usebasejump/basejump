@@ -3,10 +3,6 @@ CREATE EXTENSION "basejump-supabase_test_helpers";
 
 select plan(15);
 
--- make sure we're setup for enabling personal accounts
-update basejump.config
-set enable_personal_accounts = true;
-
 --- we insert a user into auth.users and return the id into user_id to use
 
 select tests.create_supabase_user('test1', 'test1@test.com');

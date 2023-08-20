@@ -1,30 +1,46 @@
-import {SupabaseClient} from "@supabase/supabase-js";
-import {useApiRequest} from "./use-api-request";
-import {GET_ACCOUNT_RESPONSE} from "@usebasejump/shared";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import { GET_ACCOUNT_RESPONSE } from "@usebasejump/shared";
 
 type Props = {
-    accountId?: string;
-    accountSlug?: string;
-    supabaseClient?: SupabaseClient<any> | null;
-}
+  accountId?: string;
+  accountSlug?: string;
+  supabaseClient?: SupabaseClient<any> | null;
+  options?: UseQueryOptions;
+};
 
-export const useAccount = ({supabaseClient, accountId, accountSlug}: Props) => {
-    return useApiRequest<GET_ACCOUNT_RESPONSE>({supabaseClient, apiRequest: async () => {
-            if (!supabaseClient) {
-                throw new Error('Client not yet loaded');
-            };
+export const useAccount = ({
+  supabaseClient,
+  accountId,
+  accountSlug,
+  options,
+}: Props) => {
+  return useQuery<GET_ACCOUNT_RESPONSE>({
+    queryKey: ["account", accountId || accountSlug],
+    queryFn: async () => {
+      if (accountId) {
+        const { data, error } = await supabaseClient.rpc("get_account", {
+          account_id: accountId,
+        });
 
-            if (!accountId && !accountSlug) {
-                throw new Error('Account ID or slug required');
-            }
+        if (error) {
+          throw new Error(error.message);
+        }
 
-            if (accountId) {
-                const response = await supabaseClient.rpc('get_account', {account_id: accountId});
+        return data;
+      }
 
-                return response;
-            }
+      const { data, error } = await supabaseClient.rpc("get_account_by_slug", {
+        slug: accountSlug,
+      });
 
-            const response = await supabaseClient.rpc('get_account_by_slug', {slug: accountSlug});
-            return response;
-        }})
-}
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data;
+    },
+    enabled: !!supabaseClient && (!!accountId || !!accountSlug),
+    ...options,
+  });
+};
