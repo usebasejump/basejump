@@ -17,9 +17,6 @@ type ThemeVariables = SupabaseThemeVariables & {
     tabsUnselectedBorder?: string;
     avatarBackgrounds?: string[];
   };
-  sizes?: {
-    userButtonAvatarSize?: string;
-  };
   radii?: {
     dialogContentRadius?: string;
     dropdownContentRadius?: string;

@@ -1037,6 +1037,32 @@ $$;
 grant execute on function public.get_account_members(uuid, integer, integer) to authenticated;
 
 /**
+  Allows an owner of the account to remove any member other than the primary owner
+ */
+
+create or replace function public.remove_account_member(account_id uuid, user_id uuid)
+    returns void
+    language plpgsql
+as
+$$
+BEGIN
+    -- only account owners can access this function
+    if public.has_role_on_account(remove_account_member.account_id, 'owner') <> true then
+        raise exception 'Only account owners can access this function';
+    end if;
+
+    delete
+    from basejump.account_user wu
+    where wu.account_id = remove_account_member.account_id
+      and wu.user_id = remove_account_member.user_id;
+END;
+$$;
+
+grant execute on function public.remove_account_member(uuid, uuid) to authenticated;
+
+--TODO: Write tests for remove_account_member and delete_invitation functions
+
+/**
   Returns a list of currently active invitations for a given account
  */
 
@@ -1056,7 +1082,8 @@ BEGIN
                            json_build_object(
                                    'account_role', i.account_role,
                                    'created_at', i.created_at,
-                                   'invitation_type', i.invitation_type
+                                   'invitation_type', i.invitation_type,
+                                   'invitation_id', i.id
                                )
                        )
             from basejump.invitations i
@@ -1161,6 +1188,23 @@ end
 $$;
 
 grant execute on function create_invitation(uuid, basejump.account_role, basejump.invitation_type) to authenticated;
+
+/**
+  Allows an owner to delete an existing invitation
+ */
+
+create or replace function delete_invitation(invitation_id uuid)
+    returns void
+    language plpgsql
+as
+$$
+begin
+    delete from basejump.invitations where id = delete_invitation.invitation_id;
+end
+$$;
+
+grant execute on function delete_invitation(uuid) to authenticated;
+
 
 /**
   * -------------------------

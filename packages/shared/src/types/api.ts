@@ -21,6 +21,21 @@ export type GET_ACCOUNT_BILLING_STATUS_RESPONSE = {
   billing_email?: string;
 };
 
+export type GET_BILLING_PLANS_RESPONSE = Array<{
+  id: string;
+  name: string;
+  description?: string;
+  amount: number;
+  currency: string;
+  interval: "month" | "year" | "one_time";
+  interval_count: 1;
+  trial_period_days?: 30;
+  active?: boolean;
+  metadata?: {
+    [key: string]: string;
+  };
+}>;
+
 export type GET_ACCOUNT_RESPONSE = {
   account_id: string;
   role: Database["public"]["Tables"]["account_user"]["Row"]["account_role"];

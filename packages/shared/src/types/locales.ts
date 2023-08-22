@@ -109,5 +109,23 @@ export interface I18nVariables extends AuthUII18nVariables {
     billing_status_label?: string;
     billing_status_not_setup?: string;
     manage_subscription?: string;
+    setup_new_subscription?: string;
+  };
+  new_billing_subscription_button?: {
+    button_label?: string;
+  };
+  manage_billing_subscription_button?: {
+    button_label?: string;
+  };
+  subscription_plans?: {
+    one_time?: string;
+    month?: string;
+    year?: string;
+    select_plan?: string;
+    intervals?: {
+      year?: string;
+      month?: string;
+      one_time?: string;
+    };
   };
 }

@@ -7,6 +7,8 @@ import { Container } from "../ui/container.tsx";
 import { Text } from "../ui/typography.tsx";
 import { ACCOUNT_ROLES } from "../../types/accounts.ts";
 import { Button } from "../ui/button.tsx";
+import { NewBillingSubscriptionButton } from "../new-billing-subscription-button.tsx";
+import { ManageBillingSubscriptionButton } from "../manage-billing-subscription-button.tsx";
 
 type Props = BasePropsWithClient & {
   accountId: string;
@@ -34,9 +36,7 @@ export function AccountBilling({
           <div>
             <Text>{labels?.billing_status_label}</Text>
             <p>
-              {data?.billing_status
-                ? data.billing_status
-                : labels?.billing_status_not_setup}
+              {data?.status ? data.status : labels?.billing_status_not_setup}
             </p>
           </div>
           <div>
@@ -45,9 +45,21 @@ export function AccountBilling({
           </div>
           {data?.account_role === ACCOUNT_ROLES.owner && (
             <div>
-              <Button width="auto" color="primary">
-                {labels?.manage_subscription}
-              </Button>
+              {data?.status ? (
+                <ManageBillingSubscriptionButton
+                  supabaseClient={supabaseClient}
+                  accountId={accountId}
+                />
+              ) : (
+                <NewBillingSubscriptionButton
+                  supabaseClient={supabaseClient}
+                  accountId={accountId}
+                >
+                  <Button width="auto" color="primary">
+                    {labels?.setup_new_subscription}
+                  </Button>
+                </NewBillingSubscriptionButton>
+              )}
             </div>
           )}
         </Container>

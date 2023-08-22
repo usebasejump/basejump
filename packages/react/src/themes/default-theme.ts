@@ -24,9 +24,6 @@ const themeOverrides: Theme = {
         "#C20D90",
       ],
     },
-    sizes: {
-      userButtonAvatarSize: "32px",
-    },
     radii: {
       dialogContentRadius: "0.5rem",
       dropdownContentRadius: "0.5rem",

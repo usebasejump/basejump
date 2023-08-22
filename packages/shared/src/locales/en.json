@@ -102,6 +102,24 @@
     "billing_email_label": "Billing email",
     "billing_status_label": "Account Status",
     "billing_status_not_setup": "Not setup",
-    "manage_subscription": "Manage Subscription"
+    "manage_subscription": "Manage Subscription",
+    "setup_new_subscription": "Setup Subscription"
+  },
+  "new_billing_subscription_button": {
+    "button_label": "Activate your account"
+  },
+  "manage_billing_subscription_button": {
+    "button_label": "Manage your account"
+  },
+  "subscription_plans": {
+    "one_time": "One time",
+    "month": "Monthly",
+    "year": "Yearly",
+    "select_plan": "Select Plan",
+    "intervals": {
+      "one_time": "One time",
+      "month": "per month",
+      "year": "per year"
+    }
   }
 }
