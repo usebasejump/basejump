@@ -128,4 +128,11 @@ export interface I18nVariables extends AuthUII18nVariables {
       one_time?: string;
     };
   };
+  accept_invitation?: {
+    header_text?: string;
+    button_label?: string;
+    invite_invalid?: string;
+    loading_label?: string;
+    loading_button_label?: string;
+  };
 }

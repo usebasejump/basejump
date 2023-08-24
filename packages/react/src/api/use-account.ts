@@ -15,6 +15,7 @@ export const useAccount = ({
   accountSlug,
   options,
 }: Props) => {
+  console.log("boop", accountSlug);
   return useQuery<GET_ACCOUNT_RESPONSE>({
     queryKey: ["account", accountId || accountSlug],
     queryFn: async () => {
@@ -29,7 +30,6 @@ export const useAccount = ({
 
         return data;
       }
-
       const { data, error } = await supabaseClient.rpc("get_account_by_slug", {
         slug: accountSlug,
       });

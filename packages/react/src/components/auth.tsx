@@ -5,4 +5,18 @@
  * alongside basejump
  */
 
-export { Auth } from '@supabase/auth-ui-react';
+"use client";
+
+import { ComponentPropsWithoutRef } from "react";
+import { BasePropsWithClient } from "../types/base-props";
+import { Auth as InternalAuth } from "@supabase/auth-ui-react";
+
+type Props = BasePropsWithClient & ComponentPropsWithoutRef<typeof Auth>;
+
+export const Auth = ({ view = "sign_in", supabaseClient, ...props }: Props) => {
+  return (
+    <>
+      <InternalAuth view={view} supabaseClient={supabaseClient} {...props} />
+    </>
+  );
+};

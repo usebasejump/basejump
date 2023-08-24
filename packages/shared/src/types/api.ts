@@ -90,3 +90,14 @@ export type GET_ACCOUNT_BILLING_STATUS_RESPONSE = {
   is_primary_owner: boolean;
   billing_enabled: boolean;
 };
+
+export type ACCEPT_INVITATION_RESPONSE = {
+  account_id: string;
+  account_role: Database["public"]["Tables"]["account_user"]["Row"]["account_role"];
+  slug: string;
+};
+
+export type LOOKUP_INVITATION_RESPONSE = {
+  active: boolean;
+  account_name: string;
+};

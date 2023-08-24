@@ -121,5 +121,12 @@
       "month": "per month",
       "year": "per year"
     }
+  },
+  "accept_invitation": {
+    "header_text": "You've been invited to join",
+    "button_label": "Accept Invitation",
+    "invalid_invite": "This invitation is invalid or has expired",
+    "loading_label": "Loading invitation",
+    "loading_button_label": "Accepting invitation"
   }
 }

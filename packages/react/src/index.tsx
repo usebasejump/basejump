@@ -7,6 +7,7 @@ export * from "./components/forms/create-account-form";
 export * from "./components/forms/edit-account-form";
 export * from "./components/forms/invite-member-form";
 export * from "./components/auth";
+export * from "./components/forms/accept-invitation";
 
 /**
  * Pages
@@ -37,3 +38,10 @@ export * from "./api/use-account-billing-status";
 export * from "./components/basejump-user-session";
 export * from "./components/signed-out";
 export * from "./components/signed-in";
+
+/**
+ * Themes
+ */
+import defaultTheme from "./themes/default-theme";
+
+export const BasejumpTheme = defaultTheme;

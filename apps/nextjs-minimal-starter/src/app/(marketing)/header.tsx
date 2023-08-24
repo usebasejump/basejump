@@ -12,6 +12,7 @@ import {
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { SignUpButton } from "@usebasejump/react/src/components/sign-up-button";
 import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 
 const invitationUrlTemplate =
   process.env.NEXT_PUBLIC_BASEJUMP_INVITATION_URL_TEMPLATE;
@@ -19,6 +20,8 @@ const invitationUrlTemplate =
 export default function Header() {
   const supabaseClient = createClientComponentClient();
   const redirectTo = `${window?.location?.origin}/auth/callback`;
+  const router = useRouter();
+  const { accountSlug } = useParams();
 
   return (
     <BasejumpUserSession
@@ -30,7 +33,14 @@ export default function Header() {
           <h1 className="text-2xl font-bold">Basejump</h1>
           <SignedIn>
             <AccountSelector
-              onAccountChange={(account) => alert(`account ${account.name}`)}
+              currentAccountSlug={accountSlug}
+              defaultPersonalAccount={true}
+              afterCreate={(account) =>
+                router.push(`/dashboard/${account.slug}`)
+              }
+              onAccountChange={(account) =>
+                router.push(`/dashboard/${account.slug}`)
+              }
             />
           </SignedIn>
         </div>
