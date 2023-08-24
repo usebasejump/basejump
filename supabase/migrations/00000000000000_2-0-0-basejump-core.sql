@@ -953,6 +953,9 @@ BEGIN
     returning id into new_account_id;
 
     return public.get_account(new_account_id);
+EXCEPTION
+    WHEN unique_violation THEN
+        raise exception 'An account with that unique ID already exists';
 END;
 $$;
 
@@ -1132,6 +1135,9 @@ begin
     end if;
     return json_build_object('account_id', lookup_account_id, 'account_role', new_member_role, 'slug',
                              lookup_account_slug);
+EXCEPTION
+    WHEN unique_violation THEN
+        raise exception 'You are already a member of this account';
 end;
 $$;
 
