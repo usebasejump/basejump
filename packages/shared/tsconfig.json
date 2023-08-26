@@ -1,8 +1,0 @@
-{
-  "extends": "tsconfig/library.json",
-  "compilerOptions": {
-    "resolveJsonModule": true,
-  },
-  "include": ["./src"],
-  "exclude": ["node_modules"]
-}
