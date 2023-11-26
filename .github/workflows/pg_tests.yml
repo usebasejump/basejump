@@ -30,7 +30,7 @@ jobs:
       - name: Install core extension using dbdev cli
         run: |
           dbdev install --connection postgres://postgres:postgres@localhost:54322/postgres --path .
-          psql -v ON_ERROR_STOP=1 -U postgres -d postgres -h localhost -p 54322 -c "CREATE EXTENSION basejump-basejump_core;"
+          psql -v ON_ERROR_STOP=1 -U postgres -d postgres -h localhost -p 54322 -c 'CREATE EXTENSION "basejump-basejump_core";'
         env:
           PGPASSWORD: postgres
       - name: Move files into supabase tests directory
