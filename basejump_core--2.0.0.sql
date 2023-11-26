@@ -1104,7 +1104,7 @@ grant execute on function public.get_account_invitations(uuid, integer, integer)
   * This one exists in the public schema because we want it to be called
   * using the supabase rpc method
  */
-create or replace function accept_invitation(lookup_invitation_token text)
+create or replace function public.accept_invitation(lookup_invitation_token text)
     returns jsonb
     language plpgsql
     security definer set search_path = public, basejump
@@ -1141,7 +1141,7 @@ EXCEPTION
 end;
 $$;
 
-grant execute on function accept_invitation(text) to authenticated;
+grant execute on function public.accept_invitation(text) to authenticated;
 
 
 /**
@@ -1170,13 +1170,13 @@ begin
 end;
 $$;
 
-grant execute on function lookup_invitation(text) to authenticated;
+grant execute on function public.lookup_invitation(text) to authenticated;
 
 
 /**
   Allows a user to create a new invitation if they are an owner of an account
  */
-create or replace function create_invitation(account_id uuid, account_role basejump.account_role,
+create or replace function public.create_invitation(account_id uuid, account_role basejump.account_role,
                                              invitation_type basejump.invitation_type)
     returns json
     language plpgsql
@@ -1193,13 +1193,13 @@ begin
 end
 $$;
 
-grant execute on function create_invitation(uuid, basejump.account_role, basejump.invitation_type) to authenticated;
+grant execute on function public.create_invitation(uuid, basejump.account_role, basejump.invitation_type) to authenticated;
 
 /**
   Allows an owner to delete an existing invitation
  */
 
-create or replace function delete_invitation(invitation_id uuid)
+create or replace function public.delete_invitation(invitation_id uuid)
     returns void
     language plpgsql
 as
@@ -1209,7 +1209,7 @@ begin
 end
 $$;
 
-grant execute on function delete_invitation(uuid) to authenticated;
+grant execute on function public.delete_invitation(uuid) to authenticated;
 
 
 /**

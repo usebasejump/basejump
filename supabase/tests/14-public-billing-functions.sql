@@ -1,5 +1,6 @@
 BEGIN;
-CREATE EXTENSION "basejump-supabase_test_helpers";
+create extension "basejump-supabase_test_helpers"
+    version '0.0.2';
 
 update basejump.config
 set enable_team_account_billing     = TRUE,
@@ -7,10 +8,6 @@ set enable_team_account_billing     = TRUE,
 
 update basejump.config
 set default_account_plan_id = 'price_00000000000000';
-
---TODO: Remove once this is moved into supabase_test_helpers
-GRANT USAGE ON SCHEMA tests TO service_role;
-grant execute on all functions in schema tests to service_role;
 
 select plan(6);
 
@@ -25,8 +22,7 @@ values ('00000000-0000-0000-0000-000000000000', 'my-known-account', 'My Known Ac
 insert into basejump.accounts (id, slug, name)
 values ('00000000-0000-0000-0000-000000000001', 'my-known-account-2', 'My Known Account 2');
 
-select tests.clear_authentication();
-set role service_role;
+select tests.authenticate_as_service_role();
 
 select public.service_role_upsert_customer_subscription('00000000-0000-0000-0000-000000000000', '{
   "id": "cus_00000000000000",
@@ -99,8 +95,8 @@ select row_eq(
            );
 
 --- test out updating customer
-select tests.clear_authentication();
-set role service_role;
+select tests.authenticate_as_service_role();
+
 select public.service_role_upsert_customer_subscription('00000000-0000-0000-0000-000000000000', customer => '{
   "id": "cus_00000000000000",
   "billing_email": "test2@test.com",
@@ -128,8 +124,7 @@ select row_eq(
            );
 
 
-select tests.clear_authentication();
-set role service_role;
+select tests.authenticate_as_service_role();
 
 select public.service_role_upsert_customer_subscription('00000000-0000-0000-0000-000000000000', subscription => '{
   "id": "sub_00000000000000",

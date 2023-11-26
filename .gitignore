@@ -40,9 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Supabase
-**/supabase/.branches
-**/supabase/.temp
-
 # turbo
 .turbo
+

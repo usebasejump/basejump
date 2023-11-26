@@ -1,5 +1,6 @@
 BEGIN;
-CREATE EXTENSION "basejump-supabase_test_helpers";
+create extension "basejump-supabase_test_helpers"
+    version '0.0.2';
 
 select plan(27);
 
@@ -160,7 +161,7 @@ select is(
 
 
 select throws_ok($$select create_account('my-account', 'My account')$$,
-                 'duplicate key value violates unique constraint "accounts_slug_key"');
+                 'An account with that unique ID already exists');
 
 select create_account('My AccOunt & 3');
 
@@ -210,8 +211,7 @@ select throws_ok(
 
 
 ---- some functions should work for service_role users
-select tests.clear_authentication();
-set role service_role;
+select tests.authenticate_as_service_role();
 
 select is(
                (select (get_account('00000000-0000-0000-0000-000000000000') ->> 'account_id')::uuid),

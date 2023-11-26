@@ -1,13 +1,10 @@
 BEGIN;
-CREATE EXTENSION "basejump-supabase_test_helpers";
+create extension "basejump-supabase_test_helpers"
+    version '0.0.2';
 
 update basejump.config
 set enable_personal_account_billing = FALSE,
     enable_team_account_billing     = FALSE;
-
---TODO: Remove once this is moved into supabase_test_helpers
-GRANT USAGE ON SCHEMA tests TO service_role;
-grant execute on all functions in schema tests to service_role;
 
 select plan(6);
 

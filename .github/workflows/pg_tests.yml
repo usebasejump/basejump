@@ -19,21 +19,15 @@ jobs:
           version: latest
       - name: Supabase Start
         run: supabase init && supabase start
-      - name: Install dbdev from scripts/install-dbdev.sql (remove this once remote install enabled in dbdev CLI)
-        run: psql -v ON_ERROR_STOP=1 -U postgres -d postgres -h localhost -p 54322 -f ./scripts/install-dbdev.sql
-        env:
-          PGPASSWORD: postgres
-      - name: Enable basejump-supabase_test_helpers
-        run: psql -v ON_ERROR_STOP=1 -U postgres -d postgres -h localhost -p 54322 -c "SELECT dbdev.install('basejump-supabase_test_helpers');"
+      - name: Install supabase_test_helpers from scripts/install-dbdev-with-test-helpers.sql (remove this once remote install enabled in dbdev CLI)
+        run: psql -v ON_ERROR_STOP=1 -U postgres -d postgres -h localhost -p 54322 -f ./scripts/install-dbdev-with-test-helpers.sql
         env:
           PGPASSWORD: postgres
       - name: Install core extension using dbdev cli
         run: |
           dbdev install --connection postgres://postgres:postgres@localhost:54322/postgres --path .
-          psql -v ON_ERROR_STOP=1 -U postgres -d postgres -h localhost -p 54322 -c 'CREATE EXTENSION "basejump-basejump_core";'
+          psql -v ON_ERROR_STOP=1 -U postgres -d postgres -h localhost -p 54322 -c 'CREATE EXTENSION "basejump_core";'
         env:
           PGPASSWORD: postgres
-      - name: Move files into supabase tests directory
-        run: mkdir ./supabase/tests && mv ./tests/* ./supabase/tests/
       - name: Run Tests
         run: supabase test db

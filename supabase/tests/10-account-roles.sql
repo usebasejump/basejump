@@ -1,5 +1,6 @@
 BEGIN;
-CREATE EXTENSION "basejump-supabase_test_helpers";
+create extension "basejump-supabase_test_helpers"
+    version '0.0.2';
 
 select plan(17);
 -- make sure we're setup for enabling personal accounts

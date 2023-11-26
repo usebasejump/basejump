@@ -1,10 +1,10 @@
 # Basejump
 
+> If you're looking for the original Basejump which included a NextJS SaaS starter template, [check out the legacy repo](https://github.com/usebasejump/legacy-basejump-template).
+
 Basejump adds personal accounts, team accounts, permissions and billing support to Supabase Auth.
 
 [Learn more at usebasejump.com](https://usebasejump.com).
-
-> If you're looking for the original Basejump which included a NextJS SaaS starter template, [check out the legacy repo](https://github.com/usebasejump/legacy-basejump-template).
 
 ## Features
 - **Personal accounts**: Every user that signs up using Supabase auth automatically gets their own personal account.  Billing on personal accounts can be enabled/disabled. 
@@ -15,3 +15,36 @@ Basejump adds personal accounts, team accounts, permissions and billing support 
 
 ## Quick Start (recommended)
 Check out the getting started guide at [usebasejump.com](https://usebasejump.com).
+
+## Contributing
+Yes please! Here's how you can get started locally
+
+#### Initialize Supabase
+```bash
+    supabase init && supabase start
+```
+
+#### Install dependencies using dbdev
+1. Install dbdev according to instructions on [database.dev](https://database.dev).
+2. Install supabase_test_helpers
+```sql
+    select dbdev.install('basejump-supabase_test_helpers');
+```
+
+#### Install local version of basejump_core
+```bash
+dbdev install --connection postgres://postgres:postgres@localhost:54322/postgres --path .
+```
+
+#### Enable basejump_core
+```sql
+    CREATE EXTENSION IF NOT EXISTS basejump_core;
+```
+
+#### Make sure tests can run
+```bash
+    supabase test db
+```
+
+### Add your changes and write tests. 
+Make sure you're following the database.dev upgrade guidelines.  you should NEVER be updating/changing existing version files. All changes should have valid migration files for postgres extensions.  I'll try to flesh this section out more later.
