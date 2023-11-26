@@ -26,7 +26,7 @@ jobs:
       - name: Install core extension using dbdev cli
         run: |
           dbdev install --connection postgres://postgres:postgres@localhost:54322/postgres --path .
-          psql -v ON_ERROR_STOP=1 -U postgres -d postgres -h localhost -p 54322 -c 'CREATE EXTENSION "basejump_core";'
+          psql -v ON_ERROR_STOP=1 -U postgres -d postgres -h localhost -p 54322 -c 'CREATE EXTENSION IF NOT EXISTS basejump_core with schema extensions;'
         env:
           PGPASSWORD: postgres
       - name: Run Tests
