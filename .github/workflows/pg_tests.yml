@@ -19,50 +19,12 @@ jobs:
           version: latest
       - name: Supabase Start
         run: supabase init && supabase start
-      - name: Enable pgtle and install supabase_test_helpers (move this to CLI once remote install enabled)
-        run: psql -v ON_ERROR_STOP=1 -U postgres -d postgres -h localhost -p 54322 -c "create extension if not exists http with schema extensions;
-create extension if not exists pg_tle;
-select pgtle.uninstall_extension_if_exists('supabase-dbdev');
-drop extension if exists "supabase-dbdev";
-select
-    pgtle.install_extension(
-        'supabase-dbdev',
-        resp.contents ->> 'version',
-        'PostgreSQL package manager',
-        resp.contents ->> 'sql'
-    )
-from http(
-    (
-        'GET',
-        'https://api.database.dev/rest/v1/'
-        || 'package_versions?select=sql,version'
-        || '&package_name=eq.supabase-dbdev'
-        || '&order=version.desc'
-        || '&limit=1',
-        array[
-            (
-                'apiKey',
-                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJp'
-                || 'c3MiOiJzdXBhYmFzZSIsInJlZiI6InhtdXB0cHBsZnZpaWZyY'
-                || 'ndtbXR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODAxMDczNzI'
-                || 'sImV4cCI6MTk5NTY4MzM3Mn0.z2CN0mvO2No8wSi46Gw59DFGCTJ'
-                || 'rzM0AQKsu_5k134s'
-            )::http_header
-        ],
-        null,
-        null
-    )
-) x,
-lateral (
-    select
-        ((row_to_json(x) -> 'content') #>> '{}')::json -> 0
-) resp(contents);
-create extension "supabase-dbdev";
-select dbdev.install('supabase-dbdev');
-drop extension if exists "supabase-dbdev";
-create extension "supabase-dbdev";
-
-SELECT dbdev.install('basejump-supabase_test_helpers');"
+      - name: Install dbdev from scripts/install-dbdev.sql (remove this once remote install enabled in dbdev CLI)
+        run: psql -v ON_ERROR_STOP=1 -U postgres -d postgres -h localhost -p 54322 -f ./scripts/install-dbdev.sql
+        env:
+          PGPASSWORD: postgres
+      - name: Enable basejump-supabase_test_helpers
+        run: psql -v ON_ERROR_STOP=1 -U postgres -d postgres -h localhost -p 54322 -c "SELECT dbdev.install('basejump-supabase_test_helpers');"
         env:
           PGPASSWORD: postgres
       - name: Install core extension using dbdev cli
