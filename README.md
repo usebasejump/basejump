@@ -1,58 +1,18 @@
-# Basejump SaaS starter for Supabase
+# Basejump
 
-Basejump is an open source starter for Supabase. It provides personal accounts, shared team accounts, billing
-subscriptions with Stripe and a dashboard template.
+Basejump adds personal accounts, team accounts, permissions and billing support to Supabase Auth.
 
 [Learn more at usebasejump.com](https://usebasejump.com).
 
-## Installation
+> If you're looking for the original Basejump which included a NextJS SaaS starter template, [check out the legacy repo](https://github.com/usebasejump/legacy-basejump-template).
 
-```bash
-yarn
-yarn dev
+## Features
+- :bust_in_silhouette: Personal accounts: Every user that signs up using Supabase auth automatically gets their own personal account.  Billing on personal accounts can be enabled/disabled. 
+- :busts_in_silhouette: Team accounts: Team accounts are billable accounts that can be shared by multiple users.  Team accounts can be disabled if you only wish to allow personal accounts. Billing on team accounts can also be disabled.
+- :triangular_flag_on_post: Permissions: Permissions are handled using RLS, just like you're used to with Supabase.  Basejump provides convenience methods that let you restrict access to rows based on a user's account access and role within an account
+- :moneybag: Billing: Basejump provides out of the box billing support for Stripe, but you can add your own providers easily. If you do, please consider contributing them so others can benefit!
+- :white_check_mark: Testing: Basejump is fully tested itself, but also provides a suite of testing tools that make it easier to test your own Supabase functions and schema.  You can check it out at [database.dev/basejump/supabase_test_helpers](https://database.dev/basejump/supabase_test_helpers). You do not need to be using Basejump to use the testing tools.
+
+## Quick Start (recommended)
+Check out the getting started guide at [usebasejump.com](https://usebasejump.com).
 ```
-
-## Typescript and generated types
-
-We've implemented automatic type generation based off of your Supabase database config. You can learn more about this
-setup [in the supabase docs on type generation](https://supabase.com/docs/guides/api/generating-types)
-
-To update your types, run:
-
-```bash
-yarn generate-types
-```
-
-You can then reference them as
-
-```javascript
-import Database from '@/types/supabase-types';
-
-const profile: Database['public']['Tables']['profiles']['Row'] = {name: 'John Doe'};
-```
-
-## Code Formatting and linting
-
-The project is configured to use ESLint and Prettier. Prettier is run through ESLint, not on its own.
-
-* Prettier: [Prettier ESLint Plugin](https://github.com/prettier/eslint-plugin-prettier)
-* ESLint: [NextJS ESLint](https://nextjs.org/docs/basic-features/eslint)
-
-## Internationalizatoin and translations
-
-Basejump uses NextJS built in internationalization, and adds `next-translate` for translation support.
-
-* [NextJS Internationalization](https://nextjs.org/docs/basic-features/i18n)
-* [next-translate](https://github.com/aralroca/next-translate)
-
-## Thanks & Credits
-
-<p>Hosting has generously been provided by Vercel</p>
-<a
-href="https://vercel.com?utm_source=basejump&utm_campaign=oss"
-target="_blank"
-rel="noopener noreferrer"
->
-    <img src="public/images/vercel-logo.svg" alt="Powered by Vercel" />
-</a>
-
