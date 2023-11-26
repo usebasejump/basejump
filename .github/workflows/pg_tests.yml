@@ -6,11 +6,26 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: --git https://github.com/supabase/dbdev.git dbdev
       - uses: actions/checkout@v3
       - uses: supabase/setup-cli@v1
         with:
-          version: 1.50.11
+          version: latest
       - name: Supabase Start
-        run: supabase start
+        run: supabase init && supabase start
+      - name: Enable pgtle
+        run: psql -v ON_ERROR_STOP=1 -U postgres -d postgres -h localhost -p 54322 -c "CREATE EXTENSION pg_tle;"
+        env:
+          PGPASSWORD: postgres
+      - name: Install core extension using dbdev cli
+        run: dbdev install --connection postgres://postgres:postgres@localhost:54322/postgres --path .
+      - name: Move files into supabase tests directory
+        run: mkdir ./supabase/tests && mv ./tests/* ./supabase/tests/
       - name: Run Tests
-        run: supabase db test
+        run: supabase test db
