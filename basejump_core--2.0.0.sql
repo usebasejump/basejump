@@ -348,7 +348,7 @@ alter table basejump.account_user
   * When an account gets created, we want to insert the current user as the first
   * owner
  */
-create function basejump.add_current_user_to_new_account()
+create or replace function basejump.add_current_user_to_new_account()
     returns trigger
     language plpgsql
     security definer
@@ -375,7 +375,7 @@ EXECUTE FUNCTION basejump.add_current_user_to_new_account();
   * When a user signs up, we need to create a personal account for them
   * and add them to the account_user table so they can act on it
  */
-create function basejump.run_new_user_setup()
+create or replace function basejump.run_new_user_setup()
     returns trigger
     language plpgsql
     security definer
@@ -393,8 +393,8 @@ begin
         generated_user_name := split_part(new.email, '@', 1);
     end if;
     -- create the new users's personal account
-    insert into basejump.accounts (name, primary_owner_user_id, personal_account)
-    values (generated_user_name, NEW.id, true)
+    insert into basejump.accounts (name, primary_owner_user_id, personal_account, id)
+    values (generated_user_name, NEW.id, true, NEW.id)
     returning id into first_account_id;
 
     -- add them to the account_user table so they can act on it
@@ -596,6 +596,7 @@ $$;
 
 grant execute on function basejump.has_role_on_account(uuid, basejump.account_role) to authenticated;
 
+
 /**
   * Returns account_ids that the current user is a member of. If you pass in a role,
   * it'll only return accounts that the user is a member of with that role.
@@ -625,6 +626,22 @@ grant execute on function basejump.get_accounts_with_role(basejump.account_role)
   * Each of these functions exists in the public name space because they are accessible
   * via the API.  it is the primary way developers can interact with Basejump accounts
  */
+
+/**
+* Returns the account_id for a given account slug
+*/
+
+create or replace function public.get_account_id(slug text)
+    returns uuid
+    language sql
+as
+$$
+select id
+from basejump.accounts
+where slug = get_account_id.slug;
+$$;
+
+grant execute on function public.get_account_id(text) to authenticated, service_role;
 
 /**
  * Returns the current user's role within a given account_id
@@ -922,16 +939,8 @@ create or replace function public.get_personal_account()
     language plpgsql
 as
 $$
-DECLARE
-    internal_account_id uuid;
 BEGIN
-    select a.id
-    into internal_account_id
-    from basejump.accounts a
-    where a.personal_account = true
-      and a.primary_owner_user_id = auth.uid();
-
-    return public.get_account(internal_account_id);
+    return public.get_account(auth.uid());
 END;
 $$;
 
@@ -1050,7 +1059,7 @@ as
 $$
 BEGIN
     -- only account owners can access this function
-    if public.has_role_on_account(remove_account_member.account_id, 'owner') <> true then
+    if basejump.has_role_on_account(remove_account_member.account_id, 'owner') <> true then
         raise exception 'Only account owners can access this function';
     end if;
 
@@ -1062,8 +1071,6 @@ END;
 $$;
 
 grant execute on function public.remove_account_member(uuid, uuid) to authenticated;
-
---TODO: Write tests for remove_account_member and delete_invitation functions
 
 /**
   Returns a list of currently active invitations for a given account
@@ -1177,7 +1184,7 @@ grant execute on function public.lookup_invitation(text) to authenticated;
   Allows a user to create a new invitation if they are an owner of an account
  */
 create or replace function public.create_invitation(account_id uuid, account_role basejump.account_role,
-                                             invitation_type basejump.invitation_type)
+                                                    invitation_type basejump.invitation_type)
     returns json
     language plpgsql
 as
@@ -1205,6 +1212,11 @@ create or replace function public.delete_invitation(invitation_id uuid)
 as
 $$
 begin
+    -- verify account owner for the invitation
+    if basejump.has_role_on_account((select account_id from basejump.invitations where id = delete_invitation.invitation_id), 'owner') <> true then
+        raise exception 'Only account owners can delete invitations';
+    end if;
+
     delete from basejump.invitations where id = delete_invitation.invitation_id;
 end
 $$;

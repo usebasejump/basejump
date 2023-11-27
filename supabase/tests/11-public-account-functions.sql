@@ -2,7 +2,7 @@ BEGIN;
 create extension "basejump-supabase_test_helpers"
     version '0.0.2';
 
-select plan(27);
+select plan(29);
 
 -- make sure we're setup for the test correctly
 update basejump.config
@@ -34,8 +34,15 @@ select is(
 insert into basejump.accounts (id, slug, name)
 values ('00000000-0000-0000-0000-000000000000', 'my-known-account', 'My Known Account');
 
+-- get_account_id should return the correct account id
 select is(
-               (select (get_account('00000000-0000-0000-0000-000000000000') ->> 'account_id')::uuid),
+               (select public.get_account_id('my-known-account')),
+               '00000000-0000-0000-0000-000000000000'::uuid,
+               'get_account_id should return the correct id'
+           );
+
+select is(
+               (select (public.get_account('00000000-0000-0000-0000-000000000000') ->> 'account_id')::uuid),
                '00000000-0000-0000-0000-000000000000'::uuid,
                'get_account should be able to return a known account'
            );
@@ -157,6 +164,12 @@ select is(
                (select json_array_length(get_accounts())),
                1,
                'get_accounts returns 1 accounts (personal)'
+           );
+
+select is(
+               (select get_personal_account() ->> 'account_id'),
+               auth.uid()::text,
+               'get_personal_account should return the correct account_id'
            );
 
 

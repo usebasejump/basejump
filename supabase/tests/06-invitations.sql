@@ -4,7 +4,7 @@ BEGIN;
 create extension "basejump-supabase_test_helpers"
     version '0.0.2';
 
-select plan(32);
+select plan(35);
 
 -- make sure we're setup for enabling personal accounts
 update basejump.config
@@ -52,6 +52,33 @@ SELECT row_eq(
                'Should be able to list invitations for an account as an owner'
            );
 
+------- 
+-- Deleting invitations
+-------
+
+insert into basejump.invitations (account_id, account_role, token, invitation_type, id)
+values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'member', 'test_member_multiple_use_token', 'one_time',
+        '5c795311-62cc-4e44-b056-8d2ac632d0bf');
+
+select tests.authenticate_as('invited_member1');
+select throws_ok(
+               $$ select delete_invitation('5c795311-62cc-4e44-b056-8d2ac632d0bf') $$,
+               'Only account owners can delete invitations'
+           );
+
+--- owner can delete invitations
+select tests.authenticate_as('owner');
+SELECT row_eq(
+               $$ select json_array_length(get_account_invitations('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f')) $$,
+               ROW (4),
+               'Should be able to list invitations for an account as an owner'
+           );
+select delete_invitation('5c795311-62cc-4e44-b056-8d2ac632d0bf');
+SELECT row_eq(
+               $$ select json_array_length(get_account_invitations('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f')) $$,
+               ROW (3),
+               'Should be able to list invitations for an account as an owner'
+           );
 ----------
 -- Team member 1 joining with one_time token
 ----------
