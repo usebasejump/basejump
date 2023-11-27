@@ -12,12 +12,12 @@
  */
 
 
+
 /**
   * -------------------------------------------------------
   * Section - Basejump schema setup and utility functions
   * -------------------------------------------------------
  */
-
 
 -- revoke execution by default from public
 ALTER DEFAULT PRIVILEGES REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC;
@@ -38,16 +38,26 @@ GRANT USAGE ON SCHEMA basejump to service_role;
 * Subscription Status
 * Tracks the current status of the account subscription
 */
-drop type if exists basejump.subscription_status;
-create type basejump.subscription_status as enum (
-    'trialing',
-    'active',
-    'canceled',
-    'incomplete',
-    'incomplete_expired',
-    'past_due',
-    'unpaid'
-    );
+DO
+$$
+    BEGIN
+        IF NOT EXISTS(SELECT 1
+                      FROM pg_type t
+                               JOIN pg_namespace n ON n.oid = t.typnamespace
+                      WHERE t.typname = 'subscription_status'
+                        AND n.nspname = 'basejump') THEN
+            create type basejump.subscription_status as enum (
+                'trialing',
+                'active',
+                'canceled',
+                'incomplete',
+                'incomplete_expired',
+                'past_due',
+                'unpaid'
+                );
+        end if;
+    end;
+$$;
 
 /**
  * Account roles allow you to provide permission levels to users
@@ -55,24 +65,57 @@ create type basejump.subscription_status as enum (
  * "owner" and "member".  The only distinction is that owners can
  * also manage billing and invite/remove account members.
  */
-DROP TYPE IF EXISTS basejump.account_role;
-CREATE TYPE basejump.account_role AS ENUM ('owner', 'member');
+DO
+$$
+    BEGIN
+        -- check it account_role already exists on basejump schema
+        IF NOT EXISTS(SELECT 1
+                      FROM pg_type t
+                               JOIN pg_namespace n ON n.oid = t.typnamespace
+                      WHERE t.typname = 'account_role'
+                        AND n.nspname = 'basejump') THEN
+            CREATE TYPE basejump.account_role AS ENUM ('owner', 'member');
+        end if;
+    end;
+$$;
 
 /**
  * Billing providers are the different payment processors that
  * we support.  Currently, we only support Stripe, but we may
  * add others in the future.
  */
-drop type if exists basejump.billing_providers;
-create type basejump.billing_providers as enum ('stripe');
+DO
+$$
+    BEGIN
+        -- check it account_role already exists on basejump schema
+        IF NOT EXISTS(SELECT 1
+                      FROM pg_type t
+                               JOIN pg_namespace n ON n.oid = t.typnamespace
+                      WHERE t.typname = 'billing_providers'
+                        AND n.nspname = 'basejump') THEN
+            create type basejump.billing_providers as enum ('stripe');
+        end if;
+    end;
+$$;
 
 /**
  * Invitation types are either email or link. Email invitations are sent to
  * a single user and can only be claimed once.  Link invitations can be used multiple times
  * Both expire after 24 hours
  */
-DROP TYPE IF EXISTS basejump.invitation_type;
-CREATE TYPE basejump.invitation_type AS ENUM ('one_time', '24_hour');
+DO
+$$
+    BEGIN
+        -- check it account_role already exists on basejump schema
+        IF NOT EXISTS(SELECT 1
+                      FROM pg_type t
+                               JOIN pg_namespace n ON n.oid = t.typnamespace
+                      WHERE t.typname = 'invitation_type'
+                        AND n.nspname = 'basejump') THEN
+            CREATE TYPE basejump.invitation_type AS ENUM ('one_time', '24_hour');
+        end if;
+    end;
+$$;
 
 /**
   * -------------------------------------------------------
@@ -326,7 +369,7 @@ EXECUTE PROCEDURE basejump.trigger_set_user_tracking();
   * The system does not enforce any permissions for roles, other than restricting
   * billing and account membership to only owners
  */
-create table basejump.account_user
+create table if not exists basejump.account_user
 (
     -- id of the user in the account
     user_id      uuid references auth.users        not null,
@@ -422,7 +465,7 @@ execute procedure basejump.run_new_user_setup();
  * Billing customer
  * This is a private table that contains a mapping of user IDs to your billing providers IDs
  */
-create table basejump.billing_customers
+create table if not exists basejump.billing_customers
 (
     -- UUID from auth.users
     account_id uuid references basejump.accounts not null,
@@ -450,7 +493,7 @@ alter table
   * Billing subscriptions
   * This is a private table that contains a mapping of account IDs to your billing providers subscription IDs
  */
-create table basejump.billing_subscriptions
+create table if not exists basejump.billing_subscriptions
 (
     -- Subscription ID from Stripe, e.g. sub_1234.
     id                   text primary key,
@@ -505,7 +548,7 @@ alter table
   * Invitations are sent to users to join a account
   * They pre-define the role the user should have once they join
  */
-create table basejump.invitations
+create table if not exists basejump.invitations
 (
     -- the id of the invitation
     id                 uuid unique                       not null default uuid_generate_v4(),
@@ -1213,7 +1256,9 @@ as
 $$
 begin
     -- verify account owner for the invitation
-    if basejump.has_role_on_account((select account_id from basejump.invitations where id = delete_invitation.invitation_id), 'owner') <> true then
+    if basejump.has_role_on_account(
+               (select account_id from basejump.invitations where id = delete_invitation.invitation_id), 'owner') <>
+       true then
         raise exception 'Only account owners can delete invitations';
     end if;
 
