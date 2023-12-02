@@ -1,0 +1,27 @@
+name: Build DBDev
+on:
+  workflow_call:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Cache dbdev
+        uses: actions/cache@v2
+        with:
+          path: ~/.cargo/bin/dbdev
+          key: ${{ runner.os }}-dbdev-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install dbdev
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: --git https://github.com/supabase/dbdev.git dbdev
+        if: steps.cache.outputs.cache-hit != 'true'
+      - name: Create build-output artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: dbdev-output
+          path: ~/.cargo/bin/dbdev
