@@ -6,6 +6,7 @@ jobs:
   pg_tap_tests:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: ./.github/workflows/build.yml
       - name: Run Tests
         run: supabase test db
