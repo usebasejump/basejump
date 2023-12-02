@@ -69,7 +69,7 @@ jobs:
       - name: Setup and start Supabase
         run: |
           supabase init
-          echo "\n\n[functions.test-stripe-billing-webhooks]\nverify_jwt = false" >> supabase/config.toml
+          echo -e "\n\n[functions.test-stripe-billing-webhooks]\nverify_jwt = false" >> supabase/config.toml
           cat supabase/config.toml
           supabase start
       - name: Install supabase_test_helpers from scripts/install-dbdev-with-test-helpers.sql (remove this once remote install enabled in dbdev CLI)
