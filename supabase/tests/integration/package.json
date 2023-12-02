@@ -1,0 +1,15 @@
+{
+  "name": "functions",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.10.0"
+  },
+  "scripts": {},
+  "dependencies": {
+    "@supabase/supabase-js": "^2.38.5",
+    "stripe": "^14.7.0"
+  }
+}
