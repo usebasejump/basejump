@@ -1,11 +1,39 @@
-name: Stripe Tests
+name: Tests
 on:
   pull_request:
     branches: [ main ]
 jobs:
   dbdev:
     uses: ./.github/workflows/dbdev.yml
-  build:
+  pg_tap_tests:
+    name: PGTap Tests
+    runs-on: ubuntu-latest
+    needs: dbdev
+    steps:
+      - name: Download DBDev
+        uses: actions/download-artifact@master
+        with:
+          name: dbdev-output
+          path: ~/.cargo/bin/dbdev
+      - uses: actions/checkout@v3
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Supabase Start
+        run: supabase init && supabase start
+      - name: Install supabase_test_helpers from scripts/install-dbdev-with-test-helpers.sql (remove this once remote install enabled in dbdev CLI)
+        run: psql -v ON_ERROR_STOP=1 -U postgres -d postgres -h localhost -p 54322 -f ./scripts/install-dbdev-with-test-helpers.sql
+        env:
+          PGPASSWORD: postgres
+      - name: Install core extension using dbdev cli
+        run: |
+          ~/.cargo/bin/dbdev install --connection postgres://postgres:postgres@localhost:54322/postgres --path .
+          psql -v ON_ERROR_STOP=1 -U postgres -d postgres -h localhost -p 54322 -c 'CREATE EXTENSION IF NOT EXISTS basejump_core with schema extensions;'
+        env:
+          PGPASSWORD: postgres
+      - name: Run Tests
+        run: supabase test db
+  stripe_tests:
     runs-on: ubuntu-latest
     needs: dbdev
     steps:
@@ -42,8 +70,14 @@ jobs:
           STRIPE_DEFAULT_PLAN_ID: ${{ secrets.STRIPE_DEFAULT_PLAN_ID }}
       - name: Supabase Start
         run: supabase init && supabase start
-      - name: Setup basejump for testing
-        run: ./scripts/setup.sh
+      - name: Install supabase_test_helpers from scripts/install-dbdev-with-test-helpers.sql (remove this once remote install enabled in dbdev CLI)
+        run: psql -v ON_ERROR_STOP=1 -U postgres -d postgres -h localhost -p 54322 -f ./scripts/install-dbdev-with-test-helpers.sql
+        env:
+          PGPASSWORD: postgres
+      - name: Install core extension using dbdev cli
+        run: |
+          ~/.cargo/bin/dbdev install --connection postgres://postgres:postgres@localhost:54322/postgres --path .
+          psql -v ON_ERROR_STOP=1 -U postgres -d postgres -h localhost -p 54322 -c 'CREATE EXTENSION IF NOT EXISTS basejump_core with schema extensions;'
         env:
           PGPASSWORD: postgres
       - name: Yarn install supabase/tests/integration
