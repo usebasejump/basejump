@@ -66,8 +66,11 @@ jobs:
         env:
           STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
           STRIPE_DEFAULT_PLAN_ID: ${{ secrets.STRIPE_DEFAULT_PLAN_ID }}
-      - name: Supabase Start
-        run: supabase init && supabase start
+      - name: Setup and start Supabase
+        run: |
+          supabase init
+          echo "[functions.test-stripe-billing-webhooks]\nverify_jwt = false" >> supabase/config.yaml
+          supabase start
       - name: Install supabase_test_helpers from scripts/install-dbdev-with-test-helpers.sql (remove this once remote install enabled in dbdev CLI)
         run: psql -v ON_ERROR_STOP=1 -U postgres -d postgres -h localhost -p 54322 -f ./scripts/install-dbdev-with-test-helpers.sql
         env:
