@@ -8,7 +8,7 @@ export default async function testMissingAccountId(supabaseClient) {
     ];
 
     for (const action of actions) {
-        const {error} = await supabaseClient.functions.invoke('billing-functions', {
+        const {error} = await supabaseClient.functions.invoke('test-stripe-billing-functions', {
             body: {
                 action,
                 args: {}

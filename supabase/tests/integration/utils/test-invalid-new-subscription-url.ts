@@ -24,7 +24,7 @@ export default async function testInvalidNewSubscriptionUrl(supabaseClient, acco
     ]
 
     for (const payload of payloads) {
-        const {error} = await supabaseClient.functions.invoke('billing-functions', {
+        const {error} = await supabaseClient.functions.invoke('test-stripe-billing-functions', {
             body: {
                 action: "get_new_subscription_url",
                 args: payload

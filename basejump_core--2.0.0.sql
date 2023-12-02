@@ -752,7 +752,7 @@ BEGIN
     from basejump.accounts a
              join auth.users u on u.id = a.primary_owner_user_id
              left join basejump.billing_subscriptions s on s.account_id = a.id
-             left join basejump.billing_customers c on c.account_id = s.account_id
+             left join basejump.billing_customers c on c.account_id = coalesce(s.account_id, a.id)
              join basejump.config config on true
     where a.id = get_account_billing_status.account_id
     order by s.created desc

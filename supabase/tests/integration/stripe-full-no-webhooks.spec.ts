@@ -2,11 +2,11 @@ import {expect, test} from '@playwright/test';
 import getVerifiedNewSubscriptionUrl from "./utils/get-verified-new-subscription-url.ts";
 import getVerifiedAccountStatus from "./utils/get-verified-account-status.ts";
 import {
-    cancelStripeCheckout,
-    cancelSubscription,
-    fillInStripeCard,
-    removeSubscriptionTrial,
-    updatePaymentBillingPortal
+    cancelStripeSubscription,
+    playwrightCancelStripeCheckout,
+    playwrightFillInStripeCard,
+    playwrightUpdatePaymentBillingPortal,
+    removeStripeSubscriptionTrial
 } from "./utils/stripe-actions.ts";
 import getVerifiedBillingPortalUrl from "./utils/get-verified-billing-portal-url.ts";
 import {
@@ -36,7 +36,7 @@ test('Should be able to sign up, register for a trial, convert to an account, fa
     /***
      * Check available plans
      */
-    const {data: plans} = await supabaseClient.functions.invoke('billing-functions', {
+    const {data: plans} = await supabaseClient.functions.invoke('test-stripe-billing-functions', {
         body: {
             action: 'get_plans',
             args: {
@@ -56,7 +56,7 @@ test('Should be able to sign up, register for a trial, convert to an account, fa
     // go to stripe url and complete checkout
     await page.goto(newSubscriptionData.url);
 
-    await cancelStripeCheckout(page);
+    await playwrightCancelStripeCheckout(page);
 
     await page.waitForURL(NEW_SUBSCRIPTION_CANCEL_URL, {timeout: 10000});
 
@@ -64,7 +64,7 @@ test('Should be able to sign up, register for a trial, convert to an account, fa
 
     await page.goto(newSubscriptionData.url);
 
-    await fillInStripeCard(page, 'declined');
+    await playwrightFillInStripeCard(page, 'declined');
 
     await page.waitForURL(NEW_SUBSCRIPTION_SUCCESS_URL, {timeout: 10000});
 
@@ -86,7 +86,7 @@ test('Should be able to sign up, register for a trial, convert to an account, fa
      * Convert trial to plan, will fail since bad card
      */
 
-    await removeSubscriptionTrial(stripeClient, trialData.subscription_id);
+    await removeStripeSubscriptionTrial(stripeClient, trialData.subscription_id);
 
     await getVerifiedAccountStatus(supabaseClient, accountId, {
         subscriptionActive: false,
@@ -102,7 +102,7 @@ test('Should be able to sign up, register for a trial, convert to an account, fa
     const billingPortal = await getVerifiedBillingPortalUrl(supabaseClient, accountId);
 
     await page.goto(billingPortal.url);
-    await updatePaymentBillingPortal(page, 'valid');
+    await playwrightUpdatePaymentBillingPortal(page, 'valid');
 
     await page.waitForURL(BILLING_PORTAL_RETURN_URL, {timeout: 10000});
 
@@ -124,7 +124,7 @@ test('Should be able to sign up, register for a trial, convert to an account, fa
      * Cancel subscription
      */
 
-    await cancelSubscription(stripeClient, trialData.subscription_id);
+    await cancelStripeSubscription(stripeClient, trialData.subscription_id);
 
     await getVerifiedAccountStatus(supabaseClient, accountId, {
         subscriptionActive: false,

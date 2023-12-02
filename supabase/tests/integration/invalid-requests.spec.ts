@@ -36,7 +36,7 @@ test('Shouldnt be able to make things up or pass bad data', async ({page}) => {
      * Hit an invalid endpoint action
      */
 
-    const {error} = await supabaseClient.functions.invoke('billing-functions', {
+    const {error} = await supabaseClient.functions.invoke('test-stripe-billing-functions', {
         body: {
             action: 'not_a_thing',
             args: {
@@ -54,6 +54,6 @@ test('Shouldnt be able to make things up or pass bad data', async ({page}) => {
      */
 
     const {supabaseClient: unauthorizedClient} = await setupBasejumpAccount(`unauthorized-access-${timestamp}`);
-    
+
     await testUnauthorized(unauthorizedClient, accountId);
 });

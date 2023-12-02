@@ -4,11 +4,13 @@ import {createClient, SupabaseClient} from "@supabase/supabase-js";
 export default async function setupBasejumpAccount(uniqueIdentifier: string): {
     supabaseClient: SupabaseClient,
     accountId: string,
+    billingEmail: string,
 } {
     const supabaseClient = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+    const billingEmail = `test+${uniqueIdentifier}@test.com`;
 
     const {data: {session}} = await supabaseClient.auth.signUp({
-        email: `test+${uniqueIdentifier}@test.com`,
+        email: billingEmail,
         password: 'test1234',
     });
 
@@ -23,5 +25,5 @@ export default async function setupBasejumpAccount(uniqueIdentifier: string): {
 
     const accountId = account.account_id;
 
-    return {supabaseClient, accountId};
+    return {supabaseClient, accountId, billingEmail};
 }

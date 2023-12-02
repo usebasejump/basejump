@@ -28,12 +28,12 @@ export default async function testUnauthorized(unauthorizedClient, accountId) {
     ];
 
     for (const payload of payloads) {
-        const {error} = await unauthorizedClient.functions.invoke('billing-functions', {
+        const {error} = await unauthorizedClient.functions.invoke('test-stripe-billing-functions', {
             body: payload
         });
 
         const invalidUrlError = await error.context.json()
-        
+
         expect(error.context.status).toEqual(401);
         expect(invalidUrlError.error).toEqual('Unauthorized');
     }

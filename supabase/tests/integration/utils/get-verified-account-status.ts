@@ -5,7 +5,7 @@ export default async function getVerifiedAccountStatus(supabaseClient, accountId
     billingEnabled = true,
     subscriptionStatus = 'trialing'
 }) {
-    const {data} = await supabaseClient.functions.invoke('billing-functions', {
+    const {data} = await supabaseClient.functions.invoke('test-stripe-billing-functions', {
         body: {
             action: 'get_billing_status',
             args: {

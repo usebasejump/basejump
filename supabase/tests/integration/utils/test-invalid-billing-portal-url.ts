@@ -13,7 +13,7 @@ export default async function testInvalidBillingPortalUrl(supabaseClient, accoun
     ]
 
     for (const payload of payloads) {
-        const {error} = await supabaseClient.functions.invoke('billing-functions', {
+        const {error} = await supabaseClient.functions.invoke('test-stripe-billing-functions', {
             body: {
                 action: "get_billing_portal_url",
                 args: payload

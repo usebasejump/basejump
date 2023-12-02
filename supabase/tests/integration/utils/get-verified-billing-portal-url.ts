@@ -2,7 +2,7 @@ import {expect} from "@playwright/test";
 import {BILLING_PORTAL_RETURN_URL} from "./variables.ts";
 
 export default async function getVerifiedBillingPortalUrl(supabaseClient, accountId) {
-    const {data, error} = await supabaseClient.functions.invoke('billing-functions', {
+    const {data, error} = await supabaseClient.functions.invoke('test-stripe-billing-functions', {
         body: {
             action: "get_billing_portal_url",
             args: {
