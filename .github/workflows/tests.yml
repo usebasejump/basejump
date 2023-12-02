@@ -36,6 +36,7 @@ jobs:
       - name: Run Tests
         run: supabase test db
   stripe_tests:
+    name: Stripe Tests
     runs-on: ubuntu-latest
     needs: dbdev
     steps:
@@ -87,12 +88,10 @@ jobs:
           SUPABASE_URL: http://127.0.0.1:54321
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
-      - name: Start stripe listener headless
-        run: ./stripe listen --api-key ${{ secrets.STRIPE_API_KEY }}  --forward-to http://127.0.0.1:54321/functions/v1/test-stripe-billing-webhooks &
-        env:
-          STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
       - name: Run tests with webhooks
-        run: cd supabase/tests/integration && yarn test:stripe-webhooks
+        run: |
+          ./stripe listen --api-key ${{ secrets.STRIPE_API_KEY }}  --forward-to http://127.0.0.1:54321/functions/v1/test-stripe-billing-webhooks &
+          cd supabase/tests/integration && yarn test:stripe-webhooks
         env:
           SUPABASE_URL: http://127.0.0.1:54321
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
