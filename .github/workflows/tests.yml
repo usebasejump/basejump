@@ -88,7 +88,9 @@ jobs:
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
       - name: Start stripe listener headless
-        run: ./stripe listen --forward-to http://127.0.0.1:54321/functions/v1/test-stripe-billing-webhooks &
+        run: ./stripe listen --api-key ${{ secrets.STRIPE_API_KEY }}  --forward-to http://127.0.0.1:54321/functions/v1/test-stripe-billing-webhooks &
+        env:
+          STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
       - name: Run tests with webhooks
         run: cd supabase/tests/integration && yarn test:stripe-webhooks
         env:
