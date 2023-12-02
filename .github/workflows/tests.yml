@@ -83,7 +83,13 @@ jobs:
         run: cd supabase/tests/integration && yarn test:setup
       - name: Run tests without webhooks
         run: cd supabase/tests/integration && yarn test:invalid && yarn test:stripe-no-webhooks
+        env:
+          SUPABASE_URL: http://127.0.0.1:54321
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
       - name: Start stripe listener headless
         run: ./stripe listen --forward-to http://127.0.0.1:54321/functions/v1/test-stripe-billing-webhooks &
       - name: Run tests with webhooks
         run: cd supabase/tests/integration && yarn test:stripe-webhooks
+        env:
+          SUPABASE_URL: http://127.0.0.1:54321
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
