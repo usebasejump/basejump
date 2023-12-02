@@ -42,23 +42,19 @@ jobs:
         with:
           name: dbdev-output
           path: ~/.cargo/bin
+      - run: |
+          ls -la ~/.cargo/bin
+          chmod +x ~/.cargo/bin/dbdev
       - uses: actions/checkout@v3
       - uses: supabase/setup-cli@v1
         with:
           version: latest
-      - name: Cache stripe
-        uses: actions/cache@v2
-        with:
-          path: ./stripe
-          key: ${{ runner.os }}-stripe
-
       - name: Install stripe
         run: |
           # Download linux version as per Stripe documentation
             curl -L https://github.com/stripe/stripe-cli/releases/download/v1.18.0/stripe_1.18.0_linux_x86_64.tar.gz --output stripe.tar.gz
             # Unzip
             tar -xvf stripe.tar.gz
-        if: steps.cache.outputs.cache-hit != 'true'
       - name: Create supabase/functions/.env including stripe webhook secrets
         run: |
           echo "STRIPE_WEBHOOK_SIGNING_SECRET=$(./stripe listen --print-secret)" >> supabase/functions/.env
