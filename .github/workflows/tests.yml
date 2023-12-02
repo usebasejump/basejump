@@ -91,7 +91,7 @@ jobs:
           SUPABASE_URL: http://127.0.0.1:54321
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
-          STRIPE_DEFAULT_PRICE_ID: ${{ secrets.STRIPE_DEFAULT_PRICE_ID }}
+          STRIPE_DEFAULT_PLAN_ID: ${{ secrets.STRIPE_DEFAULT_PLAN_ID }}
           STRIPE_DEFAULT_TRIAL_DAYS: 7
       - name: Run tests with webhooks
         run: |
@@ -101,5 +101,5 @@ jobs:
           SUPABASE_URL: http://127.0.0.1:54321
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
-          STRIPE_DEFAULT_PRICE_ID: ${{ secrets.STRIPE_DEFAULT_PRICE_ID }}
+          STRIPE_DEFAULT_PLAN_ID: ${{ secrets.STRIPE_DEFAULT_PLAN_ID }}
           STRIPE_DEFAULT_TRIAL_DAYS: 7

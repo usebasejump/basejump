@@ -15,7 +15,7 @@ const timestamp = Date.now();
 const uniqueIdentifier = `stripe-only-webhooks-${timestamp}`
 const stripeClient = new Stripe(process.env.STRIPE_API_KEY);
 
-const stripeDefaultPlanId = process.env.STRIPE_DEFAULT_PRICE_ID;
+const stripeDefaultPlanId = process.env.STRIPE_DEFAULT_PLAN_ID;
 
 test('Should be able to perform full user journey using only webhook updates from Stripe', async ({page}) => {
     /**
