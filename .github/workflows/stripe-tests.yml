@@ -1,0 +1,58 @@
+name: Stripe Tests
+on:
+  pull_request:
+    branches: [ main ]
+jobs:
+  dbdev:
+    uses: ./.github/workflows/dbdev.yml
+  build:
+    runs-on: ubuntu-latest
+    needs: dbdev
+    steps:
+      - name: Download DBDev
+        uses: actions/download-artifact@master
+        with:
+          name: dbdev-output
+          path: ~/.cargo/bin/dbdev
+      - uses: actions/checkout@v3
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Cache stripe
+        uses: actions/cache@v2
+        with:
+          path: ./stripe
+          key: ${{ runner.os }}-stripe
+
+      - name: Install stripe
+        run: |
+          # Download linux version as per Stripe documentation
+            curl -L https://github.com/stripe/stripe-cli/releases/download/v1.18.0/stripe_1.18.0_linux_x86_64.tar.gz --output stripe.tar.gz
+            # Unzip
+            tar -xvf stripe.tar.gz
+        if: steps.cache.outputs.cache-hit != 'true'
+      - name: Create supabase/functions/.env including stripe webhook secrets
+        run: |
+          echo "STRIPE_WEBHOOK_SIGNING_SECRET=$(./stripe listen --print-secret)" >> supabase/functions/.env
+          echo "STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}" >> supabase/functions/.env
+          echo "STRIPE_DEFAULT_PLAN_ID=${{ secrets.STRIPE_DEFAULT_PLAN_ID }}" >> supabase/functions/.env
+          echo "STRIPE_DEFAULT_TRIAL_DAYS=7" >> supabase/functions/.env
+        env:
+          STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
+          STRIPE_DEFAULT_PLAN_ID: ${{ secrets.STRIPE_DEFAULT_PLAN_ID }}
+      - name: Supabase Start
+        run: supabase init && supabase start
+      - name: Setup basejump for testing
+        run: ./scripts/setup.sh
+        env:
+          PGPASSWORD: postgres
+      - name: Yarn install supabase/tests/integration
+        run: cd supabase/tests/integration && yarn --frozen-lockfile
+      - name: Install playwright browsers
+        run: cd supabase/tests/integration && yarn test:setup
+      - name: Run tests without webhooks
+        run: cd supabase/tests/integration && yarn test:invalid && yarn test:stripe-no-webhooks
+      - name: Start stripe listener headless
+        run: ./stripe listen --forward-to http://127.0.0.1:54321/functions/v1/test-stripe-billing-webhooks &
+      - name: Run tests with webhooks
+        run: cd supabase/tests/integration && yarn test:stripe-webhooks

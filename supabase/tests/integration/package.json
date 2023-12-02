@@ -7,7 +7,12 @@
     "@playwright/test": "^1.40.0",
     "@types/node": "^20.10.0"
   },
-  "scripts": {},
+  "scripts": {
+    "test:setup": "playwright install --with-deps",
+    "test:invalid": "playwright test invalid-requests.spec.ts",
+    "test:stripe-no-webhooks": "playwright test stripe-full-no-webhooks.spec.ts",
+    "test:stripe-webhooks": "playwright test stripe-full.spec.ts"
+  },
   "dependencies": {
     "@supabase/supabase-js": "^2.38.5",
     "stripe": "^14.7.0"

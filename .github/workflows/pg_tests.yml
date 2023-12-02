@@ -5,7 +5,8 @@ on:
 jobs:
   dbdev:
     uses: ./.github/workflows/dbdev.yml
-  build:
+  tests:
+    name: PGTap Tests
     runs-on: ubuntu-latest
     needs: dbdev
     steps:
@@ -26,7 +27,7 @@ jobs:
           PGPASSWORD: postgres
       - name: Install core extension using dbdev cli
         run: |
-          dbdev install --connection postgres://postgres:postgres@localhost:54322/postgres --path .
+          ~/.cargo/bin/dbdev install --connection postgres://postgres:postgres@localhost:54322/postgres --path .
           psql -v ON_ERROR_STOP=1 -U postgres -d postgres -h localhost -p 54322 -c 'CREATE EXTENSION IF NOT EXISTS basejump_core with schema extensions;'
         env:
           PGPASSWORD: postgres
