@@ -70,7 +70,6 @@ jobs:
         run: |
           supabase init
           echo -e "\n\n[functions.test-stripe-billing-webhooks]\nverify_jwt = false" >> supabase/config.toml
-          cat supabase/config.toml
           supabase start
       - name: Install supabase_test_helpers from scripts/install-dbdev-with-test-helpers.sql (remove this once remote install enabled in dbdev CLI)
         run: psql -v ON_ERROR_STOP=1 -U postgres -d postgres -h localhost -p 54322 -f ./scripts/install-dbdev-with-test-helpers.sql
@@ -92,6 +91,8 @@ jobs:
           SUPABASE_URL: http://127.0.0.1:54321
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
+          STRIPE_DEFAULT_PRICE_ID: ${{ secrets.STRIPE_DEFAULT_PRICE_ID }}
+          STRIPE_TRIAL_PERIOD_DAYS: 7
       - name: Run tests with webhooks
         run: |
           ./stripe listen --api-key ${{ secrets.STRIPE_API_KEY }}  --forward-to http://127.0.0.1:54321/functions/v1/test-stripe-billing-webhooks &
@@ -100,3 +101,5 @@ jobs:
           SUPABASE_URL: http://127.0.0.1:54321
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
+          STRIPE_DEFAULT_PRICE_ID: ${{ secrets.STRIPE_DEFAULT_PRICE_ID }}
+          STRIPE_TRIAL_PERIOD_DAYS: 7
