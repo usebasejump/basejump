@@ -92,7 +92,7 @@ jobs:
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
           STRIPE_DEFAULT_PRICE_ID: ${{ secrets.STRIPE_DEFAULT_PRICE_ID }}
-          STRIPE_TRIAL_PERIOD_DAYS: 7
+          STRIPE_DEFAULT_TRIAL_DAYS: 7
       - name: Run tests with webhooks
         run: |
           ./stripe listen --api-key ${{ secrets.STRIPE_API_KEY }}  --forward-to http://127.0.0.1:54321/functions/v1/test-stripe-billing-webhooks &
@@ -102,4 +102,4 @@ jobs:
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
           STRIPE_DEFAULT_PRICE_ID: ${{ secrets.STRIPE_DEFAULT_PRICE_ID }}
-          STRIPE_TRIAL_PERIOD_DAYS: 7
+          STRIPE_DEFAULT_TRIAL_DAYS: 7
