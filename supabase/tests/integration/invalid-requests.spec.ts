@@ -1,28 +1,15 @@
 import {expect, test} from '@playwright/test';
-import {createClient} from "@supabase/supabase-js";
 import testInvalidNewSubscriptionUrl from "./utils/test-invalid-new-subscription-url.ts";
 import testInvalidBillingPortalUrl from "./utils/test-invalid-billing-portal-url.ts";
 import testMissingAccountId from "./utils/test-missing-account-id.ts";
+import setupBasejumpAccount from "./utils/setup-basejump-account.ts";
+import testUnauthorized from "./utils/test-unauthorized.ts";
 
 const timestamp = Date.now();
-const supabaseClient = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
-const accountSlug = `stripe-test-account-${timestamp}-2`;
+const uniqueIdentifier = `invalid-requests-${timestamp}`;
 
 test('Shouldnt be able to make things up or pass bad data', async ({page}) => {
-    const {data: {session}} = await supabaseClient.auth.signUp({
-        email: `test+${timestamp}-2@test.com`,
-        password: 'test1234',
-    });
-    expect(session.access_token).not.toBeNull();
-
-    const {data: account} = await supabaseClient.rpc('create_account', {
-        slug: accountSlug,
-        name: 'Test Account',
-    });
-
-    expect(account.slug).toEqual(accountSlug);
-
-    const accountId = account.account_id;
+    const {accountId, supabaseClient} = await setupBasejumpAccount(uniqueIdentifier);
 
 
     /***
@@ -62,4 +49,11 @@ test('Shouldnt be able to make things up or pass bad data', async ({page}) => {
 
     expect(invalidUrlError.error).toEqual('Invalid action');
 
+    /**
+     * Unauthorized requests
+     */
+
+    const {supabaseClient: unauthorizedClient} = await setupBasejumpAccount(`unauthorized-access-${timestamp}`);
+    
+    await testUnauthorized(unauthorizedClient, accountId);
 });

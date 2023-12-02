@@ -1,4 +1,5 @@
 import {expect} from "@playwright/test";
+import {NEW_SUBSCRIPTION_CANCEL_URL, NEW_SUBSCRIPTION_SUCCESS_URL} from "./variables.ts";
 
 export default async function getVerifiedNewSubscriptionUrl(supabaseClient, accountId, planId = null) {
     const {data} = await supabaseClient.functions.invoke('billing-functions', {
@@ -7,8 +8,8 @@ export default async function getVerifiedNewSubscriptionUrl(supabaseClient, acco
             args: {
                 account_id: accountId,
                 plan_id: planId,
-                success_url: 'http://127.0.0.1:54323/success',
-                cancel_url: 'http://127.0.0.1:54323/cancel',
+                success_url: NEW_SUBSCRIPTION_SUCCESS_URL,
+                cancel_url: NEW_SUBSCRIPTION_CANCEL_URL,
             }
         }
     });

@@ -1,5 +1,4 @@
 import {expect, test} from '@playwright/test';
-import {createClient} from "@supabase/supabase-js";
 import getVerifiedNewSubscriptionUrl from "./utils/get-verified-new-subscription-url.ts";
 import getVerifiedAccountStatus from "./utils/get-verified-account-status.ts";
 import {
@@ -9,31 +8,21 @@ import {
     removeSubscriptionTrial,
     updatePaymentBillingPortal
 } from "./utils/stripe-actions.ts";
-import Stripe from 'stripe';
 import getVerifiedBillingPortalUrl from "./utils/get-verified-billing-portal-url.ts";
+import {
+    BILLING_PORTAL_RETURN_URL,
+    NEW_SUBSCRIPTION_CANCEL_URL,
+    NEW_SUBSCRIPTION_SUCCESS_URL
+} from "./utils/variables.ts";
+import setupBasejumpAccount from "./utils/setup-basejump-account.ts";
+import Stripe from "stripe";
 
 const timestamp = Date.now();
-const supabaseClient = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
-const accountSlug = `stripe-test-account-${timestamp}`;
+const uniqueIdentifier = `stripe-no-webhooks-${timestamp}`
 const stripeClient = new Stripe(process.env.STRIPE_API_KEY);
 
 test('Should be able to sign up, register for a trial, convert to an account, fail next payment and be deactivated, then fix', async ({page}) => {
-    const {data: {session}, error} = await supabaseClient.auth.signUp({
-        email: `test+${timestamp}@test.com`,
-        password: 'test1234',
-    });
-
-    expect(error).toBeNull();
-    expect(session.access_token).not.toBeNull();
-
-    const {data: account} = await supabaseClient.rpc('create_account', {
-        slug: accountSlug,
-        name: 'Test Account',
-    });
-
-    expect(account.slug).toEqual(accountSlug);
-
-    const accountId = account.account_id;
+    const {accountId, supabaseClient} = await setupBasejumpAccount(uniqueIdentifier);
 
     /***
      * Get billing status and make sure we're not active
@@ -69,17 +58,17 @@ test('Should be able to sign up, register for a trial, convert to an account, fa
 
     await cancelStripeCheckout(page);
 
-    await page.waitForURL('http://127.0.0.1:54323/cancel', {timeout: 10000});
+    await page.waitForURL(NEW_SUBSCRIPTION_CANCEL_URL, {timeout: 10000});
 
-    expect(page.url()).toEqual('http://127.0.0.1:54323/cancel');
+    expect(page.url()).toEqual(NEW_SUBSCRIPTION_CANCEL_URL);
 
     await page.goto(newSubscriptionData.url);
 
     await fillInStripeCard(page, 'declined');
 
-    await page.waitForURL('http://127.0.0.1:54323/success', {timeout: 10000});
+    await page.waitForURL(NEW_SUBSCRIPTION_SUCCESS_URL, {timeout: 10000});
 
-    expect(page.url()).toEqual('http://127.0.0.1:54323/success');
+    expect(page.url()).toEqual(NEW_SUBSCRIPTION_SUCCESS_URL);
 
     /***
      * Verify subscription is now active and in trial state
@@ -115,9 +104,9 @@ test('Should be able to sign up, register for a trial, convert to an account, fa
     await page.goto(billingPortal.url);
     await updatePaymentBillingPortal(page, 'valid');
 
-    await page.waitForURL('http://127.0.0.1:54323/return', {timeout: 10000});
+    await page.waitForURL(BILLING_PORTAL_RETURN_URL, {timeout: 10000});
 
-    expect(page.url()).toEqual('http://127.0.0.1:54323/return');
+    expect(page.url()).toEqual(BILLING_PORTAL_RETURN_URL);
 
 
     /***
