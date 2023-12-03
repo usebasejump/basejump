@@ -1,0 +1,4 @@
+default_version = 2.0.0
+comment = 'Basejump adds accounts, teams, permissions and bulling to Supabase'
+relocatable = false
+superuser = false

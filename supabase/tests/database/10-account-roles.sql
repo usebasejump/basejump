@@ -1,5 +1,6 @@
 BEGIN;
-CREATE EXTENSION "basejump-supabase_test_helpers";
+create extension "basejump-supabase_test_helpers"
+    version '0.0.2';
 
 select plan(17);
 -- make sure we're setup for enabling personal accounts
@@ -14,14 +15,14 @@ select tests.create_supabase_user('member');
 --- start acting as an authenticated user
 select tests.authenticate_as('primary');
 
-insert into accounts (id, team_name, personal_account)
-values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'test', false);
+insert into basejump.accounts (id, name, slug, personal_account)
+values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', 'test', 'test', false);
 
 -- setup users for tests
 set local role postgres;
-insert into account_user (account_id, user_id, account_role)
+insert into basejump.account_user (account_id, user_id, account_role)
 values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', tests.get_supabase_uid('owner'), 'owner');
-insert into account_user (account_id, user_id, account_role)
+insert into basejump.account_user (account_id, user_id, account_role)
 values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f', tests.get_supabase_uid('member'), 'member');
 
 --------
@@ -31,7 +32,7 @@ select tests.authenticate_as('member');
 
 -- can't update role directly in the account_user table
 SELECT results_ne(
-               $$ update account_user set account_role = 'owner' where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = tests.get_supabase_uid('member') returning 1 $$,
+               $$ update basejump.account_user set account_role = 'owner' where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = tests.get_supabase_uid('member') returning 1 $$,
                $$ values(1) $$,
                'Members should not be able to update their own role'
            );
@@ -44,8 +45,8 @@ SELECT throws_ok(
 
 -- member should still be only a member
 SELECT row_eq(
-               $$ select account_role from account_user where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = tests.get_supabase_uid('member') $$,
-               ROW ('member'::account_role),
+               $$ select account_role from basejump.account_user where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = tests.get_supabase_uid('member') $$,
+               ROW ('member'::basejump.account_role),
                'Member should still be a member'
            );
 
@@ -56,7 +57,7 @@ select tests.authenticate_as('owner');
 
 -- can't update role directly in the account_user table
 SELECT results_ne(
-               $$ update account_user set account_role = 'owner' where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = tests.get_supabase_uid('member') returning 1 $$,
+               $$ update basejump.account_user set account_role = 'owner' where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = tests.get_supabase_uid('member') returning 1 $$,
                $$ values(1) $$,
                'Members should not be able to update their own role'
            );
@@ -68,8 +69,8 @@ SELECT throws_ok(
            );
 
 SELECT row_eq(
-               $$ select account_role from account_user where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = tests.get_supabase_uid('member') $$,
-               ROW ('member'::account_role),
+               $$ select account_role from basejump.account_user where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = tests.get_supabase_uid('member') $$,
+               ROW ('member'::basejump.account_role),
                'Member should still be a member since primary owner change failed'
            );
 
@@ -82,14 +83,14 @@ SELECT throws_ok(
 
 --- primary owner should still be the same
 SELECT row_eq(
-               $$ select account_role from account_user where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = tests.get_supabase_uid('primary') $$,
-               ROW ('owner'::account_role),
+               $$ select account_role from basejump.account_user where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = tests.get_supabase_uid('primary') $$,
+               ROW ('owner'::basejump.account_role),
                'Primary owner should still be the same'
            );
 
 -- account should have the same primary_owner_user_id
 SELECT row_eq(
-               $$ select primary_owner_user_id from accounts where id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' $$,
+               $$ select primary_owner_user_id from basejump.accounts where id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' $$,
                ROW (tests.get_supabase_uid('primary')),
                'Primary owner should still be the same'
            );
@@ -102,8 +103,8 @@ SELECT lives_ok(
 
 -- member should now be an owner
 SELECT row_eq(
-               $$ select account_role from account_user where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = tests.get_supabase_uid('member') $$,
-               ROW ('owner'::account_role),
+               $$ select account_role from basejump.account_user where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = tests.get_supabase_uid('member') $$,
+               ROW ('owner'::basejump.account_role),
                'Member should now be an owner'
            );
 
@@ -114,7 +115,7 @@ select tests.authenticate_as('primary');
 
 -- can't update role directly in the account_user table
 SELECT results_ne(
-               $$ update account_user set account_role = 'member' where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = tests.get_supabase_uid('member') returning 1 $$,
+               $$ update basejump.account_user set account_role = 'member' where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = tests.get_supabase_uid('member') returning 1 $$,
                $$ values(1) $$,
                'Members should not be able to update their own role'
            );
@@ -127,8 +128,8 @@ SELECT lives_ok(
 
 -- member should now be a member
 SELECT row_eq(
-               $$ select account_role from account_user where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = tests.get_supabase_uid('member') $$,
-               ROW ('member'::account_role),
+               $$ select account_role from basejump.account_user where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = tests.get_supabase_uid('member') $$,
+               ROW ('member'::basejump.account_role),
                'Member should now be a member'
            );
 
@@ -140,14 +141,14 @@ SELECT lives_ok(
 
 -- member should now be a primary owner
 SELECT row_eq(
-               $$ select account_role from account_user where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = tests.get_supabase_uid('member') $$,
-               ROW ('owner'::account_role),
+               $$ select account_role from basejump.account_user where account_id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' and user_id = tests.get_supabase_uid('member') $$,
+               ROW ('owner'::basejump.account_role),
                'Member should now be a primary owner'
            );
 
 -- account primary_owner_user_id should be updated
 SELECT row_eq(
-               $$ select primary_owner_user_id from accounts where id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' $$,
+               $$ select primary_owner_user_id from basejump.accounts where id = 'd126ecef-35f6-4b5d-9f28-d9f00a9fb46f' $$,
                ROW (tests.get_supabase_uid('member')),
                'Primary owner should be updated'
            );
