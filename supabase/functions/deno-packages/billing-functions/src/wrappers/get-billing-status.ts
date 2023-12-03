@@ -18,8 +18,6 @@ export default async function getBillingStatus(
     const billingData = await handlers.getBillingStatus({
         accountId: roleInfo.account_id,
         billingEmail: roleInfo.billing_email,
-        defaultPlanId: roleInfo.billing_default_plan_id,
-        defaultTrialDays: roleInfo.billing_default_trial_days,
         customerId: roleInfo.billing_customer_id,
         subscriptionId: roleInfo.billing_subscription_id,
     });

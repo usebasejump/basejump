@@ -79,25 +79,6 @@ $$
 $$;
 
 /**
- * Billing providers are the different payment processors that
- * we support.  Currently, we only support Stripe, but we may
- * add others in the future.
- */
-DO
-$$
-    BEGIN
-        -- check it account_role already exists on basejump schema
-        IF NOT EXISTS(SELECT 1
-                      FROM pg_type t
-                               JOIN pg_namespace n ON n.oid = t.typnamespace
-                      WHERE t.typname = 'billing_providers'
-                        AND n.nspname = 'basejump') THEN
-            create type basejump.billing_providers as enum ('stripe');
-        end if;
-    end;
-$$;
-
-/**
  * Invitation types are either email or link. Email invitations are sent to
  * a single user and can only be claimed once.  Link invitations can be used multiple times
  * Both expire after 24 hours
@@ -124,12 +105,10 @@ $$;
 
 CREATE TABLE IF NOT EXISTS basejump.config
 (
-    enable_team_accounts            boolean                    default true,
-    enable_personal_account_billing boolean                    default true,
-    enable_team_account_billing     boolean                    default true,
-    billing_provider                basejump.billing_providers default 'stripe',
-    default_trial_period_days       integer                    default 30,
-    default_account_plan_id         text
+    enable_team_accounts            boolean default true,
+    enable_personal_account_billing boolean default true,
+    enable_team_account_billing     boolean default true,
+    billing_provider                text    default 'stripe'
 );
 
 -- create config row
@@ -371,11 +350,11 @@ EXECUTE PROCEDURE basejump.trigger_set_user_tracking();
 create table if not exists basejump.account_user
 (
     -- id of the user in the account
-    user_id      uuid references auth.users        not null,
+    user_id      uuid references auth.users on delete cascade        not null,
     -- id of the account the user is in
-    account_id   uuid references basejump.accounts not null,
+    account_id   uuid references basejump.accounts on delete cascade not null,
     -- role of the user in the account
-    account_role basejump.account_role             not null,
+    account_role basejump.account_role                               not null,
     constraint account_user_pkey primary key (user_id, account_id)
 );
 
@@ -467,7 +446,7 @@ execute procedure basejump.run_new_user_setup();
 create table if not exists basejump.billing_customers
 (
     -- UUID from auth.users
-    account_id uuid references basejump.accounts not null,
+    account_id uuid references basejump.accounts (id) on delete cascade not null,
     -- The user's customer ID in Stripe. User must not be able to update this.
     id         text primary key,
     -- The email address the customer wants to use for invoicing
@@ -475,7 +454,7 @@ create table if not exists basejump.billing_customers
     -- The active status of a customer
     active     boolean,
     -- The billing provider the customer is using
-    provider   basejump.billing_providers
+    provider   text
 );
 
 -- Open up access to billing_customers
@@ -496,8 +475,8 @@ create table if not exists basejump.billing_subscriptions
 (
     -- Subscription ID from Stripe, e.g. sub_1234.
     id                   text primary key,
-    account_id           uuid references basejump.accounts                               not null,
-    billing_customer_id  text references basejump.billing_customers (id)                 not null,
+    account_id           uuid references basejump.accounts (id) on delete cascade          not null,
+    billing_customer_id  text references basejump.billing_customers (id) on delete cascade not null,
     -- The status of the subscription object, one of subscription_status type above.
     status               basejump.subscription_status,
     -- Set of key-value pairs, used to store additional information about the object in a structured format.
@@ -510,11 +489,11 @@ create table if not exists basejump.billing_subscriptions
     -- If true the subscription has been canceled by the user and will be deleted at the end of the billing period.
     cancel_at_period_end boolean,
     -- Time at which the subscription was created.
-    created              timestamp with time zone default timezone('utc' :: text, now()) not null,
+    created              timestamp with time zone default timezone('utc' :: text, now())   not null,
     -- Start of the current period that the subscription has been invoiced for.
-    current_period_start timestamp with time zone default timezone('utc' :: text, now()) not null,
+    current_period_start timestamp with time zone default timezone('utc' :: text, now())   not null,
     -- End of the current period that the subscription has been invoiced for. At the end of this period, a new invoice will be created.
-    current_period_end   timestamp with time zone default timezone('utc' :: text, now()) not null,
+    current_period_end   timestamp with time zone default timezone('utc' :: text, now())   not null,
     -- If the subscription has ended, the timestamp of the date the subscription ended.
     ended_at             timestamp with time zone default timezone('utc' :: text, now()),
     -- A date in the future at which the subscription will automatically get canceled.
@@ -525,7 +504,7 @@ create table if not exists basejump.billing_subscriptions
     trial_start          timestamp with time zone default timezone('utc' :: text, now()),
     -- If the subscription has a trial, the end of that trial.
     trial_end            timestamp with time zone default timezone('utc' :: text, now()),
-    provider             basejump.billing_providers
+    provider             text
 );
 
 -- Open up access to billing_subscriptions
@@ -550,15 +529,15 @@ alter table
 create table if not exists basejump.invitations
 (
     -- the id of the invitation
-    id                 uuid unique                       not null default uuid_generate_v4(),
+    id                 uuid unique                                              not null default uuid_generate_v4(),
     -- what role should invitation accepters be given in this account
-    account_role       basejump.account_role             not null,
+    account_role       basejump.account_role                                    not null,
     -- the account the invitation is for
-    account_id         uuid references basejump.accounts not null,
+    account_id         uuid references basejump.accounts (id) on delete cascade not null,
     -- unique token used to accept the invitation
-    token              text unique                       not null default basejump.generate_token(30),
+    token              text unique                                              not null default basejump.generate_token(30),
     -- who created the invitation
-    invited_by_user_id uuid references auth.users        not null,
+    invited_by_user_id uuid references auth.users                               not null,
     -- account name. filled in by a trigger
     account_name       text,
     -- when the invitation was last updated
@@ -566,7 +545,7 @@ create table if not exists basejump.invitations
     -- when the invitation was created
     created_at         timestamp with time zone,
     -- what type of invitation is this
-    invitation_type    basejump.invitation_type          not null,
+    invitation_type    basejump.invitation_type                                 not null,
     primary key (id)
 );
 
@@ -743,8 +722,6 @@ BEGIN
                    'billing_status', s.status,
                    'billing_customer_id', c.id,
                    'billing_provider', config.billing_provider,
-                   'billing_default_plan_id', config.default_account_plan_id,
-                   'billing_default_trial_days', config.default_trial_period_days,
                    'billing_email',
                    coalesce(c.email, u.email) -- if we don't have a customer email, use the user's email as a fallback
                )
@@ -777,7 +754,7 @@ BEGIN
     if customer is not null then
         insert into basejump.billing_customers (id, account_id, email, provider)
         values (customer ->> 'id', service_role_upsert_customer_subscription.account_id, customer ->> 'billing_email',
-                (customer ->> 'provider')::basejump.billing_providers)
+                (customer ->> 'provider'))
         on conflict (id) do update
             set email = customer ->> 'billing_email';
     end if;
@@ -798,7 +775,7 @@ BEGIN
                 (subscription ->> 'cancel_at')::timestamptz,
                 (subscription ->> 'canceled_at')::timestamptz, (subscription ->> 'trial_start')::timestamptz,
                 (subscription ->> 'trial_end')::timestamptz,
-                subscription ->> 'plan_name', (subscription ->> 'provider')::basejump.billing_providers)
+                subscription ->> 'plan_name', (subscription ->> 'provider'))
         on conflict (id) do update
             set billing_customer_id  = subscription ->> 'billing_customer_id',
                 status               = (subscription ->> 'status')::basejump.subscription_status,

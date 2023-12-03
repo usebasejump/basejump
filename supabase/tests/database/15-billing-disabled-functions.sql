@@ -32,9 +32,7 @@ select row_eq(
                  "is_primary_owner": true,
                  "billing_customer_id": null,
                  "is_personal_account": false,
-                 "billing_default_plan_id": null,
-                 "billing_subscription_id": null,
-                 "billing_default_trial_days": 30
+                 "billing_subscription_id": null
                }'::jsonb),
                'get_account_billing_status should handle disabled billing correctly'
            );
@@ -67,9 +65,7 @@ select row_eq(
                  "is_primary_owner": true,
                  "billing_customer_id": null,
                  "is_personal_account": false,
-                 "billing_default_plan_id": null,
-                 "billing_subscription_id": null,
-                 "billing_default_trial_days": 30
+                 "billing_subscription_id": null
                }'::jsonb),
                'get_account_billing_status should handle disabled billing correctly'
            );
@@ -102,9 +98,7 @@ select row_eq(
                  "is_primary_owner": true,
                  "billing_customer_id": null,
                  "is_personal_account": false,
-                 "billing_default_plan_id": null,
-                 "billing_subscription_id": null,
-                 "billing_default_trial_days": 30
+                 "billing_subscription_id": null
                }'::jsonb),
                'get_account_billing_status should handle enabled team billing correctly'
            );

@@ -12,8 +12,6 @@ export type AUTHORIZED_BILLING_USER_INFO = {
     billing_customer_id: string;
     billing_email: string;
     billing_enabled: boolean;
-    billing_default_plan_id?: string;
-    billing_default_trial_days?: number;
     billing_provider?: string;
 };
 

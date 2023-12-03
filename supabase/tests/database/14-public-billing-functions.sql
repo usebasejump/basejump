@@ -6,9 +6,6 @@ update basejump.config
 set enable_team_account_billing     = TRUE,
     enable_personal_account_billing = true;
 
-update basejump.config
-set default_account_plan_id = 'price_00000000000000';
-
 select plan(6);
 
 select tests.create_supabase_user('test1');
@@ -86,8 +83,6 @@ select row_eq(
                  "billing_status": "active",
                  "billing_customer_id": "cus_00000000000000",
                  "billing_provider": "stripe",
-                 "billing_default_plan_id": "price_00000000000000",
-                 "billing_default_trial_days": 30,
                  "billing_email": "test@test.com",
                  "billing_enabled": true
                }'::jsonb),
@@ -115,8 +110,6 @@ select row_eq(
                  "billing_status": "active",
                  "billing_customer_id": "cus_00000000000000",
                  "billing_provider": "stripe",
-                 "billing_default_plan_id": "price_00000000000000",
-                 "billing_default_trial_days": 30,
                  "billing_email": "test2@test.com",
                  "billing_enabled": true
                }'::jsonb),
@@ -167,8 +160,6 @@ select row_eq(
                  "billing_status": "canceled",
                  "billing_customer_id": "cus_00000000000000",
                  "billing_provider": "stripe",
-                 "billing_default_plan_id": "price_00000000000000",
-                 "billing_default_trial_days": 30,
                  "billing_email": "test2@test.com",
                  "billing_enabled": true
                }'::jsonb),
@@ -189,8 +180,6 @@ select row_eq(
                  "billing_status": "active",
                  "billing_customer_id": "cus_00000000000001",
                  "billing_provider": "stripe",
-                 "billing_default_plan_id": "price_00000000000000",
-                 "billing_default_trial_days": 30,
                  "billing_email": "test@test.com",
                  "billing_enabled": true
                }'::jsonb),
