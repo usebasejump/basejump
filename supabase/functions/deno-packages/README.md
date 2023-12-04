@@ -11,7 +11,7 @@ import {serve} from "https://deno.land/std@0.168.0/http/server.ts";
 import {
     billingEndpoint,
     stripeBillingEndpoint
-} from "https://raw.githubusercontent.com/usebasejump/basejump/main/deno-packages/billing-functions/mod.ts";
+} from "https://deno.land/x/basejump@v2.0.1/billing-functions/mod.ts";
 
 const stripeResponse = stripeBillingEndpoint({
     stripeClient,
@@ -32,7 +32,7 @@ import {serve} from "https://deno.land/std@0.168.0/http/server.ts";
 import {
     billingWebhookEndpoint,
     stripeBillingWebhookEndpoint
-} from "https://raw.githubusercontent.com/usebasejump/basejump/main/deno-packages/billing-functions/mod.ts";
+} from "https://deno.land/x/basejump@v2.0.1/billing-functions/mod.ts";
 
 const stripeResponse = stripeBillingWebhookEndpoint({
     stripeClient,
@@ -52,7 +52,7 @@ Convenience function useful for ensuring a user should have access to a specific
 import {serve} from "https://deno.land/std@0.168.0/http/server.ts";
 import {
     requireAccountMember
-} from "https://raw.githubusercontent.com/usebasejump/basejump/main/deno-packages/billing-functions/mod.ts";
+} from "https://deno.land/x/basejump@v2.0.1/billing-functions/mod.ts";
 
 serve(async (req) => {
     if (req.method === "OPTIONS") {
