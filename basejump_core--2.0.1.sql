@@ -243,7 +243,7 @@ grant execute on function basejump.generate_token(int) to authenticated;
  */
 CREATE TABLE IF NOT EXISTS basejump.accounts
 (
-    id                    uuid unique                NOT NULL DEFAULT uuid_generate_v4(),
+    id                    uuid unique                NOT NULL DEFAULT extensions.uuid_generate_v4(),
     -- defaults to the user who creates the account
     -- this user cannot be removed from an account without changing
     -- the primary owner first
@@ -529,7 +529,7 @@ alter table
 create table if not exists basejump.invitations
 (
     -- the id of the invitation
-    id                 uuid unique                                              not null default uuid_generate_v4(),
+    id                 uuid unique                                              not null default extensions.uuid_generate_v4(),
     -- what role should invitation accepters be given in this account
     account_role       basejump.account_role                                    not null,
     -- the account the invitation is for

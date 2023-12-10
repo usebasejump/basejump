@@ -3,3 +3,8 @@
 config.toml
 functions/.env
 seed.sql
+
+# Supabase
+.branches
+.temp
+.env
