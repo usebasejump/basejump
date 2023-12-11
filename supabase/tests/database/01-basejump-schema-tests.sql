@@ -1,6 +1,5 @@
 BEGIN;
-create extension "basejump-supabase_test_helpers"
-    version '0.0.2';
+create extension "basejump-supabase_test_helpers" version '0.0.6';
 
 select plan(24);
 
@@ -13,7 +12,7 @@ select has_table('basejump', 'invitations', 'Basejump invitations table should e
 select has_table('basejump', 'billing_customers', 'Basejump billing_customers table should exist');
 select has_table('basejump', 'billing_subscriptions', 'Basejump billing_subscriptions table should exist');
 
-select tests.rls_enabled('public');
+select tests.rls_enabled('basejump');
 
 select columns_are('basejump', 'config',
                    Array ['enable_team_accounts', 'enable_personal_account_billing', 'enable_team_account_billing', 'billing_provider'],

@@ -36,15 +36,6 @@ Yes please! Here's how you can get started locally
     supabase init && supabase start
 ```
 
-#### Install dependencies using dbdev
-
-1. Install dbdev according to instructions on [database.dev](https://database.dev).
-2. Install supabase_test_helpers
-
-```sql
-    select dbdev.install('basejump-supabase_test_helpers');
-```
-
 #### Install local version of basejump_core
 
 ```bash
@@ -54,7 +45,7 @@ dbdev install --connection postgres://postgres:postgres@localhost:54322/postgres
 #### Enable basejump_core
 
 ```sql
-    CREATE EXTENSION IF NOT EXISTS basejump_core with schema extensions;
+    CREATE EXTENSION IF NOT EXISTS basejump_core;
 ```
 
 #### Make sure tests can run

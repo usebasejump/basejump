@@ -1,6 +1,5 @@
 BEGIN;
-create extension "basejump-supabase_test_helpers"
-    version '0.0.2';
+create extension "basejump-supabase_test_helpers" version '0.0.6';
 
 update basejump.config
 set enable_team_account_billing     = TRUE,

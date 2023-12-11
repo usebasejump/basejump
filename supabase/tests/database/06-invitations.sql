@@ -1,8 +1,7 @@
 -- the main testing for invitations on accounts is in the team_accounts tests
 -- this batch is to let us test the more complicated behaviors such as one_time, 24_hour, multiple use, etc...accounts
 BEGIN;
-create extension "basejump-supabase_test_helpers"
-    version '0.0.2';
+create extension "basejump-supabase_test_helpers" version '0.0.6';
 
 select plan(35);
 
@@ -271,19 +270,18 @@ SELECT throws_ok(
 -----------
 -- Expired 24_hour tokens
 -----------
-set local role postgres;
--- we need to remove the invitations timestamp trigger so we can force the token to expire
-drop trigger basejump_set_invitations_timestamp ON basejump.invitations;
 
 select tests.authenticate_as('owner');
 
-insert into basejump.invitations (account_id, account_role, token, invitation_type, created_at, updated_at)
+select tests.freeze_time(CURRENT_TIMESTAMP - interval '25 hours');
+
+insert into basejump.invitations (account_id, account_role, token, invitation_type)
 values ('d126ecef-35f6-4b5d-9f28-d9f00a9fb46f',
         'owner',
         'expired_token',
-        '24_hour',
-        now() - interval '25 hours',
-        now() - interval '25 hours');
+        '24_hour');
+
+select tests.unfreeze_time();
 
 select tests.authenticate_as('expired');
 
