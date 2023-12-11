@@ -23,10 +23,6 @@ jobs:
           version: latest
       - name: Supabase Start
         run: supabase init && supabase start
-      - name: Install supabase_test_helpers from scripts/install-dbdev-with-test-helpers.sql (remove this once remote install enabled in dbdev CLI)
-        run: psql -v ON_ERROR_STOP=1 -U postgres -d postgres -h localhost -p 54322 -f ./scripts/install-dbdev-with-test-helpers.sql
-        env:
-          PGPASSWORD: postgres
       - name: Install core extension using dbdev cli
         run: |
           ~/.cargo/bin/dbdev install --connection postgres://postgres:postgres@localhost:54322/postgres --path .
@@ -71,10 +67,6 @@ jobs:
           supabase init
           echo -e "\n\n[functions.test-stripe-billing-webhooks]\nverify_jwt = false" >> supabase/config.toml
           supabase start
-      - name: Install supabase_test_helpers from scripts/install-dbdev-with-test-helpers.sql (remove this once remote install enabled in dbdev CLI)
-        run: psql -v ON_ERROR_STOP=1 -U postgres -d postgres -h localhost -p 54322 -f ./scripts/install-dbdev-with-test-helpers.sql
-        env:
-          PGPASSWORD: postgres
       - name: Install core extension using dbdev cli
         run: |
           ~/.cargo/bin/dbdev install --connection postgres://postgres:postgres@localhost:54322/postgres --path .
