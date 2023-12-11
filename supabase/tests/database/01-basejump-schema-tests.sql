@@ -1,5 +1,5 @@
 BEGIN;
-create extension "basejump-supabase_test_helpers";
+create extension "basejump-supabase_test_helpers" version '0.0.6';
 
 select plan(24);
 

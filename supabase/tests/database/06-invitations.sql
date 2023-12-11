@@ -1,7 +1,7 @@
 -- the main testing for invitations on accounts is in the team_accounts tests
 -- this batch is to let us test the more complicated behaviors such as one_time, 24_hour, multiple use, etc...accounts
 BEGIN;
-create extension "basejump-supabase_test_helpers";
+create extension "basejump-supabase_test_helpers" version '0.0.6';
 
 select plan(35);
 
