@@ -1,13 +1,13 @@
-import { createSupabaseClient } from "../deps.ts";
-import { Database } from "./types/supabase.ts";
+import {createSupabaseClient} from "../deps.ts";
+import {Database} from "../types/basejump-database.ts";
 
-export default function(authToken: string) {
-  const supabase = createSupabaseClient<Database>(
-    Deno.env.get("SUPABASE_URL") as string,
-    Deno.env.get("SUPABASE_ANON_KEY") as string,
-    {
-      global: { headers: { Authorization: authToken } },
-    }
-  );
-  return supabase;
+export default function (authToken: string) {
+    const supabase = createSupabaseClient<Database>(
+        Deno.env.get("SUPABASE_URL") as string,
+        Deno.env.get("SUPABASE_ANON_KEY") as string,
+        {
+            global: {headers: {Authorization: authToken}},
+        }
+    );
+    return supabase;
 }

@@ -1,5 +1,5 @@
 import {createSupabaseClient} from "../deps.ts";
-import {Database} from "./types/supabase.ts";
+import {Database} from "../types/basejump-database.ts";
 
 export default function () {
     const supabase = createSupabaseClient<Database>(
