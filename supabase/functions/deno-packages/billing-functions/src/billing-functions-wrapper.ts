@@ -58,9 +58,9 @@ type GENERIC_URL_RESPONSE = {
 export type GET_BILLING_STATUS_RESPONSE = {
     subscription_id: string;
     subscription_active: boolean;
-    status: BASEJUMP_DATABASE_SCHEMA["public"]["Tables"]["billing_subscriptions"]["Row"]["status"];
+    status: BASEJUMP_DATABASE_SCHEMA["basejump"]["Tables"]["billing_subscriptions"]["Row"]["status"];
     billing_email?: string;
-    account_role: BASEJUMP_DATABASE_SCHEMA["public"]["Tables"]["account_user"]["Row"]["account_role"];
+    account_role: BASEJUMP_DATABASE_SCHEMA["basejump"]["Tables"]["account_user"]["Row"]["account_role"];
     is_primary_owner: boolean;
     billing_enabled: boolean;
 };
@@ -70,7 +70,7 @@ type BILLING_FUNCTION_WRAPPER_OPTIONS = {
 }
 
 export type BILLING_FUNCTION_WRAPPER_HANDLERS = {
-    provider: BASEJUMP_DATABASE_SCHEMA["public"]["Tables"]["billing_providers"]["Row"]["provider"];
+    provider: BASEJUMP_DATABASE_SCHEMA["basejump"]["Tables"]["billing_subscriptions"]["Row"]["provider"];
     getPlans: (args: GET_PLANS_ARGS) => Promise<GET_PLANS_RESPONSE>;
     getBillingPortalUrl: (
         args: GET_BILLING_PORTAL_URL_ARGS

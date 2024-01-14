@@ -1,9 +1,9 @@
 import createSupabaseClient from "../lib/create-supabase-client.ts";
-import {BASEJUMP_DATABASE_SCHEMA} from "../mod.ts";
+import {Database as BASEJUMP_DATABASE_SCHEMA} from "../types/basejump-database.ts";
 import errorResponse from "../lib/error-response.ts";
 
 export type AUTHORIZED_BILLING_USER_INFO = {
-    account_role: BASEJUMP_DATABASE_SCHEMA["public"]["Tables"]["account_user"]["Row"]["account_role"];
+    account_role: BASEJUMP_DATABASE_SCHEMA["basejump"]["Tables"]["account_user"]["Row"]["account_role"];
     is_primary_owner: boolean;
     is_personal_account: boolean;
     account_id: string;
@@ -45,7 +45,9 @@ export async function requireAuthorizedBillingUser(
         const supabase = createSupabaseClient(authToken);
         const {data, error} = await supabase.rpc("get_account_billing_status", {
             account_id: options.accountId,
-        });
+        }) as {data: AUTHORIZED_BILLING_USER_INFO | null; error: any};
+
+
 
         // means this user isn't a member of this account, block
         if (!data || error) {
@@ -69,9 +71,9 @@ export async function requireAuthorizedBillingUser(
                 return await options.onBillingDisabled();
             }
             return new Response(
-                {
+                JSON.stringify({
                     billing_enabled: false,
-                },
+                }),
                 {
                     headers: {
                         "Content-Type": "application/json",
@@ -80,8 +82,12 @@ export async function requireAuthorizedBillingUser(
             );
         }
 
+        if (!options.onBillableAndAuthorized) {
+            return errorResponse("Config error: No onBillableAndAuthorized function passed in", 400);
+        }
+
         // means this user is a member of this account, and has the right role, allow
-        return await options.onBillableAndAuthorized(data);
+        return await options.onBillableAndAuthorized?.(data);
     } catch (e) {
         // something went wrong, throw an error
         if (options.onError) {
