@@ -1,8 +1,8 @@
-import { createSupabaseClient } from "../deps.ts";
-import { BASEJUMP_DATABASE_SCHEMA } from "../mod.ts";
+import createSupabaseClient from "../lib/create-supabase-client.ts";
+import { Database as BASEJUMP_DATABASE_SCHEMA } from "../types/basejump-database.ts";
 
 type AUTHORIZED_USER_INFO = {
-  account_role: BASEJUMP_DATABASE_SCHEMA["public"]["Tables"]["account_user"]["Row"]["account_role"];
+  account_role: BASEJUMP_DATABASE_SCHEMA["basejump"]["Tables"]["account_user"]["Row"]["account_role"];
   is_primary_owner: boolean;
   is_personal_account: boolean;
 };
@@ -22,7 +22,7 @@ export async function requireAuthorizedUser(
   try {
     const authToken = req.headers.get("Authorization");
     // we don't have what we need. instant block.
-    if (!authToken || !accountId) {
+    if (!authToken || !options.accountId) {
       if (options.onUnauthorized) {
         return await options.onUnauthorized();
       }
@@ -32,7 +32,7 @@ export async function requireAuthorizedUser(
     const supabase = createSupabaseClient(authToken);
     const { data, error } = await supabase.rpc("current_user_account_role", {
       account_id: options.accountId,
-    });
+    }) as { data: AUTHORIZED_USER_INFO | null; error: any };
     // means this user isn't a member of this account, block
     if (!data || error) {
       if (options.onUnauthorized) {
