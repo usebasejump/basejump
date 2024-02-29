@@ -63,6 +63,7 @@ export type GET_BILLING_STATUS_RESPONSE = {
     account_role: BASEJUMP_DATABASE_SCHEMA["basejump"]["Tables"]["account_user"]["Row"]["account_role"];
     is_primary_owner: boolean;
     billing_enabled: boolean;
+    price_id: string;
 };
 
 type BILLING_FUNCTION_WRAPPER_OPTIONS = {
