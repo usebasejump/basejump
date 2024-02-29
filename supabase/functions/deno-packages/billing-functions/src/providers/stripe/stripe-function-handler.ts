@@ -25,8 +25,6 @@ export function stripeFunctionHandler({
                                    accountId,
                                    customerId,
                                    billingEmail,
-                                   defaultTrialDays,
-                                   defaultPlanId,
                                    subscriptionId,
                                }) {
             const customer = await findOrCreateCustomer(stripeClient, {
