@@ -13,17 +13,11 @@ type GET_PLANS_ARGS = {
 
 type GET_PLANS_RESPONSE = Array<{
     id: string;
-    name: string;
-    description?: string;
-    amount: number;
+    product_name: string;
+    product_description?: string;
+    price: number;
     currency: string;
-    interval: "month" | "year" | "one_time";
-    interval_count: 1;
-    trial_period_days?: 30;
-    active?: boolean;
-    metadata?: {
-        [key: string]: string;
-    };
+    interval: "month" | "year" | "one_time";    
 }>;
 
 type GET_BILLING_PORTAL_URL_ARGS = {
