@@ -303,13 +303,16 @@ CREATE TRIGGER basejump_protect_account_fields
     FOR EACH ROW
 EXECUTE FUNCTION basejump.protect_account_fields();
 
+-- add unaccent extension to replace any non-latin characters https://www.postgresql.org/docs/9.6/unaccent.html
+CREATE EXTENSION IF NOT EXISTS unaccent;
+
 -- convert any character in the slug that's not a letter, number, or dash to a dash on insert/update for accounts
 CREATE OR REPLACE FUNCTION basejump.slugify_account_slug()
     RETURNS TRIGGER AS
 $$
 BEGIN
     if NEW.slug is not null then
-        NEW.slug = lower(regexp_replace(NEW.slug, '[^a-zA-Z0-9-]+', '-', 'g'));
+        NEW.slug = trim(BOTH '-' FROM regexp_replace(lower(public.unaccent(trim(NEW.slug))), '[^a-z0-9\\-_]+', '-', 'gi'));
     end if;
 
     RETURN NEW;
