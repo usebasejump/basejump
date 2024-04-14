@@ -47,7 +47,10 @@ supabase test db
 ```
 
 
-
 ## Contributing
 
 Yes please! Please submit a PR with your changes to [the basejump github repo](https://github.com/usebasejump/basejump). Please make sure your changes are well tested and documented.
+
+You can contribute in the following places:
+- [Basejump core](https://github.com/usebasejump/basejump)
+- [Basejump edge functions / billing functions](https://github.com/usebasejump/basejump-deno-packages)
