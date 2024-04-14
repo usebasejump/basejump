@@ -2,7 +2,7 @@
 
 Basejump adds personal accounts, team accounts, permissions and billing support to Supabase Auth.
 
-[Learn more at usebasejump.com](https://usebasejump.com).
+[Learn more at usebasejump.com](https://usebasejump.com). Ask questions [on X / Twitter](https://twitter.com/tiniscule)
 
 ## Features
 
