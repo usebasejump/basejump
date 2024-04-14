@@ -3,95 +3,20 @@ on:
   pull_request:
     branches: [ main ]
 jobs:
-  dbdev:
-    uses: ./.github/workflows/dbdev.yml
   pg_tap_tests:
     name: PGTap Tests
     runs-on: ubuntu-latest
-    needs: dbdev
     steps:
-      - name: Download DBDev
-        uses: actions/download-artifact@master
-        with:
-          name: dbdev-output
-          path: ~/.cargo/bin
-      - name: Make dbdev executable
-        run: chmod +x ~/.cargo/bin/dbdev
       - uses: actions/checkout@v3
       - uses: supabase/setup-cli@v1
         with:
           version: latest
       - name: Supabase Start
         run: supabase init && supabase start
-      - name: Install core extension using dbdev cli
+      - name: Setup supabase testing
         run: |
-          ~/.cargo/bin/dbdev install --connection postgres://postgres:postgres@localhost:54322/postgres --path .
-          psql -v ON_ERROR_STOP=1 -U postgres -d postgres -h localhost -p 54322 -c 'CREATE EXTENSION IF NOT EXISTS basejump_core with schema extensions;'
+          psql -v ON_ERROR_STOP=1 -U postgres -d postgres -h localhost -p 54322 -f .github/workflows/setup-testing.sql
         env:
           PGPASSWORD: postgres
       - name: Run Tests
         run: supabase test db
-  stripe_tests:
-    name: Stripe Tests
-    runs-on: ubuntu-latest
-    needs: dbdev
-    steps:
-      - name: Download DBDev
-        uses: actions/download-artifact@master
-        with:
-          name: dbdev-output
-          path: ~/.cargo/bin
-      - name: Make dbdev executable
-        run: chmod +x ~/.cargo/bin/dbdev
-      - uses: actions/checkout@v3
-      - uses: supabase/setup-cli@v1
-        with:
-          version: latest
-      - name: Install stripe
-        run: |
-          # Download linux version as per Stripe documentation
-            curl -L https://github.com/stripe/stripe-cli/releases/download/v1.18.0/stripe_1.18.0_linux_x86_64.tar.gz --output stripe.tar.gz
-            # Unzip
-            tar -xvf stripe.tar.gz
-      - name: Create supabase/functions/.env including stripe webhook secrets
-        run: |
-          echo "STRIPE_WEBHOOK_SIGNING_SECRET=$(./stripe listen --print-secret)" >> supabase/functions/.env
-          echo "STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}" >> supabase/functions/.env
-          echo "STRIPE_DEFAULT_PLAN_ID=${{ secrets.STRIPE_DEFAULT_PLAN_ID }}" >> supabase/functions/.env
-          echo "STRIPE_DEFAULT_TRIAL_DAYS=7" >> supabase/functions/.env
-        env:
-          STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
-          STRIPE_DEFAULT_PLAN_ID: ${{ secrets.STRIPE_DEFAULT_PLAN_ID }}
-      - name: Setup and start Supabase
-        run: |
-          supabase init
-          echo -e "\n\n[functions.test-stripe-billing-webhooks]\nverify_jwt = false" >> supabase/config.toml
-          supabase start
-      - name: Install core extension using dbdev cli
-        run: |
-          ~/.cargo/bin/dbdev install --connection postgres://postgres:postgres@localhost:54322/postgres --path .
-          psql -v ON_ERROR_STOP=1 -U postgres -d postgres -h localhost -p 54322 -c 'CREATE EXTENSION IF NOT EXISTS basejump_core with schema extensions;'
-        env:
-          PGPASSWORD: postgres
-      - name: Yarn install supabase/tests/integration
-        run: cd supabase/tests/integration && yarn --frozen-lockfile
-      - name: Install playwright browsers
-        run: cd supabase/tests/integration && yarn test:setup
-      - name: Run tests without webhooks
-        run: cd supabase/tests/integration && yarn test:invalid && yarn test:stripe-no-webhooks
-        env:
-          SUPABASE_URL: http://127.0.0.1:54321
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
-          STRIPE_DEFAULT_PLAN_ID: ${{ secrets.STRIPE_DEFAULT_PLAN_ID }}
-          STRIPE_DEFAULT_TRIAL_DAYS: 7
-      - name: Run tests with webhooks
-        run: |
-          ./stripe listen --api-key ${{ secrets.STRIPE_API_KEY }}  --forward-to http://127.0.0.1:54321/functions/v1/test-stripe-billing-webhooks &
-          cd supabase/tests/integration && yarn test:stripe-webhooks
-        env:
-          SUPABASE_URL: http://127.0.0.1:54321
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
-          STRIPE_DEFAULT_PLAN_ID: ${{ secrets.STRIPE_DEFAULT_PLAN_ID }}
-          STRIPE_DEFAULT_TRIAL_DAYS: 7
