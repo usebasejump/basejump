@@ -25,6 +25,7 @@ Basejump adds personal accounts, team accounts, permissions and billing support 
 # Quick Start
 
 Check out the getting started guide at [usebasejump.com](https://usebasejump.com).
+<br/>
 
 ## Optional Nextjs starter template
 We've got a fleshed out starter template ready to go for Basejump built using NextJs.  You can install it by running:
