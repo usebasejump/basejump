@@ -7,6 +7,8 @@ import {billingFunctionsWrapper, stripeFunctionHandler} from "https://deno.land/
 
 import Stripe from "https://esm.sh/stripe@11.1.0?target=deno";
 
+const defaultAllowedHost = Deno.env.get("ALLOWED_HOST") || "http://localhost:3000";
+
 const stripeClient = new Stripe(Deno.env.get("STRIPE_API_KEY") as string, {
     // This is needed to use the Fetch API rather than relying on the Node http
     // package.
@@ -21,7 +23,7 @@ const stripeHandler = stripeFunctionHandler({
 });
 
 const billingEndpoint = billingFunctionsWrapper(stripeHandler, {
-    allowedURLs: [Deno.env.get("ALLOWED_HOST")]
+    allowedURLs: [defaultAllowedHost]
 });
 
 serve(async (req) => {

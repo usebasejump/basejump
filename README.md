@@ -19,9 +19,18 @@ Basejump adds personal accounts, team accounts, permissions and billing support 
   at [database.dev/basejump/supabase_test_helpers](https://database.dev/basejump/supabase_test_helpers). You do not need
   to be using Basejump to use the testing tools.
 
-## Quick Start (recommended)
+## Quick Start
 
 Check out the getting started guide at [usebasejump.com](https://usebasejump.com).
+
+## Optional Nextjs starter template
+We've got a fleshed out starter template ready to go for Basejump built using NextJs.  You can install it by running:
+
+```bash
+yarn create next-app -e https://github.com/usebasejump/basejump-next
+```
+
+Then add your Supabase URL and anon key to your `.env.local` file. There's an example in the `.env.example` file.
 
 ## Running tests
 Basejump includes comprehensive pgtap testing for all included functionality - but it's not enabled by default in case that's not your jam. To run the tests, you'll need to add a few dependencies.
