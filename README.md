@@ -1,11 +1,8 @@
 # Basejump
 
-> If you're looking for the original Basejump which included a NextJS SaaS starter
-> template, [check out the legacy repo](https://github.com/usebasejump/legacy-basejump-template).
-
 Basejump adds personal accounts, team accounts, permissions and billing support to Supabase Auth.
 
-[Learn more at usebasejump.com](https://usebasejump.com).
+[Learn more at usebasejump.com](https://usebasejump.com). Ask questions [on X / Twitter](https://twitter.com/tiniscule)
 
 ## Features
 
@@ -26,36 +23,34 @@ Basejump adds personal accounts, team accounts, permissions and billing support 
 
 Check out the getting started guide at [usebasejump.com](https://usebasejump.com).
 
-## Contributing
+## Running tests
+Basejump includes comprehensive pgtap testing for all included functionality - but it's not enabled by default in case that's not your jam. To run the tests, you'll need to add a few dependencies.
 
-Yes please! Here's how you can get started locally
-
-#### Initialize Supabase
-
-```bash
-    supabase init && supabase start
-```
-
-#### Install local version of basejump_core
-
-```bash
-dbdev install --connection postgres://postgres:postgres@localhost:54322/postgres --path .
-```
-
-#### Enable basejump_core
+#### Install pgtap
 
 ```sql
-    CREATE EXTENSION IF NOT EXISTS basejump_core;
+create extension pgtap with schema extensions;
 ```
 
-#### Make sure tests can run
+#### Install dbdev
+Follow the directions at [database.dev](https://database.dev/supabase/dbdev) to install dbdev.
 
+#### Install supabase_test_helpers
+
+```sql
+select dbdev.install('basejump-supabase_test_helpers');
+```
+
+#### Run the tests
 ```bash
-    supabase test db
+supabase test db
 ```
 
-### Add your changes and write tests.
 
-Make sure you're following the database.dev upgrade guidelines. you should NEVER be updating/changing existing version
-files. All changes should have valid migration files for postgres extensions. I'll try to flesh this section out more
-later.
+## Contributing
+
+Yes please! Please submit a PR with your changes to [the basejump github repo](https://github.com/usebasejump/basejump). Please make sure your changes are well tested and documented.
+
+You can contribute in the following places:
+- [Basejump core](https://github.com/usebasejump/basejump)
+- [Basejump edge functions / billing functions](https://github.com/usebasejump/basejump-deno-packages)
