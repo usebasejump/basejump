@@ -1,9 +1,3 @@
-.branches
-.temp
-config.toml
-functions/.env
-seed.sql
-
 # Supabase
 .branches
 .temp
