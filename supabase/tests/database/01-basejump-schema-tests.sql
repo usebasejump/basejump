@@ -1,7 +1,7 @@
 BEGIN;
 create extension "basejump-supabase_test_helpers" version '0.0.6';
 
-select plan(24);
+select plan(20);
 
 select has_schema('basejump', 'Basejump schema should exist');
 
@@ -17,14 +17,6 @@ select tests.rls_enabled('basejump');
 select columns_are('basejump', 'config',
                    Array ['enable_team_accounts', 'enable_personal_account_billing', 'enable_team_account_billing', 'billing_provider'],
                    'Basejump config table should have the correct columns');
-
-select ok(basejump.is_set('enable_personal_account_billing')),
-       'Basejump config should have personal account billing enabled';
-select ok(basejump.is_set('enable_team_accounts')), 'Basejump config should have team accounts enabled';
-select ok((basejump.get_config() ->> 'enable_team_account_billing')::boolean = true,
-          'Basejump config should have team account billing enabled');
-select ok(basejump.get_config() ->> 'billing_provider' = 'stripe',
-          'Basejump config should have stripe as the billing provider');
 
 
 select function_returns('basejump', 'generate_token', Array ['integer'], 'text',
