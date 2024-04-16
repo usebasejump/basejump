@@ -1,7 +1,11 @@
 BEGIN;
-create extension "basejump-supabase_test_helpers" version '0.0.6';
+create extension if not exists "basejump-supabase_test_helpers" version '0.0.6';
 
 select plan(15);
+
+-- make sure we're setup for automatic personal team account creation
+update basejump.config
+set enable_automatic_personal_team = true;
 
 --- we insert a user into auth.users and return the id into user_id to use
 

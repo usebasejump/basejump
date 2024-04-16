@@ -64,12 +64,13 @@ CREATE TABLE IF NOT EXISTS basejump.config
     enable_team_accounts            boolean default true,
     enable_personal_account_billing boolean default true,
     enable_team_account_billing     boolean default true,
+    enable_automatic_personal_team  boolean default true, -- In some setups you might not want to automatically create a personal space. In this case set this value to false.
     billing_provider                text    default 'stripe'
 );
 
 -- create config row
-INSERT INTO basejump.config (enable_team_accounts, enable_personal_account_billing, enable_team_account_billing)
-VALUES (true, true, true);
+INSERT INTO basejump.config (enable_team_accounts, enable_personal_account_billing, enable_team_account_billing, enable_automatic_personal_team)
+VALUES (true, true, true, false);
 
 -- enable select on the config table
 GRANT SELECT ON basejump.config TO authenticated, service_role;
