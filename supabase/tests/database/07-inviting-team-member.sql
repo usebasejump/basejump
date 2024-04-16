@@ -1,11 +1,14 @@
 BEGIN;
-create extension "basejump-supabase_test_helpers" version '0.0.6';
+create extension if not exists "basejump-supabase_test_helpers" version '0.0.6';
 
 select plan(10);
 
 -- make sure we're setup for enabling personal accounts
 update basejump.config
-set enable_team_accounts = true;
+set enable_team_accounts = true,
+    -- make sure we're setup for automatic personal team account creation
+    enable_automatic_personal_team = true;
+ 
 
 --- Create the users we need for testing
 select tests.create_supabase_user('test1');

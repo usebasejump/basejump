@@ -1,5 +1,5 @@
 BEGIN;
-create extension "basejump-supabase_test_helpers" version '0.0.6';
+create extension if not exists "basejump-supabase_test_helpers" version '0.0.6';
 
 select plan(20);
 
@@ -15,7 +15,7 @@ select has_table('basejump', 'billing_subscriptions', 'Basejump billing_subscrip
 select tests.rls_enabled('basejump');
 
 select columns_are('basejump', 'config',
-                   Array ['enable_team_accounts', 'enable_personal_account_billing', 'enable_team_account_billing', 'billing_provider'],
+                   Array ['enable_team_accounts', 'enable_personal_account_billing', 'enable_team_account_billing', 'enable_automatic_personal_team', 'billing_provider'],
                    'Basejump config table should have the correct columns');
 
 

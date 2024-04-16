@@ -1,9 +1,11 @@
 BEGIN;
-create extension "basejump-supabase_test_helpers" version '0.0.6';
+create extension if not exists "basejump-supabase_test_helpers" version '0.0.6';
 
 update basejump.config
 set enable_personal_account_billing = FALSE,
-    enable_team_account_billing     = FALSE;
+    enable_team_account_billing     = FALSE,
+    -- make sure we're setup for automatic personal team account creation
+    enable_automatic_personal_team = true;
 
 select plan(6);
 
