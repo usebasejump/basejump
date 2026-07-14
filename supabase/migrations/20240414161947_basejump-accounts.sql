@@ -304,7 +304,7 @@ create policy "users can view their own account_users" on basejump.account_user
     for select
     to authenticated
     using (
-    user_id = auth.uid()
+    user_id = (select auth.uid())
     );
 
 create policy "users can view their teammates" on basejump.account_user
@@ -337,7 +337,7 @@ create policy "Accounts are viewable by primary owner" on basejump.accounts
     for select
     to authenticated
     using (
-    primary_owner_user_id = auth.uid()
+    primary_owner_user_id = (select auth.uid())
     );
 
 create policy "Team accounts can be created by any user" on basejump.accounts
