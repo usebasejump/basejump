@@ -1,3 +1,5 @@
+> This project is unmaintained. it's still useful as an example for how you can implement team accounts with Supabase, particularly the migrations. But stuff like billing is better solved now using the official Supabase sync from Stripe.
+
 # Basejump
 
 Basejump adds personal accounts, team accounts, permissions and billing support to Supabase Auth.
